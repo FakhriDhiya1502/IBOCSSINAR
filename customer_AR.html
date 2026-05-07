@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Receivable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <style>
+        body {
+            background: #f4f6fb;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+        }
+
+        .card-header-custom {
+            background: #fff;
+            border-bottom: 1.5px solid #e8ecf4;
+            padding: 16px 20px;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-label {
+            font-weight: 700;
+            font-size: .95rem;
+            color: #1a237e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        table {
+            font-size: 13.5px;
+        }
+
+        th {
+            background: #f8faff;
+            color: #374151;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            border-bottom: 1.5px solid #e0e7ef !important;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .s-open {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .s-draft {
+            background: #fefce8;
+            color: #854d0e;
+        }
+
+        .s-posted {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .s-generated {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .bulk-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 2px solid #e0e7ef;
+            padding: 14px 32px;
+            display: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, .08);
+        }
+
+        .bulk-bar.visible {
+            display: flex;
+        }
+
+        .btn-generate {
+            background: #1a237e;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 22px;
+            font-weight: 700;
+            font-size: .9rem;
+        }
+
+        .btn-generate:hover {
+            background: #283593;
+            color: #fff;
+        }
+
+        .toast-wrap {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast-item {
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+            animation: slideIn .25s ease;
+        }
+
+        .toast-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1.5px solid #bbf7d0;
+        }
+
+        .toast-warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1.5px solid #fde68a;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: .9rem;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            color: #1a237e;
+            border-bottom-color: #1a237e;
+        }
+
+        .empty-state {
+            padding: 48px;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            padding: 0 6px;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 13px;
+            transition: transform .2s;
+        }
+
+        .expand-btn.open {
+            color: #1a237e;
+        }
+
+        .expand-row td {
+            background: #f8faff;
+            padding: 0 !important;
+        }
+
+        .expand-inner {
+            padding: 10px 16px 14px 56px;
+            border-top: 1px solid #e0e7ef;
+        }
+
+        .item-mini-table {
+            width: 100%;
+            font-size: 12.5px;
+        }
+
+        .item-mini-table th {
+            background: #eef2ff;
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+
+        .item-mini-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-mini-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-detail {
+            background: none;
+            border: 1px solid #c7d2fe;
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: #4338ca;
+            font-size: 11.5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: #eef2ff;
+        }
+
+        /* Progress modal */
+        .progress-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 32px;
+            min-width: 380px;
+            max-width: 480px;
+            box-shadow: 0 8px 40px rgba(0,0,0,.18);
+        }
+
+        .progress-modal h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin: 0 0 6px;
+        }
+
+        .progress-modal .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .pi-waiting { color: #9ca3af; }
+        .pi-processing { color: #1a237e; }
+        .pi-done { color: #059669; }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark" style="background:#1a237e; padding:10px 24px;">
+        <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="text-white-50 small" id="navUser"></span>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10 py-4 px-4">
+
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-plus me-2"
+                            style="color:#1a237e;"></i>Accounts Receivable</h4>
+                    <p class="text-muted small mb-0">Generate AR dokumen dari Delivery Order (DO) yang sudah terkirim. 1
+                        DO = 1 AR.</p>
+                </div>
+
+                <!-- Tabs -->
+                <div style="border-bottom:2px solid #e0e7ef; margin-bottom:20px;">
+                    <button class="tab-btn active" id="tabDo" onclick="switchTab('do')">
+                        <i class="bi bi-truck me-1"></i>DO Belum di-AR
+                    </button>
+                    <button class="tab-btn" id="tabAr" onclick="switchTab('ar')">
+                        <i class="bi bi-file-earmark-check me-1"></i>Dokumen AR
+                    </button>
+                </div>
+
+                <!-- DO Tab -->
+                <div id="panelDo">
+                    <div class="card">
+                        <div class="card-header-custom">
+                            <span class="section-label"><i class="bi bi-truck"></i> Delivery Order Tersedia</span>
+                            <input type="text" id="fDoSearch" class="form-control form-control-sm"
+                                placeholder="Cari DO No / Order No..." oninput="renderDoTable()"
+                                style="width:220px; border-radius:8px;">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th style="width:36px;"></th>
+                                        <th>DO No</th>
+                                        <th>Order / PO Ref</th>
+                                        <th>Customer</th>
+                                        <th>ETA</th>
+                                        <th class="text-end">Total Qty</th>
+                                        <th class="text-end">Open Qty</th>
+                                        <th>Status AR</th>
+                                        <th>Keterangan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AR Tab -->
+                <div id="panelAr" style="display:none;">
+                    <div class="card">
+                        <div class="card-header-custom">
+                            <span class="section-label"><i class="bi bi-file-earmark-check"></i> Dokumen AR</span>
+                            <input type="text" id="fArSearch" class="form-control form-control-sm"
+                                placeholder="Cari AR No / DO..." oninput="renderArTable()"
+                                style="width:220px; border-radius:8px;">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;"></th>
+                                        <th>AR No</th>
+                                        <th>Tanggal</th>
+                                        <th>DO Ref</th>
+                                        <th>Order Ref</th>
+                                        <th class="text-end">Total Qty</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="arBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Bar -->
+    <div class="bulk-bar" id="bulkBar">
+        <span class="text-muted small me-auto" id="bulkBarLabel">0 DO dipilih</span>
+        <button class="btn btn-outline-secondary btn-sm" onclick="clearSelection()">Batal</button>
+        <button class="btn-generate" onclick="generateAR()"><i class="bi bi-plus-circle me-2"></i>Generate AR</button>
+    </div>
+
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- Progress Modal -->
+    <div class="progress-modal-backdrop" id="progressBackdrop" style="display:none;">
+        <div class="progress-modal">
+            <h5><i class="bi bi-arrow-repeat me-2"></i>Sedang Memproses AR</h5>
+            <p class="subtitle">Jangan tutup atau refresh halaman ini.</p>
+            <div id="progressList"></div>
+        </div>
+    </div>
+
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+        new SidebarSystem(null, 'ar_list').render();
+
+        const DEMO_DO = [
+            {
+                doNo: "DO-SIC-0001", orderNo: "ORD-SIC-2604-001", company: "SIC", customer: "TOP",
+                status: "Shipped", eta: "2026-04-05",
+                items: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 5000, openQty: 5000, uom: "Kg", unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qty: 9200, openQty: 9200, uom: "Kg", unitPrice: 8500 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0002", orderNo: "ORD-SIC-2604-002", company: "SIC", customer: "TOP",
+                status: "Shipped", eta: "2026-04-10",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qty: 4500, openQty: 4500, uom: "Kg", unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qty: 4250, openQty: 4250, uom: "Kg", unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0003", orderNo: "ORD-SIC-2604-003", company: "SIC", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-06",
+                items: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qty: 6000, openQty: 6000, uom: "Kg", unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qty: 4500, openQty: 4500, uom: "Kg", unitPrice: 8200 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0004", orderNo: "ORD-SIC-2604-004", company: "SIC", customer: "AYM",
+                status: "Shipped", eta: "2026-04-08",
+                items: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 4000, openQty: 4000, uom: "Kg", unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qty: 8000, openQty: 8000, uom: "Kg", unitPrice: 8500 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0005", orderNo: "ORD-SIC-2604-005", company: "SIC", customer: "AYM",
+                status: "Shipped", eta: "2026-04-17",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qty: 5300, openQty: 5300, uom: "Kg", unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qty: 4000, openQty: 4000, uom: "Kg", unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0001", orderNo: "ORD-CTU-2604-001", company: "CTU", customer: "TOP",
+                status: "Shipped", eta: "2026-04-19",
+                items: [{ itemCode: "DOC-001", itemName: "DOC Broiler FS", qty: 6000, openQty: 6000, uom: "Ekor", unitPrice: 6500 }]
+            },
+            {
+                doNo: "DO-CTU-0002", orderNo: "ORD-CTU-2604-002", company: "CTU", customer: "TOP",
+                status: "Shipped", eta: "2026-04-23",
+                items: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qty: 4000, openQty: 4000, uom: "Kg",    unitPrice: 8500 },
+                    { itemCode: "DOC-002",  itemName: "DOC Broiler PS",        qty: 3500, openQty: 3500, uom: "Ekor", unitPrice: 6800 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0003", orderNo: "ORD-CTU-2604-003", company: "CTU", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-15",
+                items: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",         qty: 3500, openQty: 3500, uom: "Ekor", unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)",  qty: 4300, openQty: 4300, uom: "Kg",   unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0004", orderNo: "ORD-CTU-2604-004", company: "CTU", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-21",
+                items: [{ itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 5200, openQty: 5200, uom: "Kg", unitPrice: 7800 }]
+            },
+            {
+                doNo: "DO-CTU-0005", orderNo: "ORD-CTU-2604-005", company: "CTU", customer: "AYM",
+                status: "Shipped", eta: "2026-04-22",
+                items: [{ itemCode: "DOC-002", itemName: "DOC Broiler PS", qty: 5000, openQty: 5000, uom: "Ekor", unitPrice: 6800 }]
+            },
+            {
+                doNo: "DO-CTU-0006", orderNo: "ORD-CTU-2604-006", company: "CTU", customer: "AYM",
+                status: "Shipped", eta: "2026-04-24",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)", qty: 3800, openQty: 3800, uom: "Kg",    unitPrice: 8200 },
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",       qty: 3000, openQty: 3000, uom: "Ekor", unitPrice: 6500 }
+                ]
+            }
+        ];
+
+        function getDoList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_customer_deliveries") || "[]");
+            const storedNos = new Set(stored.map(d => d.doNo));
+            return [...stored, ...DEMO_DO.filter(d => !storedNos.has(d.doNo))];
+        }
+
+        function getArList() {
+            return JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]");
+        }
+
+        function generatedDoNos() {
+            return new Set(getArList().map(a => a.doRef));
+        }
+
+        // ── Tabs ──────────────────────────────────────────────────────────────────
+        function switchTab(tab) {
+            document.getElementById("tabDo").classList.toggle("active", tab === "do");
+            document.getElementById("tabAr").classList.toggle("active", tab === "ar");
+            document.getElementById("panelDo").style.display = tab === "do" ? "" : "none";
+            document.getElementById("panelAr").style.display = tab === "ar" ? "" : "none";
+            if (tab === "ar") renderArTable();
+            clearSelection();
+        }
+
+        function deliveryBadge(status) {
+            const s = (status || "").toLowerCase();
+            if (s.includes("shipped") || s.includes("delivered")) return `<span class="status-badge s-posted">${status}</span>`;
+            if (s.includes("transit")) return `<span class="status-badge" style="background:#fff7ed;color:#9a3412;">${status}</span>`;
+            return `<span class="status-badge s-open">${status}</span>`;
+        }
+
+        function statusBadge(status) {
+            const text = (!status || status === "Draft") ? "Open" : status;
+            const cls = text === "Open" ? "s-open" : text === "Closed" ? "s-posted" : "s-open";
+            return `<span class="status-badge ${cls}">${text}</span>`;
+        }
+
+        // ── DO Table ──────────────────────────────────────────────────────────────
+        function renderDoTable() {
+            const q = (document.getElementById("fDoSearch").value || "").toLowerCase();
+            const done = generatedDoNos();
+            const rows = getDoList().filter(d => {
+                if (!q) return true;
+                return d.doNo.toLowerCase().includes(q) || (d.orderNo || "").toLowerCase().includes(q) || (d.customer || "").toLowerCase().includes(q) || (d.company || "").toLowerCase().includes(q);
+            });
+
+            const tbody = document.getElementById("doBody");
+            if (!rows.length) {
+                tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-truck"></i>Tidak ada DO tersedia.</td></tr>`;
+                return;
+            }
+
+            const groups = {};
+            rows.forEach(d => {
+                const company = d.company || "Unknown";
+                if (!groups[company]) groups[company] = [];
+                groups[company].push(d);
+            });
+
+            let html = "";
+            let idx = 0;
+            Object.entries(groups).forEach(([company, doList]) => {
+                html += `<tr style="background:#f0f3fa;">
+                    <td colspan="11" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
+                        <i class="bi bi-building me-2"></i>${company}
+                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${doList.length} DO)</span>
+                    </td>
+                </tr>`;
+
+                doList.forEach(d => {
+                    const isDone = done.has(d.doNo);
+                    const expandId = `exp-do-${idx}`;
+                    const cb = isDone
+                        ? `<input type="checkbox" disabled title="Sudah di-AR">`
+                        : `<input type="checkbox" class="row-check" data-do="${d.doNo}" onchange="updateBulkBar()">`;
+                    const arStatus = isDone
+                        ? `<span class="status-badge s-generated">Closed</span>`
+                        : `<span class="status-badge s-open">Open</span>`;
+                    const note = isDone ? `<span class="text-muted small">Sudah ada AR</span>` : `<span class="text-muted small">Siap di-generate</span>`;
+
+                    const lines = d.items || [];
+                    const totalQty     = lines.reduce((s, l) => s + (l.qty || 0), 0);
+                    const totalOpenQty = lines.reduce((s, l) => s + (l.openQty !== undefined ? l.openQty : (l.qty || 0)), 0);
+
+                    const itemRows = lines.length
+                        ? lines.map(l => {
+                            const qty      = l.qty || 0;
+                            const openQty  = l.openQty !== undefined ? l.openQty : qty;
+                            const unitPrice = l.unitPrice || 0;
+                            const lineTotal = qty * unitPrice;
+                            return `<tr>
+                                <td>${l.itemCode || "-"}</td>
+                                <td>${l.itemName || "-"}</td>
+                                <td class="text-end">${qty.toLocaleString()}</td>
+                                <td class="text-end text-primary fw-semibold">${openQty.toLocaleString()}</td>
+                                <td class="text-end">${unitPrice ? unitPrice.toLocaleString("id-ID") : "-"}</td>
+                                <td class="text-end fw-semibold">${lineTotal ? "IDR " + lineTotal.toLocaleString("id-ID") : "-"}</td>
+                            </tr>`;
+                        }).join("")
+                        : `<tr><td colspan="6" class="text-muted text-center py-2">Tidak ada item detail.</td></tr>`;
+
+                    const expandRow = `<tr class="expand-row" id="${expandId}" style="display:none;">
+                        <td colspan="11">
+                            <div class="expand-inner">
+                                <table class="item-mini-table">
+                                    <thead><tr>
+                                        <th>Item Code</th><th>Item Name</th>
+                                        <th class="text-end">Qty</th>
+                                        <th class="text-end">Open Qty</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr></thead>
+                                    <tbody>${itemRows}</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>`;
+
+                    const mainRow = `<tr style="${isDone ? 'opacity:.6;' : ''}">
+                        <td>${cb}</td>
+                        <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
+                        <td class="fw-semibold">${d.doNo}</td>
+                        <td><span class="text-primary">${d.orderNo || "-"}</span></td>
+                        <td><span class="fw-semibold">${d.customer || "-"}</span></td>
+                        <td>${d.eta || "-"}</td>
+                        <td class="text-end">${totalQty.toLocaleString()}</td>
+                        <td class="text-end text-primary fw-semibold">${totalOpenQty.toLocaleString()}</td>
+                        <td>${arStatus}</td>
+                        <td>${note}</td>
+                        <td><button class="btn-detail" onclick="viewDetail('${d.doNo}')"><i class="bi bi-eye me-1"></i>Detail</button></td>
+                    </tr>`;
+
+                    html += mainRow + expandRow;
+                    idx++;
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleExpand(expandId) {
+            const row = document.getElementById(expandId);
+            const btn = document.getElementById("btn-" + expandId);
+            const isOpen = row.style.display !== "none";
+            row.style.display = isOpen ? "none" : "";
+            btn.classList.toggle("open", !isOpen);
+            btn.innerHTML = isOpen ? `<i class="bi bi-chevron-right"></i>` : `<i class="bi bi-chevron-down"></i>`;
+        }
+
+        function viewDetail(doNo) {
+            window.location.href = `customer_bulk_ar_process.html?do=${encodeURIComponent(doNo)}`;
+        }
+
+        // ── AR Table ──────────────────────────────────────────────────────────────
+        function renderArTable() {
+            const q = (document.getElementById("fArSearch").value || "").toLowerCase();
+            const list = getArList().filter(a => {
+                if (!q) return true;
+                return a.arNo.toLowerCase().includes(q) || (a.doRef || "").toLowerCase().includes(q) || (a.orderRef || "").toLowerCase().includes(q) || (a.company || "").toLowerCase().includes(q) || (a.customer || "").toLowerCase().includes(q);
+            });
+
+            const tbody = document.getElementById("arBody");
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="bi bi-file-earmark-x"></i>Belum ada dokumen AR.</td></tr>`;
+                return;
+            }
+
+            const groups = {};
+            list.forEach(a => {
+                const company = a.company || "Unknown";
+                if (!groups[company]) groups[company] = [];
+                groups[company].push(a);
+            });
+
+            let html = "";
+            let idx = 0;
+            Object.entries(groups).forEach(([company, arList]) => {
+                html += `<tr style="background:#f0f3fa;">
+                    <td colspan="7" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
+                        <i class="bi bi-building me-2"></i>${company}
+                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${arList.length} AR)</span>
+                    </td>
+                </tr>`;
+
+                arList.forEach(a => {
+                    const expandId = `exp-ar-${idx}`;
+                    const itemRows = (a.lines || []).map(l => {
+                        const qty = l.qty || 0;
+                        const unitPrice = l.unitPrice || 0;
+                        const lineTotal = qty * unitPrice;
+                        return `<tr>
+                            <td>${l.itemCode || "-"}</td>
+                            <td>${l.itemName || "-"}</td>
+                            <td class="text-end">${qty.toLocaleString()}</td>
+                            <td class="text-end">${unitPrice ? unitPrice.toLocaleString("id-ID") : "-"}</td>
+                            <td class="text-end fw-semibold">${lineTotal ? "IDR " + lineTotal.toLocaleString("id-ID") : "-"}</td>
+                        </tr>`;
+                    }).join("") || `<tr><td colspan="5" class="text-muted text-center">Tidak ada detail item.</td></tr>`;
+
+                    const expandRow = `<tr class="expand-row" id="${expandId}" style="display:none;">
+                        <td colspan="7">
+                            <div class="expand-inner">
+                                <table class="item-mini-table">
+                                    <thead><tr>
+                                        <th>Item Code</th><th>Item Name</th>
+                                        <th class="text-end">Qty</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr></thead>
+                                    <tbody>${itemRows}</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>`;
+
+                    const mainRow = `<tr>
+                        <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
+                        <td class="fw-semibold text-primary" style="cursor:pointer;" onclick="window.location.href='customer_ar_view.html?no=${encodeURIComponent(a.arNo)}'">
+                            ${a.arNo} <i class="bi bi-box-arrow-up-right ms-1" style="font-size:10px;opacity:.5;"></i>
+                        </td>
+                        <td>${a.arDate || "-"}</td>
+                        <td>${a.doRef || "-"}</td>
+                        <td>${a.orderRef || "-"}</td>
+                        <td class="text-end">${(a.totalQty || 0).toLocaleString()}</td>
+                        <td>${statusBadge(a.status)}</td>
+                    </tr>`;
+
+                    html += mainRow + expandRow;
+                    idx++;
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ── Selection ─────────────────────────────────────────────────────────────
+        function updateBulkBar() {
+            const checked = document.querySelectorAll(".row-check:checked");
+            const n = checked.length;
+            document.getElementById("bulkBar").classList.toggle("visible", n > 0);
+            document.getElementById("bulkBarLabel").textContent = `${n} DO dipilih — akan dibuat ${n} AR`;
+        }
+
+        function clearSelection() {
+            document.querySelectorAll(".row-check").forEach(c => c.checked = false);
+            document.getElementById("bulkBar").classList.remove("visible");
+        }
+
+        // ── Generate AR (inline, with progress modal) ─────────────────────────────
+        async function generateAR() {
+            const checked = [...document.querySelectorAll(".row-check:checked")];
+            if (!checked.length) return;
+
+            const selectedDos = checked.map(c => c.dataset.do);
+            const allDo = getDoList();
+            const today = new Date().toISOString().split("T")[0];
+
+            const progressList = document.getElementById("progressList");
+            progressList.innerHTML = selectedDos.map(doNo =>
+                `<div class="progress-item" id="pi-${doNo.replace(/[^a-z0-9]/gi,'_')}">
+                    <span class="progress-icon pi-waiting"><i class="bi bi-circle"></i></span>
+                    <span>${doNo}</span>
+                </div>`
+            ).join("");
+            document.getElementById("progressBackdrop").style.display = "flex";
+
+            await sleep(300);
+
+            const arList = JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]");
+            let count = 0;
+
+            for (const doNo of selectedDos) {
+                const safeId = doNo.replace(/[^a-z0-9]/gi, '_');
+                const piEl = document.getElementById(`pi-${safeId}`);
+
+                piEl.querySelector(".progress-icon").className = "progress-icon pi-processing";
+                piEl.querySelector(".progress-icon").innerHTML = `<i class="bi bi-arrow-repeat spin"></i>`;
+                piEl.querySelector("span:last-child").textContent = `${doNo} — sedang diproses...`;
+
+                await sleep(600);
+
+                const d = allDo.find(x => x.doNo === doNo);
+                if (d) {
+                    const arNo = "AR-" + today.replace(/-/g,"").slice(2) + "-" + String(arList.length + count + 1).padStart(4, "0");
+                    const due = new Date(today); due.setDate(due.getDate() + 7);
+                    const lines = (d.items || []).map(l => ({
+                        itemCode:  l.itemCode || "-",
+                        itemName:  l.itemName || "-",
+                        qty:       l.qty || 0,
+                        unitPrice: l.unitPrice || 0,
+                        discount:  0,
+                        subtotal:  (l.qty || 0) * (l.unitPrice || 0),
+                        glAccount: "7110204",
+                        glName:    "SALES REVENUE — FEED",
+                        distrRule: "PROD;HO",
+                        taxCode:   "PPNO-NO",
+                        uom:       l.uom || "Kg"
+                    }));
+                    const totalBeforeDisc = lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
+                    arList.unshift({
+                        arNo, arDate: today,
+                        dueDate: due.toISOString().split("T")[0],
+                        accountCode: "1100", notes: "",
+                        doRef:    d.doNo,
+                        orderRef: d.orderNo || "",
+                        company:  d.company || "",
+                        customer: d.customer || "",
+                        totalQty: lines.reduce((s, l) => s + l.qty, 0),
+                        discountPct: 0, freight: 0,
+                        totalBeforeDisc,
+                        total: totalBeforeDisc,
+                        status: "Open",
+                        lines
+                    });
+                    count++;
+                }
+
+                piEl.querySelector(".progress-icon").className = "progress-icon pi-done";
+                piEl.querySelector(".progress-icon").innerHTML = `<i class="bi bi-check-circle-fill"></i>`;
+                piEl.querySelector("span:last-child").textContent = `${doNo} — selesai`;
+
+                await sleep(400);
+            }
+
+            localStorage.setItem("IBOCS_ar_list", JSON.stringify(arList));
+
+            await sleep(600);
+            document.getElementById("progressBackdrop").style.display = "none";
+            clearSelection();
+            showToast(`${count} AR berhasil dibuat!`, "success");
+            renderDoTable();
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        // ── Toast ─────────────────────────────────────────────────────────────────
+        function showToast(msg, type = "success") {
+            const wrap = document.getElementById("toastWrap");
+            const el = document.createElement("div");
+            el.className = `toast-item toast-${type}`;
+            el.innerHTML = msg;
+            wrap.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────────────
+        renderDoTable();
+    </script>
+
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { display: inline-block; animation: spin .7s linear infinite; }
+    </style>
+</body>
+
+</html>

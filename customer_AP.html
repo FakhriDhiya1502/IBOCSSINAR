@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accounts Payable</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <style>
+        body {
+            background: #f4f6fb;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .page-header {
+            background: #1a237e;
+            color: #fff;
+            padding: 20px 32px;
+        }
+
+        .page-header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .page-header p {
+            font-size: .85rem;
+            opacity: .8;
+            margin: 4px 0 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+        }
+
+        .card-header-custom {
+            background: #fff;
+            border-bottom: 1.5px solid #e8ecf4;
+            padding: 16px 20px;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-label {
+            font-weight: 700;
+            font-size: .95rem;
+            color: #1a237e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        table {
+            font-size: 13.5px;
+        }
+
+        th {
+            background: #f8faff;
+            color: #374151;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            border-bottom: 1.5px solid #e0e7ef !important;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+        }
+
+        .s-open {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .s-draft {
+            background: #fefce8;
+            color: #854d0e;
+        }
+
+        .s-posted {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .s-paid {
+            background: #f5f3ff;
+            color: #5b21b6;
+        }
+
+        .s-generated {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        .bulk-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 2px solid #e0e7ef;
+            padding: 14px 32px;
+            display: none;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, .08);
+        }
+
+        .bulk-bar.visible {
+            display: flex;
+        }
+
+        .btn-generate {
+            background: #1a237e;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 22px;
+            font-weight: 700;
+            font-size: .9rem;
+        }
+
+        .btn-generate:hover {
+            background: #283593;
+            color: #fff;
+        }
+
+        .toast-wrap {
+            position: fixed;
+            bottom: 80px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast-item {
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+            animation: slideIn .25s ease;
+        }
+
+        .toast-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1.5px solid #bbf7d0;
+        }
+
+        .toast-warning {
+            background: #fffbeb;
+            color: #92400e;
+            border: 1.5px solid #fde68a;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: .9rem;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            color: #1a237e;
+            border-bottom-color: #1a237e;
+        }
+
+        .empty-state {
+            padding: 48px;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            padding: 0 6px;
+            color: #6b7280;
+            cursor: pointer;
+            font-size: 13px;
+            transition: transform .2s;
+        }
+
+        .expand-btn.open {
+            color: #1a237e;
+        }
+
+        .expand-row td {
+            background: #f8faff;
+            padding: 0 !important;
+        }
+
+        .expand-inner {
+            padding: 10px 16px 14px 56px;
+            border-top: 1px solid #e0e7ef;
+        }
+
+        .item-mini-table {
+            width: 100%;
+            font-size: 12.5px;
+        }
+
+        .item-mini-table th {
+            background: #eef2ff;
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+
+        .item-mini-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .item-mini-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-detail {
+            background: none;
+            border: 1px solid #c7d2fe;
+            border-radius: 6px;
+            padding: 2px 8px;
+            color: #4338ca;
+            font-size: 11.5px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-detail:hover {
+            background: #eef2ff;
+        }
+
+        /* Progress modal */
+        .progress-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.45);
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-modal {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 32px;
+            min-width: 380px;
+            max-width: 480px;
+            box-shadow: 0 8px 40px rgba(0,0,0,.18);
+        }
+
+        .progress-modal h5 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1a237e;
+            margin: 0 0 6px;
+        }
+
+        .progress-modal .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .pi-waiting { color: #9ca3af; }
+        .pi-processing { color: #1a237e; }
+        .pi-done { color: #059669; }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark" style="background:#1a237e; padding:10px 24px;">
+        <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="text-white-50 small" id="navUser"></span>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10 py-4 px-4">
+
+                <div class="mb-4">
+                    <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-minus me-2"
+                            style="color:#1a237e;"></i>Accounts Payable</h4>
+                    <p class="text-muted small mb-0">Generate AP dokumen dari GRPO yang sudah diterima. 1 GRPO = 1 AP.
+                    </p>
+                </div>
+
+                <!-- Tabs -->
+                <div style="border-bottom:2px solid #e0e7ef; margin-bottom:20px;">
+                    <button class="tab-btn active" id="tabGrpo" onclick="switchTab('grpo')">
+                        <i class="bi bi-box-seam me-1"></i>GRPO Belum di-AP
+                    </button>
+                    <button class="tab-btn" id="tabAp" onclick="switchTab('ap')">
+                        <i class="bi bi-file-earmark-check me-1"></i>Dokumen AP
+                    </button>
+                </div>
+
+                <!-- GRPO Tab -->
+                <div id="panelGrpo">
+                    <div class="card">
+                        <div class="card-header-custom">
+                            <span class="section-label"><i class="bi bi-inbox"></i> GRPO Tersedia</span>
+                            <div class="d-flex gap-2">
+                                <input type="text" id="fGrpoSearch" class="form-control form-control-sm"
+                                    placeholder="Cari GRPO / PO No..." oninput="renderGrpoTable()"
+                                    style="width:220px; border-radius:8px;">
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th style="width:36px;"></th>
+                                        <th>GRPO No</th>
+                                        <th>Tanggal</th>
+                                        <th>PO Ref</th>
+                                        <th>Vendor</th>
+                                        <th class="text-end">Total Qty</th>
+                                        <th class="text-end">Open Qty</th>
+                                        <th>Status</th>
+                                        <th>Keterangan</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grpoBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AP Tab -->
+                <div id="panelAp" style="display:none;">
+                    <div class="card">
+                        <div class="card-header-custom">
+                            <span class="section-label"><i class="bi bi-file-earmark-check"></i> Dokumen AP</span>
+                            <input type="text" id="fApSearch" class="form-control form-control-sm"
+                                placeholder="Cari AP No / GRPO..." oninput="renderApTable()"
+                                style="width:220px; border-radius:8px;">
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;"></th>
+                                        <th>AP No</th>
+                                        <th>Tanggal</th>
+                                        <th>GRPO Ref</th>
+                                        <th>PO Ref</th>
+                                        <th class="text-end">Total Qty</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="apBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Bar -->
+    <div class="bulk-bar" id="bulkBar">
+        <span class="text-muted small me-auto" id="bulkBarLabel">0 GRPO dipilih</span>
+        <button class="btn btn-outline-secondary btn-sm" onclick="clearSelection()">Batal</button>
+        <button class="btn-generate" onclick="generateAP()"><i class="bi bi-plus-circle me-2"></i>Generate AP</button>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-wrap" id="toastWrap"></div>
+
+    <!-- Progress Modal -->
+    <div class="progress-modal-backdrop" id="progressBackdrop" style="display:none;">
+        <div class="progress-modal">
+            <h5><i class="bi bi-arrow-repeat me-2"></i>Sedang Memproses AP</h5>
+            <p class="subtitle">Jangan tutup atau refresh halaman ini.</p>
+            <div id="progressList"></div>
+        </div>
+    </div>
+
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+        new SidebarSystem(null, 'ap_list').render();
+
+        const DEMO_GRPO = [
+            {
+                grpoNo: "GRPO-TOP-0001", grpoDate: "2026-04-03", poNo: "PO-TOP-2604-001",
+                store: "TOP Branch Bekasi", customer: "TOP", vendor: "SIC",
+                totalQty: 14200, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 5000, qtyReceived: 5000, unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qtyOrder: 9200, qtyReceived: 9200, unitPrice: 8500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-TOP-0002", grpoDate: "2026-04-10", poNo: "PO-TOP-2604-002",
+                store: "TOP Branch Tangerang", customer: "TOP", vendor: "SIC",
+                totalQty: 8750, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qtyOrder: 4500, qtyReceived: 4500, unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4250, qtyReceived: 4250, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-TOP-0003", grpoDate: "2026-04-18", poNo: "PO-TOP-2604-003",
+                store: "TOP Branch Bogor", customer: "TOP", vendor: "CTU",
+                totalQty: 6000, status: "Open",
+                rows: [
+                    { itemCode: "DOC-001", itemName: "DOC Broiler FS", qtyOrder: 6000, qtyReceived: 6000, unitPrice: 6500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-TOP-0004", grpoDate: "2026-04-22", poNo: "PO-TOP-2604-004",
+                store: "TOP Branch Depok", customer: "TOP", vendor: "CTU",
+                totalQty: 7500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",  qtyOrder: 4000, qtyReceived: 4000, unitPrice: 8500 },
+                    { itemCode: "DOC-002",  itemName: "DOC Broiler PS",         qtyOrder: 3500, qtyReceived: 3500, unitPrice: 6800 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0001", grpoDate: "2026-04-05", poNo: "PO-BMAX-2604-001",
+                store: "BMAX Farm Cikarang", customer: "BMAX", vendor: "SIC",
+                totalQty: 10500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qtyOrder: 6000, qtyReceived: 6000, unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qtyOrder: 4500, qtyReceived: 4500, unitPrice: 8200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0002", grpoDate: "2026-04-14", poNo: "PO-BMAX-2604-002",
+                store: "BMAX Farm Karawang", customer: "BMAX", vendor: "CTU",
+                totalQty: 7800, status: "Open",
+                rows: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",         qtyOrder: 3500, qtyReceived: 3500, unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)",  qtyOrder: 4300, qtyReceived: 4300, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0003", grpoDate: "2026-04-20", poNo: "PO-BMAX-2604-003",
+                store: "BMAX Farm Bekasi", customer: "BMAX", vendor: "CTU",
+                totalQty: 5200, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 5200, qtyReceived: 5200, unitPrice: 7800 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0001", grpoDate: "2026-04-07", poNo: "PO-AYM-2604-001",
+                store: "AYM Farm Subang", customer: "AYM", vendor: "SIC",
+                totalQty: 12000, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 4000, qtyReceived: 4000, unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qtyOrder: 8000, qtyReceived: 8000, unitPrice: 8500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0002", grpoDate: "2026-04-16", poNo: "PO-AYM-2604-002",
+                store: "AYM Farm Purwakarta", customer: "AYM", vendor: "SIC",
+                totalQty: 9300, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qtyOrder: 5300, qtyReceived: 5300, unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4000, qtyReceived: 4000, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0003", grpoDate: "2026-04-21", poNo: "PO-AYM-2604-003",
+                store: "AYM Farm Indramayu", customer: "AYM", vendor: "CTU",
+                totalQty: 5000, status: "Open",
+                rows: [
+                    { itemCode: "DOC-002", itemName: "DOC Broiler PS", qtyOrder: 5000, qtyReceived: 5000, unitPrice: 6800 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0004", grpoDate: "2026-04-23", poNo: "PO-AYM-2604-004",
+                store: "AYM Farm Cirebon", customer: "AYM", vendor: "CTU",
+                totalQty: 6800, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qtyOrder: 3800, qtyReceived: 3800, unitPrice: 8200 },
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",         qtyOrder: 3000, qtyReceived: 3000, unitPrice: 6500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-SIC-0001", grpoDate: "2026-04-08", poNo: "PO-SIC-2604-001",
+                store: "SIC Farm Majalengka", customer: "SIC", vendor: "SIC",
+                totalQty: 11500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qtyOrder: 6500, qtyReceived: 6500, unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qtyOrder: 5000, qtyReceived: 5000, unitPrice: 8200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-SIC-0002", grpoDate: "2026-04-17", poNo: "PO-SIC-2604-002",
+                store: "SIC Farm Cirebon", customer: "SIC", vendor: "CTU",
+                totalQty: 8200, status: "Open",
+                rows: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",         qtyOrder: 4000, qtyReceived: 4000, unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)",  qtyOrder: 4200, qtyReceived: 4200, unitPrice: 9200 }
+                ]
+            }
+        ];
+
+        function getGrpoList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_grpo_list") || "[]");
+            const storedNos = new Set(stored.map(g => g.grpoNo));
+            return [...stored, ...DEMO_GRPO.filter(d => !storedNos.has(d.grpoNo))];
+        }
+
+        function getApList() {
+            return JSON.parse(localStorage.getItem("IBOCS_ap_list") || "[]");
+        }
+
+        function generatedGrpoNos() {
+            return new Set(getApList().map(a => a.grpoRef));
+        }
+
+        function statusBadge(status) {
+            const text = (!status || status === "Draft") ? "Open" : status;
+            const cls = text === "Open" ? "s-open" : text === "Closed" ? "s-posted" : text === "Paid" ? "s-paid" : "s-open";
+            return `<span class="status-badge ${cls}">${text}</span>`;
+        }
+
+        // ── Tabs ─────────────────────────────────────────────────────────────────
+        function switchTab(tab) {
+            document.getElementById("tabGrpo").classList.toggle("active", tab === "grpo");
+            document.getElementById("tabAp").classList.toggle("active", tab === "ap");
+            document.getElementById("panelGrpo").style.display = tab === "grpo" ? "" : "none";
+            document.getElementById("panelAp").style.display = tab === "ap" ? "" : "none";
+            if (tab === "ap") renderApTable();
+            clearSelection();
+        }
+
+        // ── GRPO Table ────────────────────────────────────────────────────────────
+        function renderGrpoTable() {
+            const q = (document.getElementById("fGrpoSearch").value || "").toLowerCase();
+            const done = generatedGrpoNos();
+            const rows = getGrpoList().filter(g => {
+                if (q && !g.grpoNo.toLowerCase().includes(q) && !(g.poNo || "").toLowerCase().includes(q) && !(g.customer || "").toLowerCase().includes(q)) return false;
+                return true;
+            });
+
+            const tbody = document.getElementById("grpoBody");
+            if (!rows.length) {
+                tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-inbox"></i>Tidak ada GRPO tersedia.</td></tr>`;
+                return;
+            }
+
+            const groups = {};
+            rows.forEach(g => {
+                const company = g.customer || g.store || "Unknown";
+                if (!groups[company]) groups[company] = [];
+                groups[company].push(g);
+            });
+
+            let html = "";
+            let idx = 0;
+            Object.entries(groups).forEach(([company, grpoList]) => {
+                html += `<tr style="background:#f0f3fa;">
+                    <td colspan="11" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
+                        <i class="bi bi-building me-2"></i>${company}
+                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${grpoList.length} GRPO)</span>
+                    </td>
+                </tr>`;
+
+                grpoList.forEach(g => {
+                    const isDone = done.has(g.grpoNo);
+                    const expandId = `exp-grpo-${idx}`;
+                    const cb = isDone
+                        ? `<input type="checkbox" disabled title="Sudah di-AP">`
+                        : `<input type="checkbox" class="row-check" data-grpo="${g.grpoNo}" onchange="updateBulkBar()">`;
+                    const statusHtml = isDone
+                        ? `<span class="status-badge s-generated">AP Generated</span>`
+                        : `<span class="status-badge s-open">${g.status || "Open"}</span>`;
+                    const note = isDone ? `<span class="text-muted small">Sudah ada AP</span>` : `<span class="text-muted small">Siap di-generate</span>`;
+
+                    const totalOpenQty = (g.rows || []).reduce((s, r) => s + (r.openQty !== undefined ? r.openQty : (r.qtyReceived || r.qty || 0)), 0);
+
+                    const itemRows = (g.rows || []).map(r => {
+                        const qty = r.qtyReceived || r.qty || 0;
+                        const openQty = r.openQty !== undefined ? r.openQty : qty;
+                        const unitPrice = r.unitPrice || 0;
+                        const lineTotal = qty * unitPrice;
+                        return `<tr>
+                            <td>${r.itemCode || "-"}</td>
+                            <td>${r.itemName || "-"}</td>
+                            <td class="text-end">${qty.toLocaleString()}</td>
+                            <td class="text-end text-primary fw-semibold">${openQty.toLocaleString()}</td>
+                            <td class="text-end">${unitPrice ? unitPrice.toLocaleString("id-ID") : "-"}</td>
+                            <td class="text-end fw-semibold">${lineTotal ? "IDR " + lineTotal.toLocaleString("id-ID") : "-"}</td>
+                        </tr>`;
+                    }).join("") || `<tr><td colspan="6" class="text-muted text-center">Tidak ada item.</td></tr>`;
+
+                    const expandRow = `<tr class="expand-row" id="${expandId}" style="display:none;">
+                        <td colspan="11">
+                            <div class="expand-inner">
+                                <table class="item-mini-table">
+                                    <thead><tr>
+                                        <th>Item Code</th><th>Item Name</th>
+                                        <th class="text-end">Qty</th>
+                                        <th class="text-end">Open Qty</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr></thead>
+                                    <tbody>${itemRows}</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>`;
+
+                    const mainRow = `<tr style="${isDone ? 'opacity:.6;' : ''}">
+                        <td>${cb}</td>
+                        <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
+                        <td class="fw-semibold">${g.grpoNo}</td>
+                        <td>${g.grpoDate || "-"}</td>
+                        <td><span class="text-primary">${g.poNo || "-"}</span></td>
+                        <td><span class="fw-semibold">${g.vendor || "-"}</span></td>
+                        <td class="text-end">${(g.totalQty || 0).toLocaleString()}</td>
+                        <td class="text-end text-primary fw-semibold">${totalOpenQty.toLocaleString()}</td>
+                        <td>${statusHtml}</td>
+                        <td>${note}</td>
+                        <td><button class="btn-detail" onclick="viewDetail('${g.grpoNo}')"><i class="bi bi-eye me-1"></i>Detail</button></td>
+                    </tr>`;
+
+                    html += mainRow + expandRow;
+                    idx++;
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleExpand(expandId) {
+            const row = document.getElementById(expandId);
+            const btn = document.getElementById("btn-" + expandId);
+            const isOpen = row.style.display !== "none";
+            row.style.display = isOpen ? "none" : "";
+            btn.classList.toggle("open", !isOpen);
+            btn.innerHTML = isOpen ? `<i class="bi bi-chevron-right"></i>` : `<i class="bi bi-chevron-down"></i>`;
+        }
+
+        function viewDetail(grpoNo) {
+            window.location.href = `customer_bulk_ap_process.html?grpo=${encodeURIComponent(grpoNo)}`;
+        }
+
+        // ── AP Table ──────────────────────────────────────────────────────────────
+        function renderApTable() {
+            const q = (document.getElementById("fApSearch").value || "").toLowerCase();
+            const list = getApList().filter(a => {
+                if (!q) return true;
+                return a.apNo.toLowerCase().includes(q) || (a.grpoRef || "").toLowerCase().includes(q) || (a.poRef || "").toLowerCase().includes(q) || (a.vendor || "").toLowerCase().includes(q);
+            });
+
+            const tbody = document.getElementById("apBody");
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="bi bi-file-earmark-x"></i>Belum ada dokumen AP.</td></tr>`;
+                return;
+            }
+
+            const groups = {};
+            list.forEach(a => {
+                const company = a.vendor || "Unknown";
+                if (!groups[company]) groups[company] = [];
+                groups[company].push(a);
+            });
+
+            let html = "";
+            let idx = 0;
+            Object.entries(groups).forEach(([company, apList]) => {
+                html += `<tr style="background:#f0f3fa;">
+                    <td colspan="7" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
+                        <i class="bi bi-building me-2"></i>${company}
+                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${apList.length} AP)</span>
+                    </td>
+                </tr>`;
+
+                apList.forEach(a => {
+                    const expandId = `exp-ap-${idx}`;
+                    const itemRows = (a.lines || []).map(l => {
+                        const qty = l.qty || 0;
+                        const unitPrice = l.unitPrice || 0;
+                        const lineTotal = qty * unitPrice;
+                        return `<tr>
+                            <td>${l.itemCode || "-"}</td>
+                            <td>${l.itemName || "-"}</td>
+                            <td class="text-end">${qty.toLocaleString()}</td>
+                            <td class="text-end">${unitPrice ? unitPrice.toLocaleString("id-ID") : "-"}</td>
+                            <td class="text-end fw-semibold">${lineTotal ? "IDR " + lineTotal.toLocaleString("id-ID") : "-"}</td>
+                        </tr>`;
+                    }).join("") || `<tr><td colspan="5" class="text-muted text-center">Tidak ada detail item.</td></tr>`;
+
+                    const expandRow = `<tr class="expand-row" id="${expandId}" style="display:none;">
+                        <td colspan="7">
+                            <div class="expand-inner">
+                                <table class="item-mini-table">
+                                    <thead><tr>
+                                        <th>Item Code</th><th>Item Name</th>
+                                        <th class="text-end">Qty</th>
+                                        <th class="text-end">Unit Price</th>
+                                        <th class="text-end">Line Total</th>
+                                    </tr></thead>
+                                    <tbody>${itemRows}</tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>`;
+
+                    const mainRow = `<tr>
+                        <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
+                        <td class="fw-semibold text-primary" style="cursor:pointer;" onclick="window.location.href='customer_ap_view.html?no=${encodeURIComponent(a.apNo)}'">
+                            ${a.apNo} <i class="bi bi-box-arrow-up-right ms-1" style="font-size:10px;opacity:.5;"></i>
+                        </td>
+                        <td>${a.apDate || "-"}</td>
+                        <td>${a.grpoRef || "-"}</td>
+                        <td>${a.poRef || "-"}</td>
+                        <td class="text-end">${(a.totalQty || 0).toLocaleString()}</td>
+                        <td>${statusBadge(a.status)}</td>
+                    </tr>`;
+
+                    html += mainRow + expandRow;
+                    idx++;
+                });
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ── Selection ─────────────────────────────────────────────────────────────
+        function updateBulkBar() {
+            const checked = document.querySelectorAll(".row-check:checked");
+            const n = checked.length;
+            document.getElementById("bulkBar").classList.toggle("visible", n > 0);
+            document.getElementById("bulkBarLabel").textContent = `${n} GRPO dipilih — akan dibuat ${n} AP`;
+        }
+
+        function clearSelection() {
+            document.querySelectorAll(".row-check").forEach(c => c.checked = false);
+            document.getElementById("bulkBar").classList.remove("visible");
+        }
+
+        // ── Generate AP (inline, with progress modal) ─────────────────────────────
+        async function generateAP() {
+            const checked = [...document.querySelectorAll(".row-check:checked")];
+            if (!checked.length) return;
+
+            const selectedGrpos = checked.map(c => c.dataset.grpo);
+            const allGrpo = getGrpoList();
+            const today = new Date().toISOString().split("T")[0];
+
+            // Build progress list UI
+            const progressList = document.getElementById("progressList");
+            progressList.innerHTML = selectedGrpos.map(grpoNo =>
+                `<div class="progress-item" id="pi-${grpoNo.replace(/[^a-z0-9]/gi,'_')}">
+                    <span class="progress-icon pi-waiting"><i class="bi bi-circle"></i></span>
+                    <span>${grpoNo}</span>
+                </div>`
+            ).join("");
+            document.getElementById("progressBackdrop").style.display = "flex";
+
+            await sleep(300);
+
+            const apList = JSON.parse(localStorage.getItem("IBOCS_ap_list") || "[]");
+            let count = 0;
+
+            for (const grpoNo of selectedGrpos) {
+                const safeId = grpoNo.replace(/[^a-z0-9]/gi, '_');
+                const piEl = document.getElementById(`pi-${safeId}`);
+
+                // Mark as processing
+                piEl.querySelector(".progress-icon").className = "progress-icon pi-processing";
+                piEl.querySelector(".progress-icon").innerHTML = `<i class="bi bi-arrow-repeat spin"></i>`;
+                piEl.querySelector("span:last-child").textContent = `${grpoNo} — sedang diproses...`;
+
+                await sleep(600);
+
+                const g = allGrpo.find(x => x.grpoNo === grpoNo);
+                if (g) {
+                    const apNo = "AP-" + today.replace(/-/g,"").slice(2) + "-" + String(apList.length + count + 1).padStart(4, "0");
+                    const lines = (g.rows || []).map(r => ({
+                        itemCode:  r.itemCode || "-",
+                        itemName:  r.itemName || "-",
+                        qtyOrder:  r.qtyOrder || r.qtyReceived || 0,
+                        qty:       r.qtyReceived || r.qty || 0,
+                        unitPrice: r.unitPrice || 0,
+                        discount:  0,
+                        subtotal:  (r.qtyReceived || 0) * (r.unitPrice || 0),
+                        glAccount: "5120501",
+                        glName:    "COGS DIRECT — FREIGHT EXPENSE",
+                        distrRule: "PROD;HO",
+                        taxCode:   "PPNO-NO"
+                    }));
+                    const totalBeforeDisc = lines.reduce((s, l) => s + l.qty * l.unitPrice, 0);
+                    apList.unshift({
+                        apNo, apDate: today, dueDate: addDays(today, 30),
+                        accountCode: "2100", notes: "",
+                        grpoRef: g.grpoNo,
+                        poRef:   g.poNo || "",
+                        vendor:  g.customer || g.store || "",
+                        totalQty: lines.reduce((s, l) => s + l.qty, 0),
+                        discountPct: 0, freight: 0,
+                        totalBeforeDisc,
+                        total: totalBeforeDisc,
+                        status: "Open",
+                        lines
+                    });
+                    count++;
+                }
+
+                // Mark done
+                piEl.querySelector(".progress-icon").className = "progress-icon pi-done";
+                piEl.querySelector(".progress-icon").innerHTML = `<i class="bi bi-check-circle-fill"></i>`;
+                piEl.querySelector("span:last-child").textContent = `${grpoNo} — selesai`;
+
+                await sleep(400);
+            }
+
+            localStorage.setItem("IBOCS_ap_list", JSON.stringify(apList));
+
+            await sleep(600);
+            document.getElementById("progressBackdrop").style.display = "none";
+            clearSelection();
+            showToast(`${count} AP berhasil dibuat!`, "success");
+            renderGrpoTable();
+        }
+
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function addDays(dateStr, days) {
+            const d = new Date(dateStr);
+            d.setDate(d.getDate() + days);
+            return d.toISOString().split("T")[0];
+        }
+
+        // ── Toast ─────────────────────────────────────────────────────────────────
+        function showToast(msg, type = "success") {
+            const wrap = document.getElementById("toastWrap");
+            const el = document.createElement("div");
+            el.className = `toast-item toast-${type}`;
+            el.innerHTML = msg;
+            wrap.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }
+
+        // ── Init ──────────────────────────────────────────────────────────────────
+        renderGrpoTable();
+    </script>
+
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { display: inline-block; animation: spin .7s linear infinite; }
+    </style>
+</body>
+
+</html>

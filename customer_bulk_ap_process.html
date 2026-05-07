@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer | AP Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1f2937; font-size: 13px; }
+
+        :root { --primary: #1a237e; --line: #d0d7e3; --soft: #f5f7fb; --muted: #6b7280; }
+
+        .topnav { background: var(--primary); padding: 10px 24px; display:flex; align-items:center; gap:16px; }
+        .topnav .brand { color:#fff; font-weight:800; font-size:17px; text-decoration:none; }
+        .topnav .portal-label { color:rgba(255,255,255,.5); font-size:12px; }
+        .topnav .nav-user { color:rgba(255,255,255,.7); font-size:12px; margin-left:auto; }
+
+        .page-wrap { padding: 20px 24px; }
+        .page-title { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+        .page-title h4 { margin:0; font-size:17px; font-weight:700; color:var(--primary); }
+
+        .mode-badge { padding:3px 12px; border-radius:20px; font-size:11.5px; font-weight:700; }
+        .mode-grpo { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+        .mode-ap { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+
+        .inv-card { background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.06); overflow:hidden; }
+        .inv-titlebar { background:#e8ecf8; border-bottom:2px solid var(--primary); padding:9px 18px; font-weight:700; font-size:14px; color:var(--primary); display:flex; align-items:center; gap:8px; }
+
+        .inv-header { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--line); }
+        .inv-header-left { padding:16px 20px; border-right:1px solid var(--line); }
+        .inv-header-right { padding:16px 20px; }
+
+        .field-row { display:grid; grid-template-columns:140px 1fr; align-items:center; margin-bottom:7px; }
+        .field-row:last-child { margin-bottom:0; }
+        .field-row label { font-size:11.5px; font-weight:600; color:var(--muted); }
+        .field-row input, .field-row select {
+            border:1px solid #c5cfe0; border-radius:5px; padding:5px 9px;
+            font-size:13px; background:#f5f7fb; color:#374151; width:100%;
+            outline:none; font-family:inherit;
+        }
+        .field-row .val-text { font-size:13px; font-weight:600; color:#1f2937; padding: 5px 0; }
+
+        .inv-tabs { border-bottom:1px solid var(--line); background:#f8fafc; display:flex; }
+        .inv-tab { padding:9px 20px; border:none; background:transparent; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+        .inv-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:#fff; }
+
+        .inv-table-wrap { overflow-x:auto; }
+        table.inv-table { width:100%; border-collapse:collapse; min-width:700px; }
+        table.inv-table th { background:#f0f3fa; font-size:11px; font-weight:700; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--line); text-align:left; white-space:nowrap; }
+        table.inv-table td { padding:7px 10px; border-bottom:1px solid #edf0f7; vertical-align:middle; white-space:nowrap; }
+        table.inv-table tr:hover td { background:#f8faff; }
+        table.inv-table .group-row td { background:#eef2ff; font-weight:700; color:var(--primary); border-top:2px solid #c7d2fe; padding:7px 14px; font-size:12px; }
+
+        .inv-footer { display:grid; grid-template-columns:1fr 340px; border-top:1px solid var(--line); }
+        .inv-footer-left { padding:14px 20px; display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+        .inv-footer-right { border-left:1px solid var(--line); padding:12px 20px; }
+
+        .total-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #edf0f7; font-size:13px; }
+        .total-row:last-child { border-bottom:none; padding-top:8px; font-size:14px; font-weight:700; }
+        .total-row label { color:var(--muted); font-size:12px; }
+        .total-row .val { font-weight:600; color:#1f2937; min-width:140px; text-align:right; }
+        .total-row.grand .val { color:var(--primary); font-size:14px; }
+
+        .action-bar { background:#fff; border-top:2px solid var(--line); padding:12px 20px; display:flex; justify-content:flex-end; align-items:center; gap:10px; }
+
+        .status-badge { padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+        .s-open { background:#eff6ff; color:#1d4ed8; }
+        .s-generated { background:#ecfdf5; color:#065f46; }
+
+        .info-banner { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 16px; margin-bottom:16px; font-size:12.5px; color:#92400e; display:flex; align-items:center; gap:8px; }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a class="brand" href="customer_dashboard.html">IBOCS</a>
+        <span class="portal-label">Customer Portal</span>
+        <span class="nav-user" id="navUser"></span>
+    </div>
+
+    <div class="container-fluid py-0">
+        <div class="row g-0">
+            <div class="col-lg-2 pt-3 px-2" id="sidebar-container"></div>
+            <div class="col-lg-10 page-wrap">
+
+                <div class="page-title">
+                    <a href="customer_AP.html" class="btn btn-outline-secondary btn-sm rounded-circle" style="width:30px;height:30px;padding:0;line-height:28px;text-align:center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h4 id="pageTitle"><i class="bi bi-file-earmark-minus me-2"></i>Detail</h4>
+                    <span class="mode-badge" id="modeBadge"></span>
+                </div>
+
+                <div class="info-banner" id="infoBanner" style="display:none;">
+                    <i class="bi bi-eye"></i>
+                    <span id="infoBannerText"></span>
+                </div>
+
+                <div class="inv-card mb-4">
+                    <div class="inv-titlebar">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span id="cardTitle">A/P Invoice</span>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="inv-header">
+                        <div class="inv-header-left">
+                            <div class="field-row">
+                                <label id="lblParty">Vendor</label>
+                                <input type="text" id="fVendorCode" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Name</label>
+                                <input type="text" id="fVendorName" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Currency</label>
+                                <input type="text" value="IDR — Rupiah" readonly>
+                            </div>
+                        </div>
+                        <div class="inv-header-right">
+                            <div class="field-row">
+                                <label>No.</label>
+                                <input type="text" id="fDocNo" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Status</label>
+                                <div><span class="status-badge s-open" id="fStatus">Open</span></div>
+                            </div>
+                            <div class="field-row">
+                                <label>Posting Date</label>
+                                <input type="text" id="fPostingDate" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Due Date</label>
+                                <input type="text" id="fDueDate" readonly>
+                            </div>
+                            <div class="field-row" id="rowRef1">
+                                <label id="lblRef1">GRPO Ref</label>
+                                <input type="text" id="fGrpoRef" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label id="lblRef2">PO Ref</label>
+                                <input type="text" id="fPoRef" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="inv-tabs">
+                        <button class="inv-tab active" onclick="switchInvTab('contents', this)">Contents</button>
+                        <button class="inv-tab" onclick="switchInvTab('accounting', this)">Accounting</button>
+                    </div>
+
+                    <!-- Contents tab -->
+                    <div id="tabContents">
+                        <div class="inv-table-wrap">
+                            <table class="inv-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;">#</th>
+                                        <th>Description</th>
+                                        <th style="width:110px;">G/L Account</th>
+                                        <th>G/L Account Name</th>
+                                        <th style="width:90px;">Distr. Rule</th>
+                                        <th style="width:80px;text-align:right;">Qty</th>
+                                        <th style="width:140px;text-align:right;">Unit Price (IDR)</th>
+                                        <th style="width:90px;text-align:right;">Discount %</th>
+                                        <th style="width:90px;">Tax Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Accounting tab -->
+                    <div id="tabAccounting" style="display:none; padding:16px 20px;">
+                        <div class="row g-3" style="max-width:500px;">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold" style="font-size:11.5px;color:var(--muted);">Account Code</label>
+                                <input type="text" class="form-control form-control-sm" id="gAccount" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" style="font-size:11.5px;color:var(--muted);">Catatan Internal</label>
+                                <textarea class="form-control form-control-sm" id="gNotes" rows="2" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="inv-footer">
+                        <div class="inv-footer-left">
+                            <div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Purchase Employee</div>
+                                <input type="text" id="fPurchEmp" value="-No Purchase Employee-" readonly style="border:1px solid #d0d7e3;border-radius:5px;padding:5px 9px;font-size:13px;width:220px;background:#f5f7fb;">
+                            </div>
+                        </div>
+                        <div class="inv-footer-right">
+                            <div class="total-row">
+                                <label>Total Before Discount</label>
+                                <span class="val" id="totBeforeDisc">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Discount</label>
+                                <span class="val" id="totDiscount">0%</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Freight</label>
+                                <span class="val" id="totFreight">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Tax</label>
+                                <span class="val" id="totTax">IDR 0</span>
+                            </div>
+                            <div class="total-row grand">
+                                <label style="font-size:13px;color:var(--primary);font-weight:700;">Total</label>
+                                <span class="val" id="totGrand">IDR 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action bar -->
+                    <div class="action-bar">
+                        <button class="btn btn-outline-secondary" onclick="window.location.href='customer_AP.html'">
+                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            new SidebarSystem(null, "ap_list").render();
+            loadView();
+        });
+
+        const DEMO_GRPO = [
+            {
+                grpoNo: "GRPO-TOP-0001", grpoDate: "2026-04-03", poNo: "PO-TOP-2604-001",
+                store: "TOP Branch Bekasi", customer: "TOP", vendor: "SIC", totalQty: 14200, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 5000, qtyReceived: 5000, unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qtyOrder: 9200, qtyReceived: 9200, unitPrice: 8500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-TOP-0002", grpoDate: "2026-04-10", poNo: "PO-TOP-2604-002",
+                store: "TOP Branch Tangerang", customer: "TOP", vendor: "SIC", totalQty: 8750, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qtyOrder: 4500, qtyReceived: 4500, unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4250, qtyReceived: 4250, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-TOP-0003", grpoDate: "2026-04-18", poNo: "PO-TOP-2604-003",
+                store: "TOP Branch Bogor", customer: "TOP", vendor: "CTU", totalQty: 6000, status: "Open",
+                rows: [{ itemCode: "DOC-001", itemName: "DOC Broiler FS", qtyOrder: 6000, qtyReceived: 6000, unitPrice: 6500 }]
+            },
+            {
+                grpoNo: "GRPO-TOP-0004", grpoDate: "2026-04-22", poNo: "PO-TOP-2604-004",
+                store: "TOP Branch Depok", customer: "TOP", vendor: "CTU", totalQty: 7500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qtyOrder: 4000, qtyReceived: 4000, unitPrice: 8500 },
+                    { itemCode: "DOC-002",  itemName: "DOC Broiler PS",        qtyOrder: 3500, qtyReceived: 3500, unitPrice: 6800 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0001", grpoDate: "2026-04-05", poNo: "PO-BMAX-2604-001",
+                store: "BMAX Farm Cikarang", customer: "BMAX", vendor: "SIC", totalQty: 10500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qtyOrder: 6000, qtyReceived: 6000, unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qtyOrder: 4500, qtyReceived: 4500, unitPrice: 8200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0002", grpoDate: "2026-04-14", poNo: "PO-BMAX-2604-002",
+                store: "BMAX Farm Karawang", customer: "BMAX", vendor: "CTU", totalQty: 7800, status: "Open",
+                rows: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",        qtyOrder: 3500, qtyReceived: 3500, unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4300, qtyReceived: 4300, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-BMAX-0003", grpoDate: "2026-04-20", poNo: "PO-BMAX-2604-003",
+                store: "BMAX Farm Bekasi", customer: "BMAX", vendor: "CTU", totalQty: 5200, status: "Open",
+                rows: [{ itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 5200, qtyReceived: 5200, unitPrice: 7800 }]
+            },
+            {
+                grpoNo: "GRPO-AYM-0001", grpoDate: "2026-04-07", poNo: "PO-AYM-2604-001",
+                store: "AYM Farm Subang", customer: "AYM", vendor: "SIC", totalQty: 12000, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 4000, qtyReceived: 4000, unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qtyOrder: 8000, qtyReceived: 8000, unitPrice: 8500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0002", grpoDate: "2026-04-16", poNo: "PO-AYM-2604-002",
+                store: "AYM Farm Purwakarta", customer: "AYM", vendor: "SIC", totalQty: 9300, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qtyOrder: 5300, qtyReceived: 5300, unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4000, qtyReceived: 4000, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-AYM-0003", grpoDate: "2026-04-21", poNo: "PO-AYM-2604-003",
+                store: "AYM Farm Indramayu", customer: "AYM", vendor: "CTU", totalQty: 5000, status: "Open",
+                rows: [{ itemCode: "DOC-002", itemName: "DOC Broiler PS", qtyOrder: 5000, qtyReceived: 5000, unitPrice: 6800 }]
+            },
+            {
+                grpoNo: "GRPO-AYM-0004", grpoDate: "2026-04-23", poNo: "PO-AYM-2604-004",
+                store: "AYM Farm Cirebon", customer: "AYM", vendor: "CTU", totalQty: 6800, status: "Open",
+                rows: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)", qtyOrder: 3800, qtyReceived: 3800, unitPrice: 8200 },
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",       qtyOrder: 3000, qtyReceived: 3000, unitPrice: 6500 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-SIC-0001", grpoDate: "2026-04-08", poNo: "PO-SIC-2604-001",
+                store: "SIC Farm Majalengka", customer: "SIC", vendor: "SIC", totalQty: 11500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qtyOrder: 6500, qtyReceived: 6500, unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qtyOrder: 5000, qtyReceived: 5000, unitPrice: 8200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-SIC-0002", grpoDate: "2026-04-17", poNo: "PO-SIC-2604-002",
+                store: "SIC Farm Cirebon", customer: "SIC", vendor: "CTU", totalQty: 8200, status: "Open",
+                rows: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",        qtyOrder: 4000, qtyReceived: 4000, unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 4200, qtyReceived: 4200, unitPrice: 9200 }
+                ]
+            }
+        ];
+
+        function getGrpoList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_grpo_list") || "[]");
+            const storedNos = new Set(stored.map(g => g.grpoNo));
+            return [...stored, ...DEMO_GRPO.filter(d => !storedNos.has(d.grpoNo))];
+        }
+
+        function fmt(n) { return "IDR " + Math.round(n).toLocaleString("id-ID"); }
+
+        function loadView() {
+            const params = new URLSearchParams(window.location.search);
+            const grpoNo = params.get("grpo");
+
+            if (!grpoNo) {
+                document.getElementById("pageTitle").innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Parameter tidak valid`;
+                return;
+            }
+
+            // Check if AP already exists for this GRPO
+            const apList = JSON.parse(localStorage.getItem("IBOCS_ap_list") || "[]");
+            const existingAP = apList.find(a => a.grpoRef === grpoNo);
+
+            if (existingAP) {
+                loadApView(existingAP);
+            } else {
+                loadGrpoPreview(grpoNo);
+            }
+        }
+
+        function loadApView(ap) {
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-file-earmark-minus me-2"></i>Detail AP — ${ap.apNo}`;
+            document.getElementById("modeBadge").className = "mode-badge mode-ap";
+            document.getElementById("modeBadge").textContent = "AP Generated";
+            document.getElementById("cardTitle").textContent = "A/P Invoice";
+            document.getElementById("infoBanner").style.display = "flex";
+            document.getElementById("infoBannerText").textContent = `Dokumen AP ini sudah digenerate dari ${ap.grpoRef}. Tampilan read-only.`;
+
+            document.getElementById("lblParty").textContent = "Vendor";
+            document.getElementById("fVendorCode").value = (ap.vendor || "").replace(/\s+/g,"").slice(0,8).toUpperCase();
+            document.getElementById("fVendorName").value = ap.vendor || "-";
+            document.getElementById("fDocNo").value = ap.apNo;
+            document.getElementById("fPostingDate").value = ap.apDate || "-";
+            document.getElementById("fDueDate").value = ap.dueDate || "-";
+            document.getElementById("lblRef1").textContent = "GRPO Ref";
+            document.getElementById("fGrpoRef").value = ap.grpoRef || "-";
+            document.getElementById("lblRef2").textContent = "PO Ref";
+            document.getElementById("fPoRef").value = ap.poRef || "-";
+
+            const statusEl = document.getElementById("fStatus");
+            statusEl.textContent = ap.status || "Open";
+            statusEl.className = "status-badge " + (ap.status === "Open" ? "s-open" : "s-generated");
+
+            document.getElementById("gAccount").value = ap.accountCode || "-";
+            document.getElementById("gNotes").value = ap.notes || "";
+
+            // Contents
+            let html = "";
+            let lineNo = 0;
+            (ap.lines || []).forEach(l => {
+                lineNo++;
+                html += `<tr>
+                    <td class="text-muted">${lineNo}</td>
+                    <td>${l.itemName || "-"}</td>
+                    <td>${l.glAccount || "-"}</td>
+                    <td>${l.glName || "-"}</td>
+                    <td>${l.distrRule || "-"}</td>
+                    <td style="text-align:right;">${(l.qty || 0).toLocaleString()}</td>
+                    <td style="text-align:right;">${l.unitPrice ? l.unitPrice.toLocaleString("id-ID") : "-"}</td>
+                    <td style="text-align:right;">${(l.discount || 0)}%</td>
+                    <td>${l.taxCode || "-"}</td>
+                </tr>`;
+            });
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+
+            const total = ap.totalBeforeDisc || 0;
+            document.getElementById("totBeforeDisc").textContent = fmt(total);
+            document.getElementById("totDiscount").textContent = (ap.discountPct || 0) + "%";
+            document.getElementById("totFreight").textContent = fmt(ap.freight || 0);
+            document.getElementById("totTax").textContent = fmt(0);
+            document.getElementById("totGrand").textContent = fmt(ap.total || total);
+        }
+
+        function loadGrpoPreview(grpoNo) {
+            const allGrpo = getGrpoList();
+            const g = allGrpo.find(x => x.grpoNo === grpoNo);
+
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-box-seam me-2"></i>Preview GRPO — ${grpoNo}`;
+            document.getElementById("modeBadge").className = "mode-badge mode-grpo";
+            document.getElementById("modeBadge").textContent = "GRPO Preview";
+            document.getElementById("cardTitle").textContent = "GRPO Detail";
+            document.getElementById("infoBanner").style.display = "flex";
+            document.getElementById("infoBannerText").textContent = `GRPO ini belum di-generate menjadi AP. Tampilan preview data GRPO.`;
+
+            if (!g) {
+                document.getElementById("contentsBody").innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Data GRPO tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            document.getElementById("lblParty").textContent = "Vendor";
+            document.getElementById("fVendorCode").value = (g.vendor || "").slice(0,8).toUpperCase();
+            document.getElementById("fVendorName").value = g.customer || g.store || "-";
+            document.getElementById("fDocNo").value = g.grpoNo;
+            document.getElementById("fPostingDate").value = g.grpoDate || "-";
+            document.getElementById("fDueDate").value = "-";
+            document.getElementById("lblRef1").textContent = "PO Ref";
+            document.getElementById("fGrpoRef").value = g.poNo || "-";
+            document.getElementById("lblRef2").textContent = "Status";
+            document.getElementById("fPoRef").value = g.status || "Open";
+
+            const statusEl = document.getElementById("fStatus");
+            statusEl.textContent = "Belum di-AP";
+            statusEl.className = "status-badge s-open";
+
+            document.getElementById("gAccount").value = "-";
+            document.getElementById("gNotes").value = "";
+
+            // Contents from GRPO rows
+            let html = "";
+            let lineNo = 0;
+            let grandTotal = 0;
+            (g.rows || []).forEach(r => {
+                lineNo++;
+                const qty = r.qtyReceived || r.qty || 0;
+                const price = r.unitPrice || 0;
+                const total = qty * price;
+                grandTotal += total;
+                html += `<tr>
+                    <td class="text-muted">${lineNo}</td>
+                    <td>${r.itemName || "-"}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td style="text-align:right;">${qty.toLocaleString()}</td>
+                    <td style="text-align:right;">${price ? price.toLocaleString("id-ID") : "-"}</td>
+                    <td style="text-align:right;">0%</td>
+                    <td>-</td>
+                </tr>`;
+            });
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+
+            document.getElementById("totBeforeDisc").textContent = fmt(grandTotal);
+            document.getElementById("totDiscount").textContent = "0%";
+            document.getElementById("totFreight").textContent = fmt(0);
+            document.getElementById("totTax").textContent = fmt(0);
+            document.getElementById("totGrand").textContent = fmt(grandTotal);
+        }
+
+        function switchInvTab(tab, btn) {
+            document.querySelectorAll(".inv-tab").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("tabContents").style.display   = tab === "contents"   ? "" : "none";
+            document.getElementById("tabAccounting").style.display = tab === "accounting" ? "" : "none";
+        }
+    </script>
+</body>
+</html>

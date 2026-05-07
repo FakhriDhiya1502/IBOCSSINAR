@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | Buat DO Draft DOC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* Page card */
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 13px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            border-bottom: 1px solid #eef0f4;
+            background: #fafbfe;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .field label .req {
+            color: #dc2626;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+            width: 100%;
+            border: 1px solid #d5dae3;
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .field input,
+        .field select {
+            padding: 0 11px;
+            height: 38px;
+        }
+
+        .field input:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .field textarea {
+            min-height: 76px;
+            padding: 9px 11px;
+            resize: vertical;
+        }
+
+        .collapse-card-header {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font: inherit;
+            color: inherit;
+            text-align: left;
+        }
+
+        .collapse-card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .collapse-card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .collapse-card-meta span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .collapse-card-header .bi-chevron-down {
+            transition: transform .2s ease;
+        }
+
+        .collapse-card-header[aria-expanded="true"] .bi-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .transport-grid .wide {
+            grid-column: span 2;
+        }
+
+        .transport-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        #vendorCol {
+            display: none;
+        }
+
+        #customerVendorRow {
+            margin-bottom: 18px;
+        }
+
+        .sub-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #1a237e;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #e0e7ef;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sub-section-title.vendor {
+            color: #7c3aed;
+            border-color: #c4b5fd;
+        }
+
+        /* SAP Grid */
+        .sap-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 6px 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .sap-grid label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #555;
+            margin: 0;
+        }
+
+        .sap-grid input,
+        .sap-grid select,
+        .sap-grid textarea {
+            width: 100%;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        .sap-grid input,
+        .sap-grid select {
+            padding: 0 10px;
+            height: 30px;
+        }
+
+        .sap-grid textarea {
+            min-height: 54px;
+            padding: 7px 10px;
+            resize: vertical;
+        }
+
+        .sap-grid input:disabled,
+        .sap-grid select:disabled,
+        .sap-grid textarea:disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .sap-grid .d-flex {
+            gap: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .sap-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sap-grid label {
+                margin-top: 6px;
+            }
+
+            .transport-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .transport-grid .wide {
+                grid-column: 1 / -1;
+            }
+        }
+
+        /* Plan card */
+        .plan-card {
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+            border: 1.5px solid #e0e7ef;
+            overflow: hidden;
+        }
+
+        .plan-card-header {
+            background: #ede9fe;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #c4b5fd;
+        }
+
+        .plan-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #5b21b6;
+            background: #ddd6fe;
+            border-radius: 5px;
+            padding: 3px 9px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .plan-tabs {
+            display: flex;
+            gap: 6px;
+        }
+
+        .plan-tab {
+            border: 1px solid #c4b5fd;
+            background: #fff;
+            color: #6d28d9;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .plan-tab.active {
+            background: #7c3aed;
+            border-color: #7c3aed;
+            color: #fff;
+        }
+
+        .plan-field {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .plan-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #6d28d9;
+            white-space: nowrap;
+            margin: 0;
+        }
+
+        .plan-field input {
+            border: 1px solid #c4b5fd;
+            border-radius: 6px;
+            padding: 0 8px;
+            font-size: 12px;
+            height: 28px;
+            background: #fff;
+            width: 180px;
+        }
+
+        .plan-field select {
+            border: 1px solid #c4b5fd;
+            border-radius: 6px;
+            padding: 0 6px;
+            font-size: 12px;
+            height: 28px;
+            background: #fff;
+            width: 200px;
+        }
+
+        .plan-card-body {
+            padding: 0;
+        }
+
+        /* Lines table */
+        .lines-wrap {
+            overflow-x: auto;
+        }
+
+        table.lt {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        table.lt th {
+            font-size: 11px;
+            color: #4b5563;
+            font-weight: 700;
+            padding: 8px 10px;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 2px solid #e0e7ef;
+        }
+
+        table.lt th.hb {
+            background: #e8eaf6;
+            color: #3730a3;
+        }
+
+        table.lt th.ha {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        table.lt th.hp {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        table.lt td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        table.lt td.cb {
+            background: #eef2ff;
+            border-right: 2px solid #c7d2fe;
+            vertical-align: top;
+        }
+
+        table.lt td.ca {
+            background: #f8fffe;
+        }
+
+        table.lt td.cp {
+            background: #fffbf5;
+        }
+
+        table.lt tr.tr-act td {
+            background: #f5f7ff;
+            padding: 6px 10px;
+        }
+
+        table.lt tr.tr-empty td {
+            text-align: center;
+            color: #9ca3af;
+            padding: 20px;
+            font-size: 13px;
+        }
+
+        table.lt th.hf {
+            background: #ecfeff;
+            color: #0e7490;
+        }
+
+        table.lt td.cf {
+            background: #f0fdfa;
+        }
+
+        /* Table inputs */
+        .ti {
+            width: 100%;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            height: 30px;
+            background: #fff;
+        }
+
+        .tn {
+            width: 90px;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            height: 30px;
+            text-align: right;
+            background: #fff;
+        }
+
+        .tuom {
+            width: 70px;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 12px;
+            height: 30px;
+            text-align: center;
+            background: #fff;
+        }
+
+        .tp {
+            width: 110px;
+            border: 1px solid #fdba74;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            height: 30px;
+            text-align: right;
+            background: #fffbf5;
+        }
+
+        .ts {
+            width: 100%;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            padding: 0 6px;
+            font-size: 12px;
+            height: 30px;
+            background: #fff;
+        }
+
+        .inp-s {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-s {
+            padding: 0 7px;
+            border: 1px solid #d5dae3;
+            border-radius: 6px;
+            background: #f9fafb;
+            cursor: pointer;
+            height: 30px;
+            font-size: 12px;
+            flex-shrink: 0;
+            color: #6366f1;
+        }
+
+        .btn-s:hover {
+            background: #e0e7ff;
+            border-color: #6366f1;
+        }
+
+        /* Qty badge */
+        .qok {
+            display: inline-block;
+            margin-top: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .qmm {
+            display: inline-block;
+            margin-top: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #d97706;
+            background: #fef3c7;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+
+        /* Buttons */
+        .btn-aa {
+            padding: 3px 9px;
+            border: 1.5px dashed #16a34a;
+            border-radius: 5px;
+            background: #f0fdf4;
+            color: #15803d;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-da {
+            padding: 2px 7px;
+            border: 0;
+            border-radius: 5px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .btn-dg {
+            padding: 3px 9px;
+            border: 0;
+            border-radius: 5px;
+            background: #fee2e2;
+            color: #991b1b;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-ap {
+            padding: 8px 18px;
+            border: 1.5px dashed #7c3aed;
+            border-radius: 8px;
+            background: #f5f3ff;
+            color: #5b21b6;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-pri {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 0;
+            font-size: 13px;
+            font-weight: 700;
+            background: #1a237e;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-sec {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 13px;
+            font-weight: 700;
+            background: #fff;
+            color: #374151;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Info button */
+        .btn-info-plan {
+            padding: 0 8px;
+            border: 1px solid #c4b5fd;
+            border-radius: 6px;
+            background: #f5f3ff;
+            cursor: pointer;
+            height: 28px;
+            font-size: 12px;
+            color: #6d28d9;
+            flex-shrink: 0;
+        }
+
+        .btn-info-plan:hover {
+            background: #ede9fe;
+        }
+
+        /* Plan info modal */
+        .pi-section {
+            padding: 10px 16px 4px;
+        }
+
+        .pi-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #6d28d9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pi-section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e9d5ff;
+        }
+
+        .pi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            margin-bottom: 6px;
+        }
+
+        .pi-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .pi-item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 7px 10px;
+        }
+
+        .pi-item .pik {
+            font-size: 10px;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 2px;
+        }
+
+        .pi-item .piv {
+            font-size: 13px;
+            color: #111;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .pi-item .piv.num {
+            color: #1a237e;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .pi-item.hi {
+            background: #ede9fe;
+        }
+
+        .pi-divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin: 2px 0;
+        }
+
+        /* Search modal */
+        .item-row {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .item-row:hover {
+            background: #eff6ff;
+        }
+
+        .item-row .ic {
+            font-size: 11px;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .item-row .in {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .item-row .im {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .transport-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Hatchery Portal</span>
+            <div class="ms-auto">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                        id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0">Buat DO Draft DOC</h5>
+                        <div class="text-muted" id="pageSubtitle" style="font-size:13px;">Isi item, qty, dan brand</div>
+                    </div>
+                    <a href="hatchery_doc_draft_list.html" class="btn-sec"><i class="bi bi-arrow-left me-1"></i>
+                        Kembali</a>
+                </div>
+
+                <!-- Header -->
+                <div class="card">
+                    <div class="card-header">Informasi Header</div>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-start">
+                            <div class="col-md-3">
+                                <div class="field">
+                                    <label>DOC Type <span class="req">*</span></label>
+                                    <div style="display:flex; gap:16px; padding-top:6px;">
+                                        <label
+                                            style="font-weight:normal; font-size:13px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                                            <input type="radio" name="docType" id="fDocTypeInternal" value="internal"
+                                                onchange="onDocTypeChange()" checked> Hatchery
+                                        </label>
+                                        <label
+                                            style="font-weight:normal; font-size:13px; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                                            <input type="radio" name="docType" id="fDocTypeExternal" value="external"
+                                                onchange="onDocTypeChange()"> Trading
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="field">
+                                    <label>Hatchery<span class="req">*</span></label>
+                                    <select id="fWhsePengirim"
+                                        style="width:100%; border:1px solid #d5dae3; border-radius:8px; padding:0 11px; font-size:13px; background:#fff; height:38px;">
+                                        <option value="">-- Pilih Hatchery --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="field">
+                                    <label><span id="postingDateLabel">Posting Date</span> <span
+                                            class="req">*</span></label>
+                                    <input type="date" id="fPostingDate"
+                                        style="width:100%; border:1px solid #d5dae3; border-radius:8px; padding:0 11px; font-size:13px; background:#fff; height:38px;">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="field">
+                                    <label><span id="deliveryDateLabel">Delivery Date</span> <span
+                                            class="req">*</span></label>
+                                    <input type="date" id="fDeliveryDate"
+                                        style="width:100%; border:1px solid #d5dae3; border-radius:8px; padding:0 11px; font-size:13px; background:#fff; height:38px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer & Vendor Header -->
+                <div class="row g-3" id="customerVendorRow">
+                    <!-- Customer Header -->
+                    <div id="customerCol" class="col-12">
+                        <div class="card mb-0">
+                            <div class="card-header"><i class="bi bi-person-fill me-2"></i>Customer Header</div>
+                            <div class="card-body">
+                                <div class="sap-grid">
+                                    <label>Customer <span class="req">*</span></label>
+                                    <select id="fCustomer" onchange="onCustomerChange()">
+                                        <option value="">-- Pilih Customer --</option>
+                                    </select>
+
+                                    <label>Contact Person</label>
+                                    <select id="fContactPerson">
+                                        <option value="">-- Pilih --</option>
+                                    </select>
+
+                                    <label>Nomor Telepon</label>
+                                    <input type="text" id="fCustomerPhone">
+
+                                    <label>Ship To</label>
+                                    <textarea id="fShipTo" placeholder="Alamat pengiriman"></textarea>
+
+                                    <label>Customer Ref. No.</label>
+                                    <input type="text" id="fCustRefNo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Vendor Header (trading only) -->
+                    <div id="vendorCol" class="col-md-6">
+                        <div class="card mb-0">
+                            <div class="card-header"
+                                style="background:#f5f3ff; color:#5b21b6; border-bottom-color:#c4b5fd;"><i
+                                    class="bi bi-truck me-2"></i>Vendor Header</div>
+                            <div class="card-body">
+                                <div class="sap-grid">
+                                    <label>Vendor Trading <span class="req">*</span></label>
+                                    <select id="fExtVendor" onchange="onVendorChange()">
+                                        <option value="">-- Pilih Vendor --</option>
+                                    </select>
+
+                                    <label>Contact Person</label>
+                                    <select id="fExtContactPerson">
+                                        <option value="">-- Pilih --</option>
+                                    </select>
+
+                                    <label>Nomor Telepon</label>
+                                    <input type="text" id="fVendorPhone">
+
+                                    <label>No. Surat Jalan <span class="req">*</span></label>
+                                    <input type="text" id="fNoSJ" placeholder="cth: SJ/2026/0042">
+
+                                    <label>No. Polisi <span class="req">*</span></label>
+                                    <input type="text" id="fNoPol" placeholder="cth: BK 1234 AB"
+                                        style="text-transform:uppercase">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transport Header -->
+                <div class="card">
+                    <div class="card-header">
+                        <button class="collapse-card-header" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#transportBody" aria-expanded="false" aria-controls="transportBody">
+                            <span class="collapse-card-title"><i class="bi bi-truck-front-fill"></i>Transport</span>
+                            <span class="collapse-card-meta">
+                                <span id="transportSummary">Transport belum diisi</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="collapse" id="transportBody">
+                        <div class="card-body">
+                            <div class="transport-grid" id="transportForm">
+                                <div class="field">
+                                    <label>Vendor Code</label>
+                                    <input type="text" id="fTransportVendorCode">
+                                </div>
+                                <div class="field">
+                                    <label>Vendor Name</label>
+                                    <input type="text" id="fTransportVendorName">
+                                </div>
+                                <div class="field">
+                                    <label>Driver Name</label>
+                                    <input type="text" id="fDriverName">
+                                </div>
+                                <div class="field">
+                                    <label>No List Transport</label>
+                                    <input type="text" id="fNoListTransport">
+                                </div>
+                                <div class="field">
+                                    <label>Bill of Lading</label>
+                                    <input type="text" id="fBillOfLading">
+                                </div>
+                                <div class="field">
+                                    <label>License Number</label>
+                                    <input type="text" id="fLicenseNumber" style="text-transform:uppercase">
+                                </div>
+                                <div class="field">
+                                    <label>Container Number</label>
+                                    <input type="text" id="fContainerNumber" style="text-transform:uppercase">
+                                </div>
+                                <div class="field">
+                                    <label>From Area</label>
+                                    <input type="text" id="fFromArea">
+                                </div>
+                                <div class="field">
+                                    <label>To Area</label>
+                                    <input type="text" id="fToArea">
+                                </div>
+                                <div class="field">
+                                    <label>Jam Berangkat</label>
+                                    <input type="time" id="fDepartureTime">
+                                </div>
+                                <div class="field">
+                                    <label>Jam Kedatangan</label>
+                                    <input type="time" id="fArrivalTime">
+                                </div>
+                                <div class="field">
+                                    <label>Minimum Fee</label>
+                                    <input type="number" id="fMinimumFee" min="0" step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="field">
+                                    <label>Service Price / KG</label>
+                                    <input type="number" id="fServicePriceKg" min="0" step="0.01" placeholder="0.00">
+                                </div>
+                                <div class="field">
+                                    <label>Total Service</label>
+                                    <input type="number" id="fTotalService" min="0" step="0.01" placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan cards -->
+                <div id="plansContainer"></div>
+
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-chat-left-text me-2"></i>Remarks</div>
+                    <div class="card-body">
+                        <div class="field">
+                            <textarea id="fDocRemarks" placeholder="Tambahkan catatan dokumen..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <button class="btn-ap" onclick="addPlan()"><i class="bi bi-plus-lg me-1"></i> Tambah
+                        Dokumen</button>
+                    <div class="d-flex gap-2">
+                        <a href="hatchery_doc_draft_list.html" class="btn-sec">Batal</a>
+                        <button class="btn-pri" onclick="saveDraft()"><i class="bi bi-save me-1"></i> Simpan Semua
+                            Draft</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Info Modal -->
+    <div class="modal fade" id="planInfoModal" tabindex="-1">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#5b21b6;color:#fff;">
+                    <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Detail Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="planInfoBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Search Modal -->
+    <div class="modal fade" id="itemSearchModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background:#1a237e;color:#fff;">
+                    <h5 class="modal-title" id="searchTitle">Cari Item</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3 border-bottom">
+                        <input type="text" class="form-control form-control-sm" id="searchQ"
+                            placeholder="Ketik nama atau kode item..." oninput="filterSearch(this.value)">
+                    </div>
+                    <div id="searchList" style="max-height:380px;overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="doc_draft_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sidebar = new SidebarSystem(null, "doc_draft_list");
+        sidebar.render();
+
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        const role = userData.role || "";
+        const showPrice = role === "admin_sales" || role === "super_admin";
+
+        document.getElementById("userInfo").textContent = userData.name || role || "-";
+        document.getElementById("userBtn").textContent = userData.name || "User";
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            location.href = "login.html";
+        });
+
+        if (showPrice) {
+            document.getElementById("pageSubtitle").textContent = "Isi item, qty, brand, dan price";
+        }
+
+        /* ── State ──────────────────────────────────────────────── */
+        let plans = [];
+        let _searchCb = null;
+        let _searchCat = null;
+
+        /* ── Helpers ────────────────────────────────────────────── */
+        function fmtNum(n) { return n ? Number(n).toLocaleString("id-ID") : "0"; }
+
+        function currentTimeValue() {
+            const now = new Date();
+            return String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0");
+        }
+
+        function transportField(id) {
+            return document.getElementById(id)?.value.trim() || "";
+        }
+
+        function collectTransportData() {
+            return {
+                vendorCode: transportField("fTransportVendorCode"),
+                vendorName: transportField("fTransportVendorName"),
+                driverName: transportField("fDriverName"),
+                noListTransport: transportField("fNoListTransport"),
+                billOfLading: transportField("fBillOfLading"),
+                licenseNumber: transportField("fLicenseNumber").toUpperCase(),
+                containerNumber: transportField("fContainerNumber").toUpperCase(),
+                fromArea: transportField("fFromArea"),
+                toArea: transportField("fToArea"),
+                departureTime: transportField("fDepartureTime"),
+                arrivalTime: transportField("fArrivalTime"),
+                minimumFee: transportField("fMinimumFee"),
+                servicePriceKg: transportField("fServicePriceKg"),
+                totalService: transportField("fTotalService")
+            };
+        }
+
+        function updateTransportSummary() {
+            const t = collectTransportData();
+            const parts = [];
+            if (t.vendorName) parts.push(t.vendorName);
+            if (t.driverName) parts.push("Driver: " + t.driverName);
+            if (t.licenseNumber) parts.push("No Pol: " + t.licenseNumber);
+            if (t.noListTransport) parts.push("List: " + t.noListTransport);
+            document.getElementById("transportSummary").textContent = parts.length ? parts.join(" | ") : "Transport belum diisi";
+        }
+
+        function escAttr(v) {
+            return String(v || "")
+                .replace(/&/g, "&amp;")
+                .replace(/"/g, "&quot;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function newAfterItem() {
+            return { id: uniqueId(), itemAfter: "", uomAfter: "Ekor", qtyAfter: 0, whseTujuan: "" };
+        }
+
+        function newFarmItem() {
+            return { id: uniqueId(), farmCode: "", farmName: "" };
+        }
+
+        function newPlan() {
+            return {
+                id: uniqueId(), planCode: "", activeTab: "item",
+                brand: "", brandName: "", itemBefore: "", uomBefore: "Ekor", qtyBefore: 0, priceBefore: null, priceJual: null,
+                afterItems: [newAfterItem()],
+                farmItems: [newFarmItem()]
+            };
+        }
+
+        /* ── Init ───────────────────────────────────────────────── */
+        function init() {
+            const today = new Date().toISOString().slice(0, 10);
+            const timeNow = currentTimeValue();
+            document.getElementById("fPostingDate").value = today;
+            document.getElementById("fDeliveryDate").value = today;
+            document.getElementById("fDepartureTime").value = timeNow;
+            document.getElementById("fArrivalTime").value = timeNow;
+
+            const custSel = document.getElementById("fCustomer");
+            M.customers.forEach(c => {
+                custSel.innerHTML += `<option value="${c.code}">${c.shortName} — ${c.name}</option>`;
+            });
+
+            M.externalVendors.forEach(v => {
+                document.getElementById("fExtVendor").innerHTML += `<option value="${v.code}">${v.name}</option>`;
+            });
+
+            const whseSel = document.getElementById("fWhsePengirim");
+            M.warehouses.forEach(w => {
+                whseSel.innerHTML += `<option value="${w.code}">${w.code} — ${w.name} (${w.location})</option>`;
+            });
+
+            document.getElementById("transportForm").addEventListener("input", updateTransportSummary);
+            addPlan();
+        }
+
+        /* ── Toggles ────────────────────────────────────────────── */
+        function getDocType() {
+            return document.querySelector('input[name="docType"]:checked')?.value || "internal";
+        }
+
+        function onDocTypeChange() {
+            const ext = getDocType() === "external";
+            const custCol = document.getElementById("customerCol");
+            const vendorCol = document.getElementById("vendorCol");
+            document.getElementById("postingDateLabel").textContent = ext ? "Posting Date GRPO" : "Posting Date";
+            document.getElementById("deliveryDateLabel").textContent = ext ? "Delivery Date DO" : "Delivery Date";
+            if (ext) {
+                custCol.className = "col-md-6";
+                vendorCol.style.display = "block";
+            } else {
+                custCol.className = "col-12";
+                vendorCol.style.display = "none";
+            }
+            renderAllPlans();
+        }
+
+        function onCustomerChange() {
+            const cust = M.getCustomer(document.getElementById("fCustomer").value);
+            document.getElementById("fContactPerson").innerHTML = cust && cust.contact
+                ? `<option value="${cust.contact}">${cust.contact}</option>`
+                : `<option value="">-- Pilih --</option>`;
+            document.getElementById("fCustomerPhone").value = cust ? (cust.phone || "") : "";
+            document.getElementById("fShipTo").value = cust ? (cust.address || "") : "";
+            plans.forEach(p => {
+                p.planCode = "";
+                p.afterItems.forEach(a => a.whseTujuan = "");
+            });
+            renderAllPlans();
+        }
+
+        function onVendorChange() {
+            const vendor = M.getExternalVendor(document.getElementById("fExtVendor").value);
+            document.getElementById("fExtContactPerson").innerHTML = vendor && vendor.name
+                ? `<option value="${vendor.name}">${vendor.name}</option>`
+                : `<option value="">-- Pilih --</option>`;
+            document.getElementById("fVendorPhone").value = vendor ? (vendor.contact || "") : "";
+        }
+
+        /* ── Plan management ────────────────────────────────────── */
+        function addPlan() {
+            plans.push(newPlan());
+            renderAllPlans();
+        }
+
+        function removePlan(planId) {
+            if (plans.length <= 1 && !confirm("Hapus plan terakhir?")) return;
+            plans = plans.filter(p => p.id !== planId);
+            renderAllPlans();
+        }
+
+        function setPlan(planId, f, v) {
+            const p = plans.find(x => x.id === planId);
+            if (p) p[f] = v;
+        }
+
+        function setPlanCode(planId, code) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            p.planCode = code;
+            const md = M.getPlan(code);
+            if (md) {
+                p.brandName = md.hatchery || "";
+                p.brand = md.hatchery || "";
+                p.afterItems.forEach(a => a.whseTujuan = md.warehouseCode);
+            } else {
+                p.brandName = "";
+                p.brand = "";
+                p.afterItems.forEach(a => a.whseTujuan = "");
+            }
+            renderPlan(planId);
+        }
+
+        function showPlanInfo(planId) {
+            const p = plans.find(x => x.id === planId);
+            const md = p && M.getPlan(p.planCode);
+            if (!md) { alert("Pilih plan terlebih dahulu."); return; }
+
+            const item = (k, v, num, hi) =>
+                `<div class="pi-item${hi ? " hi" : ""}"><div class="pik">${k}</div><div class="piv${num ? " num" : ""}">${v || "—"}</div></div>`;
+            const section = (icon, title, html) =>
+                `<div class="pi-section"><div class="pi-section-title"><i class="bi ${icon}"></i>${title}</div>${html}</div>`;
+
+            document.getElementById("planInfoBody").innerHTML = `
+                ${section("bi-file-earmark-text", "Identitas Plan", `
+                    <div class="pi-grid">
+                        ${item("Plan Document", `<strong>${md.code}</strong>`, false, true)}
+                        ${item("No.", md.no)}
+                        ${item("Document Date", md.documentDate)}
+                        ${item("Project", md.project || "—")}
+                    </div>
+                    <div class="pi-grid full">
+                        ${item("Description", md.description, false, true)}
+                    </div>
+                    <div class="pi-grid">
+                        ${item("Start Date", md.startDate)}
+                        ${item("End Date", md.endDate)}
+                    </div>
+                `)}
+                <div class="pi-divider"></div>
+                ${section("bi-egg", "Info Ayam", `
+                    <div class="pi-grid">
+                        ${item("Type of Chicken", md.typeOfChicken)}
+                        ${item("Desc of Chicken", md.descOfChicken)}
+                        ${item("DOC Weight", md.docWeight ? md.docWeight + " gram" : "—")}
+                        ${item("Batch Number", md.batchNumber || "—")}
+                    </div>
+                `)}
+                <div class="pi-divider"></div>
+                ${section("bi-bar-chart", "Stok", `
+                    <div class="pi-grid">
+                        ${item("Initial Stock", md.initialStock ? Number(md.initialStock).toLocaleString("id-ID") + " ekor" : "—", true, true)}
+                        ${item("Total DOC In", md.totalDocIn ? Number(md.totalDocIn).toLocaleString("id-ID") + " ekor" : "—", true, true)}
+                    </div>
+                `)}
+                <div class="pi-divider"></div>
+                ${section("bi-geo-alt", "Lokasi", `
+                    <div class="pi-grid">
+                        ${item("Warehouse", md.warehouseCode + " — " + md.warehouseName, false, true)}
+                        ${item("Hatchery", md.hatchery)}
+                    </div>
+                    <div class="pi-grid full">
+                        ${item("Dist. Rules", md.distRules)}
+                    </div>
+                `)}
+                <div style="height:8px;"></div>`;
+            new bootstrap.Modal(document.getElementById("planInfoModal")).show();
+        }
+
+        function setBrand(planId, v) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            p.brand = v;
+            p.brandName = (M.brands.find(b => b.code === v) || {}).name || v;
+        }
+
+        function setB(planId, f, v) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            p[f] = (f === "qtyBefore" || f === "priceBefore" || f === "priceJual") ? (parseFloat(v) || 0) : v;
+            if (f === "qtyBefore") {
+                // auto-sync single after item qty
+                if (p.afterItems.length === 1) {
+                    p.afterItems[0].qtyAfter = parseFloat(v) || 0;
+                }
+                updateBadge(planId);
+            }
+        }
+
+        function addAfterItem(planId) {
+            const p = plans.find(x => x.id === planId);
+            if (p) {
+                const newItem = newAfterItem();
+                const md = M.getPlan(p.planCode);
+                newItem.whseTujuan = md ? md.warehouseCode : "";
+                // new item gets remaining qty
+                const used = p.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
+                newItem.qtyAfter = Math.max(0, (p.qtyBefore || 0) - used);
+                p.afterItems.push(newItem);
+                renderPlan(planId);
+            }
+        }
+
+        function removeAfterItem(planId, afterId) {
+            const p = plans.find(x => x.id === planId);
+            if (!p || p.afterItems.length <= 1) return;
+            p.afterItems = p.afterItems.filter(a => a.id !== afterId);
+            renderPlan(planId);
+        }
+
+        function setPlanTab(planId, tab) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            p.activeTab = tab;
+            renderPlan(planId);
+        }
+
+        function addFarmItem(planId) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            if (!p.farmItems) p.farmItems = [];
+            p.farmItems.push(newFarmItem());
+            p.activeTab = "farm";
+            renderPlan(planId);
+        }
+
+        function removeFarmItem(planId, farmId) {
+            const p = plans.find(x => x.id === planId);
+            if (!p || !p.farmItems || p.farmItems.length <= 1) return;
+            p.farmItems = p.farmItems.filter(f => f.id !== farmId);
+            p.activeTab = "farm";
+            renderPlan(planId);
+        }
+
+        function setFarm(planId, farmId, field, value) {
+            const p = plans.find(x => x.id === planId);
+            const f = p && p.farmItems && p.farmItems.find(x => x.id === farmId);
+            if (!f) return;
+            f[field] = value;
+        }
+
+        function setA(planId, afterId, f, v) {
+            const p = plans.find(x => x.id === planId);
+            const a = p && p.afterItems.find(x => x.id === afterId);
+            if (!a) return;
+            a[f] = (f === "qtyAfter" || f === "priceAfter") ? (parseFloat(v) || 0) : v;
+            if (f === "qtyAfter") updateBadge(planId);
+        }
+
+        function updateBadge(planId) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            const tot = p.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
+            const mm = tot !== (p.qtyBefore || 0);
+            const el = document.getElementById("qbdg_" + planId);
+            if (!el) return;
+            el.className = mm ? "qmm" : "qok";
+            el.textContent = mm
+                ? `⚠ After: ${fmtNum(tot)} ≠ Before: ${fmtNum(p.qtyBefore)}`
+                : `✓ After: ${fmtNum(tot)}`;
+        }
+
+        /* ── Render ─────────────────────────────────────────────── */
+        function renderAllPlans() {
+            const container = document.getElementById("plansContainer");
+            container.innerHTML = "";
+            plans.forEach((p, i) => {
+                const div = document.createElement("div");
+                div.id = "pc_" + p.id;
+                container.appendChild(div);
+                renderPlanInto(p, i, div);
+            });
+        }
+
+        function renderPlan(planId) {
+            const p = plans.find(x => x.id === planId);
+            const idx = plans.findIndex(x => x.id === planId);
+            const el = document.getElementById("pc_" + planId);
+            if (p && el) renderPlanInto(p, idx, el);
+        }
+
+        function renderPlanInto(plan, idx, el) {
+            if (!plan.farmItems || !plan.farmItems.length) plan.farmItems = [newFarmItem()];
+            if (!plan.activeTab) plan.activeTab = "item";
+            const ext = getDocType() === "external";
+            const showPB = showPrice && ext;
+            const tot = plan.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
+            const mm = tot !== (plan.qtyBefore || 0);
+            const rs = plan.afterItems.length;
+
+            const custCode = document.getElementById("fCustomer").value;
+            const planOpts = custCode
+                ? M.getPlansByOwner(custCode).map(p =>
+                    `<option value="${p.code}">${p.code} — ${p.description}</option>`
+                ).join("")
+                : `<option value="" disabled>Pilih customer dulu</option>`;
+
+            const warehouseOpts = M.warehouses.map(w =>
+                `<option value="${w.code}">${w.code} — ${w.name} (${w.location})</option>`
+            ).join("");
+
+            // After cells builder (reused per row)
+            const afterCells = a => `
+                    <td class="ca">
+                        <div class="inp-s">
+                            <input class="ti" type="text" value="${a.itemAfter.replace(/"/g, "&quot;")}"
+                                placeholder="Nama item customer"
+                                onchange="setA('${plan.id}','${a.id}','itemAfter',this.value)">
+                            <button class="btn-s" onclick="openSearch(null,v=>fillIA('${plan.id}','${a.id}',v))" title="Cari"><i class="bi bi-search"></i></button>
+                        </div>
+                    </td>
+                    <td class="ca" style="text-align:center;">
+                        <input class="tn" type="number" value="${a.qtyAfter || ""}" min="0" placeholder="0"
+                            oninput="setA('${plan.id}','${a.id}','qtyAfter',this.value)">
+                    </td>
+                    <td class="ca">
+                        <select class="ts" onchange="setA('${plan.id}','${a.id}','whseTujuan',this.value)" disabled style="background:#f3f4f6;cursor:not-allowed;color:#6b7280;">
+                            <option value="">-- Pilih --</option>${warehouseOpts}
+                        </select>
+                    </td>
+                    <td style="text-align:center;">
+                        ${plan.afterItems.length > 1
+                    ? `<button class="btn-da" onclick="removeAfterItem('${plan.id}','${a.id}')" title="Hapus"><i class="bi bi-x-lg"></i></button>`
+                    : ""}
+                    </td>`;
+
+            // Extra after rows (2nd onwards, full <tr>)
+            const extraAfterRows = plan.afterItems.slice(1).map(a =>
+                `<tr>${afterCells(a)}</tr>`
+            ).join("");
+
+            const farmRows = plan.farmItems.map(f => `
+                <tr>
+                    <td class="cf">
+                        <input class="ti" type="text" value="${escAttr(f.farmCode)}" placeholder="Farm code"
+                            onchange="setFarm('${plan.id}','${f.id}','farmCode',this.value)">
+                    </td>
+                    <td class="cf">
+                        <input class="ti" type="text" value="${escAttr(f.farmName)}" placeholder="Farm name"
+                            onchange="setFarm('${plan.id}','${f.id}','farmName',this.value)">
+                    </td>
+                    <td class="cf" style="width:60px;text-align:center;">
+                        ${plan.farmItems.length > 1
+                    ? `<button class="btn-da" onclick="removeFarmItem('${plan.id}','${f.id}')" title="Hapus"><i class="bi bi-x-lg"></i></button>`
+                    : ""}
+                    </td>
+                </tr>`).join("");
+
+            const farmTable = `
+                <div class="lines-wrap" style="${plan.activeTab === "farm" ? "" : "display:none;"}">
+                    <table class="lt" style="min-width:520px;">
+                        <thead>
+                            <tr>
+                                <th class="hf" style="min-width:180px;">Farm Code</th>
+                                <th class="hf" style="min-width:260px;">Farm Name</th>
+                                <th class="hf" style="width:60px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${farmRows}
+                            <tr class="tr-act">
+                                <td colspan="3">
+                                    <button class="btn-aa" onclick="addFarmItem('${plan.id}')"><i class="bi bi-plus-sm"></i> Farm</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>`;
+
+            el.innerHTML = `
+            <div class="plan-card">
+                <div class="plan-card-header">
+                    <span class="plan-badge">Dokumen ${idx + 1}</span>
+                    <div class="plan-tabs">
+                        <button class="plan-tab ${plan.activeTab === "item" ? "active" : ""}" onclick="setPlanTab('${plan.id}','item')">Info Item</button>
+                        <button class="plan-tab ${plan.activeTab === "farm" ? "active" : ""}" onclick="setPlanTab('${plan.id}','farm')">Info Farm</button>
+                    </div>
+                    ${plans.length > 1
+                    ? `<button class="btn-dg" style="margin-left:auto;" onclick="removePlan('${plan.id}')"><i class="bi bi-trash me-1"></i> Hapus Dokumen</button>`
+                    : ""}
+                </div>
+                <div class="plan-card-body">
+                    <div class="lines-wrap" style="${plan.activeTab === "item" ? "" : "display:none;"}">
+                        <table class="lt">
+                            <thead>
+                                <tr>
+                                    <th class="hb" colspan="${2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0)}" style="border-bottom:none; font-size:12px;">Info CTU (Pengirim)</th>
+                                    <th class="ha" colspan="3" style="border-bottom:none; padding:4px 10px;">
+                                        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                                            <span style="font-size:12px;">Tujuan / Conversion</span>
+                                            <div class="plan-field" style="background:#fff; padding:3px 8px; border-radius:6px; border:1px solid #c4b5fd;">
+                                                <label>Pilih Plan Tujuan :</label>
+                                                <select id="pln_${plan.id}" onchange="setPlanCode('${plan.id}',this.value)" style="border:none; outline:none; font-weight:600; cursor:pointer; font-size:11px;">
+                                                    <option value="">-- Pilih Plan --</option>${planOpts}
+                                                </select>
+                                                <button class="btn-info-plan" style="height:22px; padding:0 5px;" onclick="showPlanInfo('${plan.id}')" title="Lihat detail plan">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th style="border-bottom:none;"></th>
+                                </tr>
+                                <tr>
+                                    <th class="hb" style="min-width:180px;">Item Code</th>
+                                    <th class="hb" style="width:100px;">Qty</th>
+                                    ${showPB ? `<th class="hp" style="width:120px;">Harga Beli</th>` : ""}
+                                    ${showPrice ? `<th class="hp" style="width:120px;">Harga Jual</th>` : ""}
+                                    <th class="ha" style="min-width:180px;">Conversion Item</th>
+                                    <th class="ha" style="width:100px;">Qty</th>
+                                    <th class="ha" style="min-width:150px;">Whse Tujuan</th>
+                                    <th style="width:50px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="cb" rowspan="${rs}">
+                                        <div class="inp-s">
+                                            <input class="ti" type="text" value="${plan.itemBefore.replace(/"/g, "&quot;")}"
+                                                placeholder="Nama item CTU"
+                                                onchange="setB('${plan.id}','itemBefore',this.value)">
+                                            <button class="btn-s" onclick="openSearch('DOC',v=>fillIB('${plan.id}',v))" title="Cari"><i class="bi bi-search"></i></button>
+                                        </div>
+                                    </td>
+                                    <td class="cb" rowspan="${rs}" style="text-align:center;">
+                                        <input class="tn" type="number" value="${plan.qtyBefore || ""}" min="0" placeholder="0"
+                                            oninput="setB('${plan.id}','qtyBefore',this.value)">
+                                        <span id="qbdg_${plan.id}" class="${mm ? "qmm" : "qok"}">
+                                            ${mm ? `⚠ After: ${fmtNum(tot)} ≠ Before: ${fmtNum(plan.qtyBefore)}` : `✓ After: ${fmtNum(tot)}`}
+                                        </span>
+                                    </td>
+                                    ${showPB ? `<td class="cp cb" rowspan="${rs}" style="text-align:center;">
+                                        <input class="tp" type="number" value="${plan.priceBefore || ""}" min="0" placeholder="0"
+                                            oninput="setB('${plan.id}','priceBefore',this.value)">
+                                    </td>` : ""}
+                                    ${showPrice ? `<td class="cp cb" rowspan="${rs}" style="text-align:center;">
+                                        <input class="tp" type="number" value="${plan.priceJual || ""}" min="0" placeholder="0"
+                                            oninput="setB('${plan.id}','priceJual',this.value)">
+                                    </td>` : ""}
+                                    ${afterCells(plan.afterItems[0])}
+                                </tr>
+                                ${extraAfterRows}
+                                <tr class="tr-act">
+                                    <td colspan="${2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0) + 3 + 1}">
+                                        <button class="btn-aa" onclick="addAfterItem('${plan.id}')"><i class="bi bi-plus-sm"></i> Conversion Item</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    ${farmTable}
+                </div>
+            </div>`;
+
+            // Restore select values
+            const plnSel = document.getElementById("pln_" + plan.id);
+            if (plnSel) plnSel.value = plan.planCode;
+
+            // Restore whseTujuan per after row
+            plan.afterItems.forEach(a => {
+                const wt = document.querySelector(`select[onchange*="setA('${plan.id}','${a.id}','whseTujuan'"]`);
+                if (wt) wt.value = a.whseTujuan || "";
+            });
+        }
+
+        /* ── Search popup ───────────────────────────────────────── */
+        function openSearch(cat, cb) {
+            _searchCb = cb;
+            _searchCat = cat;
+            document.getElementById("searchQ").value = "";
+            document.getElementById("searchTitle").textContent = "Cari Item" + (cat ? " (" + cat + ")" : "");
+            filterSearch("");
+            new bootstrap.Modal(document.getElementById("itemSearchModal")).show();
+        }
+
+        function filterSearch(q) {
+            const items = M.items.filter(i => {
+                if (_searchCat && i.category !== _searchCat) return false;
+                if (!q) return true;
+                return i.name.toLowerCase().includes(q.toLowerCase()) ||
+                    i.code.toLowerCase().includes(q.toLowerCase());
+            });
+            document.getElementById("searchList").innerHTML = items.length
+                ? items.map(i => `
+                    <div class="item-row" onclick="pickItem('${i.code}','${i.name.replace(/'/g, "\\'")}','${i.uom}')">
+                        <div class="ic">${i.code}</div>
+                        <div class="in">${i.name}</div>
+                        <div class="im">${i.category} · ${i.uom} · Rp ${i.price.toLocaleString("id-ID")}</div>
+                    </div>`).join("")
+                : `<div class="p-3 text-center text-muted" style="font-size:13px;">Tidak ada item ditemukan</div>`;
+        }
+
+        function pickItem(code, name, uom) {
+            if (_searchCb) _searchCb({ code, name, uom });
+            bootstrap.Modal.getInstance(document.getElementById("itemSearchModal")).hide();
+        }
+
+        function fillIB(planId, item) {
+            const p = plans.find(x => x.id === planId);
+            if (!p) return;
+            p.itemBefore = item.name;
+            p.uomBefore = item.uom || "Ekor";
+            renderPlan(planId);
+        }
+
+        function fillIA(planId, afterId, item) {
+            const p = plans.find(x => x.id === planId);
+            const a = p && p.afterItems.find(x => x.id === afterId);
+            if (!a) return;
+            a.itemAfter = item.name;
+            a.uomAfter = item.uom || "Ekor";
+            renderPlan(planId);
+        }
+
+        /* ── Save ───────────────────────────────────────────────── */
+        function saveDraft() {
+            const date = document.getElementById("fPostingDate").value;
+            const docType = getDocType();
+            const custCode = document.getElementById("fCustomer").value;
+            const whsePengirimGlobal = document.getElementById("fWhsePengirim").value;
+
+            if (!date) { alert("Tanggal wajib diisi."); return; }
+            if (!custCode) { alert("Customer Tujuan wajib dipilih."); return; }
+            if (!whsePengirimGlobal) { alert("Warehouse Pengirim di Informasi Header wajib dipilih."); return; }
+            if (!plans.length) { alert("Minimal 1 Plan harus ditambahkan."); return; }
+
+            if (docType === "external") {
+                if (!document.getElementById("fExtVendor").value ||
+                    !document.getElementById("fNoSJ").value ||
+                    !document.getElementById("fNoPol").value) {
+                    alert("Semua field Vendor Trading wajib diisi."); return;
+                }
+            }
+
+            for (const [i, plan] of plans.entries()) {
+                if (!plan.planCode) { alert(`Dokumen ${i + 1}: Plan wajib dipilih.`); return; }
+                if (!plan.brand || !plan.itemBefore) { alert(`Dokumen ${i + 1}: Brand dan Item Code wajib diisi.`); return; }
+                const totalAfter = plan.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
+                if (totalAfter !== (plan.qtyBefore || 0)) {
+                    alert(`Dokumen ${i + 1}: Total Qty Tujuan (${totalAfter}) harus sama dengan Qty CTU Pengirim (${plan.qtyBefore || 0}).`);
+                    return;
+                }
+                for (const a of plan.afterItems) {
+                    if (!a.itemAfter) { alert(`Dokumen ${i + 1}: Conversion item tidak boleh kosong.`); return; }
+                    if (!a.whseTujuan) { alert(`Dokumen ${i + 1}: Warehouse Tujuan wajib dipilih di setiap conversion.`); return; }
+                }
+            }
+
+            const custObj = M.getCustomer(custCode);
+            const extCode = docType === "external" ? document.getElementById("fExtVendor").value : null;
+            const transport = collectTransportData();
+            const brandMap = {};
+            M.brands.forEach(b => { brandMap[b.code] = b.name; });
+
+            plans.forEach(plan => {
+                const draft = {
+                    id: docDraftNextId(),
+                    date, docType,
+                    postingDate: date,
+                    deliveryDate: document.getElementById("fDeliveryDate").value,
+                    contactPerson: document.getElementById("fContactPerson").value,
+                    customerPhone: document.getElementById("fCustomerPhone").value,
+                    shipTo: document.getElementById("fShipTo").value,
+                    customerRefNo: document.getElementById("fCustRefNo").value,
+                    remarks: document.getElementById("fDocRemarks").value,
+                    forecastRef: null, forecastDesc: "",
+                    planCode: plan.planCode || "",
+                    planName: (M.getPlan(plan.planCode) || {}).description || "",
+                    customer: custCode, customerName: custObj ? custObj.name : custCode,
+                    whsePengirim: whsePengirimGlobal, whsePengirimName: (M.getWarehouse(whsePengirimGlobal) || {}).name || "",
+                    externalVendor: docType === "external" ? extCode : null,
+                    externalVendorName: docType === "external" ? (M.getExternalVendor(extCode) || {}).name : null,
+                    extContactPerson: docType === "external" ? document.getElementById("fExtContactPerson").value : null,
+                    vendorPhone: docType === "external" ? document.getElementById("fVendorPhone").value : null,
+                    noSuratJalan: docType === "external" ? document.getElementById("fNoSJ").value : null,
+                    noPol: docType === "external" ? document.getElementById("fNoPol").value.toUpperCase() : null,
+                    transport: { ...transport },
+                    farmItems: (plan.farmItems || []).map(f => ({ ...f })),
+                    lines: [{
+                        id: plan.id,
+                        brand: plan.brand, brandName: brandMap[plan.brand] || plan.brand,
+                        itemBefore: plan.itemBefore, uomBefore: plan.uomBefore,
+                        qtyBefore: plan.qtyBefore, priceBefore: plan.priceBefore, priceJual: plan.priceJual,
+                        afterItems: plan.afterItems.map(a => ({ ...a }))
+                    }],
+                    status: "Draft",
+                    createdBy: role || "admin_hatchery",
+                    createdAt: date
+                };
+                docDraftSave(draft);
+            });
+
+            alert(`${plans.length} DO Draft berhasil dibuat.`);
+            location.href = "hatchery_doc_draft_list.html";
+        }
+
+        init();
+    </script>
+</body>
+
+</html>

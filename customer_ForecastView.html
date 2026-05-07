@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | Forecast View</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f7fb; color: #222; }
+        .page { max-width: 100%; border-radius: 12px; background: #fff; padding: 24px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 20px; }
+        h1 { margin: 0; font-size: 22px; }
+        .subtext { margin-top: 6px; font-size: 13px; color: #6b7280; }
+
+        .btn-secondary-action { padding: 9px 16px; border-radius: 8px; border: 1px solid #d1d5db; font-weight: 700; cursor: pointer; font-size: 13px; background: #fff; color: #374151; text-decoration: none; display: inline-block; }
+        .btn-secondary-action:hover { background: #f3f4f6; color: #111; }
+
+        /* Cards */
+        .v-card { background: #fff; border-radius: 14px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #eef0f4; }
+        .v-card-header { padding: 13px 18px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; display: flex; align-items: center; gap: 8px; }
+        .v-card-header .vc-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .v-card-body { padding: 16px 18px; }
+
+        /* Info grid */
+        .info-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+        .info-item { background: #f8f9ff; border-radius: 10px; padding: 10px 14px; }
+        .info-item .ik { font-size: 10px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px; }
+        .info-item .iv { font-size: 13px; color: #111; font-weight: 600; }
+        .info-item .iv.num { color: #1a237e; font-weight: 700; font-size: 15px; }
+        .info-item.yellow { background: #fefce8; }
+        .info-item.yellow .ik { color: #92400e; }
+        .info-item.yellow .iv { color: #713f12; font-weight: 700; }
+
+        /* SAP grid: 4 cols */
+        .sap-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+        .sap-item { background: #f0f4ff; border-radius: 10px; padding: 10px 14px; }
+        .sap-item .sk { font-size: 10px; font-weight: 700; color: #3730a3; text-transform: uppercase; letter-spacing: .3px; margin-bottom: 4px; }
+        .sap-item .sv { font-size: 14px; font-weight: 700; color: #1a237e; }
+        .sap-item.yellow { background: #fefce8; }
+        .sap-item.yellow .sk { color: #92400e; }
+        .sap-item.yellow .sv { color: #713f12; }
+        .sap-item.green { background: #f0fdf4; }
+        .sap-item.green .sk { color: #166534; }
+        .sap-item.green .sv { color: #166534; }
+
+        /* Phase table */
+        .phase-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .phase-table th { background: #1a237e; color: #fff; padding: 10px 12px; font-size: 12px; white-space: nowrap; text-align: left; }
+        .phase-table th.r { text-align: right; }
+        .phase-table td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+        .phase-table td.r { text-align: right; }
+        .phase-table tr:hover td { background: #f8faff; }
+        .phase-table tr.row-total td { background: #fef9c3; font-weight: 700; }
+        .phase-table tr.skipped td { color: #9ca3af; background: #fafafa; }
+
+        /* Rekom items */
+        .rekom-list { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+        .rekom-card { background: #f0f6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 14px 16px; }
+        .rekom-card .rc-no { font-size: 10px; font-weight: 700; color: #6366f1; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .4px; }
+        .rekom-card .rc-name { font-size: 14px; font-weight: 700; color: #1e3a8a; margin-bottom: 2px; }
+        .rekom-card .rc-code { font-size: 11px; color: #6b7280; margin-bottom: 10px; }
+        .rekom-card .rc-qty { font-size: 26px; font-weight: 700; color: #2563eb; }
+        .rekom-card .rc-uom { font-size: 12px; color: #6b7280; }
+
+        .empty-state { text-align: center; padding: 28px; color: #9ca3af; font-size: 13px; }
+        .badge-status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-draft { background: #f3f4f6; color: #374151; }
+        .badge-fc { background: #dbeafe; color: #1d4ed8; }
+        .badge-po { background: #dcfce7; color: #166534; }
+
+        /* Matrix table (sama dengan ForecastList) */
+        .matrix-table { width:100%; border-collapse:collapse; font-size:12px; }
+        .matrix-table th, .matrix-table td { border:1px solid #e5e7eb; padding:8px 10px; vertical-align:middle; white-space:nowrap; }
+        .matrix-table thead tr:first-child th { background:#1a237e; color:#fff; text-align:center; font-size:12px; }
+        .matrix-table thead tr:nth-child(2) th { background:#f1f3f9; color:#374151; font-size:11px; text-align:center; }
+        .matrix-table td { text-align:center; }
+        .matrix-table tbody tr:hover { background:#f8faff; }
+        .matrix-table th.th-yellow { background:#fef08a !important; color:#713f12 !important; }
+        .matrix-table td.td-yellow { background:#fefce8; color:#713f12; font-weight:600; }
+
+        @media (max-width: 900px) { .info-grid, .sap-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .rekom-list { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .info-grid, .sap-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Customer Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="index.html">Ganti Portal</a></li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 fw-bold" style="color:#1a237e;"><i class="bi bi-graph-up-arrow me-2"></i>Forecast View</h4>
+                </div>
+
+                <div class="page shadow-sm">
+                    <div class="topbar">
+                        <div>
+                            <h1 id="pageTitle">Detail Plan</h1>
+                            <div class="subtext" id="pageSubtext">Informasi kalkulator dan rekomendasi item per plan.</div>
+                        </div>
+                        <div>
+                            <a href="customer_ForecastList.html" class="btn-secondary-action"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+                        </div>
+                    </div>
+
+                    <div id="mainContent">
+                        <div class="empty-state"><i class="bi bi-hourglass-split" style="font-size:28px;display:block;margin-bottom:8px;"></i>Memuat data...</div>
+                    </div>
+                </div>
+
+                <div class="text-center text-muted small mt-4 mb-2">© 2026 IBOCS — Customer Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        // ─── SESSION GUARD ────────────────────────────────────────────────────
+        const sess = localStorage.getItem("IBOCS_user");
+        if (!sess) window.location.href = "login.html?role=customer";
+        const user = JSON.parse(sess);
+        if (user.role !== "customer" && user.role !== "super_admin") window.location.href = "index.html";
+        document.getElementById("userBtn").textContent = user.name || "User";
+        document.getElementById("userInfo").textContent = `${user.email} • role=${user.role}`;
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            window.location.href = "index.html";
+        });
+
+        // ─── DATA (sama dengan ForecastList) ─────────────────────────────────
+        const STD = [
+            { d: 1,  m: 0.00, v: 100.00, fd: 0.0010 }, { d: 2,  m: 0.10, v: 99.90,  fd: 0.0020 },
+            { d: 3,  m: 0.10, v: 99.80,  fd: 0.0030 }, { d: 4,  m: 0.10, v: 99.70,  fd: 0.0040 },
+            { d: 5,  m: 0.10, v: 99.60,  fd: 0.0050 }, { d: 6,  m: 0.10, v: 99.50,  fd: 0.0060 },
+            { d: 7,  m: 0.10, v: 99.40,  fd: 0.0070 }, { d: 8,  m: 0.20, v: 99.20,  fd: 0.0090 },
+            { d: 9,  m: 0.20, v: 99.00,  fd: 0.0120 }, { d: 10, m: 0.20, v: 98.80,  fd: 0.0150 },
+            { d: 11, m: 0.20, v: 98.60,  fd: 0.0180 }, { d: 12, m: 0.20, v: 98.40,  fd: 0.0220 },
+            { d: 13, m: 0.20, v: 98.20,  fd: 0.0260 }, { d: 14, m: 0.20, v: 98.00,  fd: 0.0300 },
+            { d: 15, m: 0.20, v: 97.80,  fd: 0.0350 }, { d: 16, m: 0.20, v: 97.60,  fd: 0.0400 },
+            { d: 17, m: 0.20, v: 97.40,  fd: 0.0450 }, { d: 18, m: 0.20, v: 97.20,  fd: 0.0500 },
+            { d: 19, m: 0.20, v: 97.00,  fd: 0.0560 }, { d: 20, m: 0.20, v: 96.80,  fd: 0.0620 },
+            { d: 21, m: 0.20, v: 96.60,  fd: 0.0680 }, { d: 22, m: 0.30, v: 96.30,  fd: 0.0750 },
+            { d: 23, m: 0.30, v: 96.00,  fd: 0.0820 }, { d: 24, m: 0.30, v: 95.70,  fd: 0.0890 },
+            { d: 25, m: 0.30, v: 95.40,  fd: 0.0960 }, { d: 26, m: 0.30, v: 95.10,  fd: 0.1030 },
+            { d: 27, m: 0.30, v: 94.80,  fd: 0.1100 }, { d: 28, m: 0.30, v: 94.50,  fd: 0.1160 },
+            { d: 29, m: 0.30, v: 94.20,  fd: 0.1220 }, { d: 30, m: 0.30, v: 93.90,  fd: 0.1280 },
+            { d: 31, m: 0.30, v: 93.60,  fd: 0.1330 }, { d: 32, m: 0.30, v: 93.30,  fd: 0.1380 },
+            { d: 33, m: 0.30, v: 93.00,  fd: 0.1420 }, { d: 34, m: 0.30, v: 92.70,  fd: 0.1460 },
+            { d: 35, m: 0.30, v: 92.40,  fd: 0.1500 },
+        ];
+
+        const PHASES = [
+            { code: "FEED-001", name: "Pakan Pre-Starter (S-0)", dayFrom: 1,  dayTo: 7,  uom: "Kg" },
+            { code: "FEED-002", name: "Pakan Starter (BR-1)",    dayFrom: 8,  dayTo: 21, uom: "Kg" },
+            { code: "FEED-004", name: "Pakan Finisher (BR-3)",   dayFrom: 22, dayTo: 35, uom: "Kg" },
+        ];
+
+        const DEMO_PLANS = [
+            { planNo: "100004423", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi", location: "Pekalongan", id: "F0001364", wh: "F0001364", docQty: 9700,  docType: "DOC Broiler", ageLastPosting: 22, ageCurrent: 27, lastPostingDate: "29-Apr-26", sapData: { mort: 269, lastPop: 9431,  bw: 0.985, fcr: 1.297, fiAct: 1.242, fiCum: 12050, grpo: 22700, poItr: 10650, lastStok: 10650 } },
+            { planNo: "100004424", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi", location: "Blora",      id: "F0001471", wh: "F0001471", docQty: 30800, docType: "DOC Broiler", ageLastPosting: 19, ageCurrent: 24, lastPostingDate: "29-Apr-26", sapData: { mort: 738, lastPop: 30370, bw: 0.75,  fcr: 1.225, fiAct: 0.082, fiCum: 0.906, grpo: 43000, poItr: 16600, lastStok: 16600 } },
+            { planNo: "100004425", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi", location: "Klaten",     id: "F0001470", wh: "F0001470", docQty: 7200,  docType: "DOC Broiler", ageLastPosting: 18, ageCurrent: 21, lastPostingDate: "1-May-26",  sapData: { mort: 446, lastPop: 6826,  bw: 0.586, fcr: 1.212, fiAct: 0.08,  fiCum: 0.674, grpo: 9000,  poItr: 3550,  lastStok: 3550  } },
+            { planNo: "100000271", fcStatus: "Draft", status: "Active", company: "PT AYM",            location: "Ponorogo",   id: "F0000274", wh: "F0000274", docQty: 5000,  docType: "DOC Broiler", ageLastPosting: 12, ageCurrent: 14, lastPostingDate: "2-May-26",  sapData: { mort: 46,  lastPop: 5004,  bw: 0.345, fcr: 1.303, fiAct: 0.04,  fiCum: 0.45,  grpo: 4000,  poItr: 1750,  lastStok: 1844 } },
+            { planNo: "100000272", fcStatus: "Draft", status: "Active", company: "PT AYM",            location: "Malang",     id: "F0000073", wh: "F0000073", docQty: 8500,  docType: "DOC Broiler", ageLastPosting: 11, ageCurrent: 13, lastPostingDate: "1-May-26",  sapData: { mort: 155, lastPop: 8430,  bw: 0.325, fcr: 1.113, fiAct: 0.059, fiCum: 0.359, grpo: 5500,  poItr: 2450,  lastStok: 979  } },
+            { planNo: "100000273", fcStatus: "Draft", status: "Active", company: "PT AYM",            location: "Tuban",      id: "F0000173", wh: "F0000173", docQty: 9900,  docType: "DOC Broiler", ageLastPosting: 11, ageCurrent: 13, lastPostingDate: "1-May-26",  sapData: { mort: 329, lastPop: 9670,  bw: 0.187, fcr: 1.244, fiAct: 0.031, fiCum: 0.227, grpo: 5000,  poItr: 2750,  lastStok: 537  } },
+            { planNo: "21000235",  fcStatus: "Draft", status: "Active", company: "PT CTU",            location: "Pasuruan",   id: "FSR0001",  wh: "FSR0001",  docQty: 9315,  docType: "DOC Layer",   ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",  sapData: { mort: 386, lastPop: 8929,  bw: null,  fcr: null,  fiAct: null,  fiCum: null,  grpo: 37700, poItr: null,  lastStok: 1844, statusKalang: "GROWTH", kebutuhanMinggu: 4500, sisaKebutuhan: 18200 } },
+            { planNo: "21000236",  fcStatus: "Draft", status: "Active", company: "PT CTU",            location: "Pasuruan",   id: "FSR0002",  wh: "FSR0002",  docQty: 9460,  docType: "DOC Layer",   ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",  sapData: { mort: 326, lastPop: 9134,  bw: null,  fcr: null,  fiAct: null,  fiCum: null,  grpo: 37250, poItr: null,  lastStok: 979,  statusKalang: "GROWTH", kebutuhanMinggu: 3800, sisaKebutuhan: 15400 } },
+            { planNo: "21000237",  fcStatus: "Draft", status: "Active", company: "PT CTU",            location: "Pasuruan",   id: "FSR0003",  wh: "FSR0003",  docQty: 8940,  docType: "DOC Layer",   ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",  sapData: { mort: 276, lastPop: 8664,  bw: null,  fcr: null,  fiAct: null,  fiCum: null,  grpo: 31850, poItr: null,  lastStok: 1537, statusKalang: "GROWTH", kebutuhanMinggu: 4200, sisaKebutuhan: 16800 } },
+            { planNo: "21000238",  fcStatus: "Draft", status: "Active", company: "PT CTU",            location: "Pasuruan",   id: "FSR0004",  wh: "FSR0004",  docQty: 9460,  docType: "DOC Layer",   ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",  sapData: { mort: 291, lastPop: 9169,  bw: null,  fcr: null,  fiAct: null,  fiCum: null,  grpo: 32150, poItr: null,  lastStok: 836,  statusKalang: "GROWTH", kebutuhanMinggu: 3600, sisaKebutuhan: 14400 } },
+            { planNo: "21000239",  fcStatus: "Draft", status: "Active", company: "PT CTU",            location: "Pasuruan",   id: "FSR0005",  wh: "FSR0005",  docQty: 9520,  docType: "DOC Layer",   ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",  sapData: { mort: 211, lastPop: 9309,  bw: null,  fcr: null,  fiAct: null,  fiCum: null,  grpo: 22900, poItr: null,  lastStok: 1415, statusKalang: "GROWTH", kebutuhanMinggu: 4100, sisaKebutuhan: 16400 } },
+            { planNo: "PLAN-2026-008", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX A", id: "KDG-08", wh: "WH-KDG08", docQty: 22000, docType: "DOC Broiler Ross 308", age: 23 },
+            { planNo: "PLAN-2026-009", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX A", id: "KDG-09", wh: "WH-KDG09", docQty: 18000, docType: "DOC Broiler Cobb 500", age: 7  },
+            { planNo: "PLAN-2026-010", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX B", id: "KDG-10", wh: "WH-KDG10", docQty: 20000, docType: "DOC Broiler Ross 308", age: 11 },
+        ];
+
+        const HARVEST_DAY = 35;
+
+        const PLAN_DESCRIPTION_BY_NO = {
+            "100004423": "Pekalongan - Broiler Cycle 18",
+            "100004424": "Blora - Broiler Cycle 18",
+            "100004425": "Klaten - Broiler Cycle 18",
+            "100000271": "Ponorogo - Broiler Cycle 18",
+            "100000272": "Malang - Broiler Cycle 18",
+            "100000273": "Tuban - Broiler Cycle 18",
+            "21000235": "Pasuruan FSR0001 - Layer Growth",
+            "21000236": "Pasuruan FSR0002 - Layer Growth",
+            "21000237": "Pasuruan FSR0003 - Layer Growth",
+            "21000238": "Pasuruan FSR0004 - Layer Growth",
+            "21000239": "Pasuruan FSR0005 - Layer Growth",
+            "PLAN-2026-008": "Farm BMAX A / KDG-08 - Broiler Ross 308",
+            "PLAN-2026-009": "Farm BMAX A / KDG-09 - Broiler Cobb 500",
+            "PLAN-2026-010": "Farm BMAX B / KDG-10 - Broiler Ross 308",
+        };
+
+        function fmt(n, dec = 0) { return Number(n).toLocaleString("id-ID", { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
+
+        function getPlanDescription(plan) {
+            if (!plan) return "-";
+            const age = plan.ageCurrent ?? plan.age;
+            if (PLAN_DESCRIPTION_BY_NO[plan.planNo]) return PLAN_DESCRIPTION_BY_NO[plan.planNo];
+            if (plan.planDesc || plan.planDescription) return plan.planDesc || plan.planDescription;
+            if (plan.docType && age != null) return `${plan.docType} - Hari ${age}`;
+            if (plan.docType) return plan.docType;
+            const location = plan.location ?? plan.farm;
+            return [location, plan.id].filter(Boolean).join(" / ") || "-";
+        }
+
+        function calcFeedNeed(plan) {
+            const age = plan.ageCurrent ?? plan.age;
+            const phaseResults = PHASES.map((ph, idx) => {
+                const startDay = Math.max(ph.dayFrom, age + 1);
+                const endDay   = Math.min(ph.dayTo, HARVEST_DAY);
+                if (startDay > endDay) return { phaseIdx: idx, qty: 0, avgVitality: null, avgFeedCons: null, days: 0, skipped: true };
+                let totalQty = 0, sumV = 0, sumFc = 0, count = 0;
+                for (let d = startDay; d <= endDay; d++) {
+                    const row = STD[d - 1];
+                    totalQty += plan.docQty * (row.v / 100) * row.fd;
+                    sumV += row.v; sumFc += row.fd; count++;
+                }
+                return { phaseIdx: idx, qty: totalQty, avgVitality: sumV / count, avgFeedCons: sumFc / count, days: count, skipped: false };
+            });
+            return { phaseResults, totalQty: phaseResults.reduce((s, r) => s + r.qty, 0) };
+        }
+
+        function sapMock(plan, calc) {
+            const age = plan.ageCurrent ?? plan.age;
+            const sisaHari = HARVEST_DAY - age;
+
+            if (plan.sapData) {
+                const sd = plan.sapData;
+                const lastStok = sd.lastStok !== undefined ? sd.lastStok : Math.max(0, Math.round((sd.fiCum || 0) * 0.12));
+                const kebutuhanMinggu = sd.kebutuhanMinggu !== undefined ? sd.kebutuhanMinggu : Math.round(calc.totalQty / Math.max(sisaHari, 1) * 7);
+                const sisaKebutuhan = sd.sisaKebutuhan !== undefined ? sd.sisaKebutuhan : Math.round(calc.totalQty);
+                const stdRow = STD[Math.min(age - 1, STD.length - 1)];
+                const dailyConsumption = stdRow && sd.lastPop > 0 ? sd.lastPop * stdRow.fd : 0;
+                const hariHabis = lastStok > 0 && dailyConsumption > 0 ? Math.floor(lastStok / dailyConsumption) : 3;
+                const tglHabis = new Date(2026, 3, 20 + hariHabis);
+                const tglHabisStr = tglHabis.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+                const ageHabis = age + hariHabis;
+                const statusKalang = "Released";
+                const bwPanen = sd.bw != null ? (parseFloat(sd.bw) + (HARVEST_DAY - age) * 0.055).toFixed(2) + " kg" : "-";
+                return {
+                    mort: sd.mort, lastPop: sd.lastPop, bw: sd.bw, fcr: sd.fcr,
+                    fiAct: sd.fiAct, fiCum: sd.fiCum, grpo: sd.grpo, poItr: sd.poItr,
+                    lastStok, kebutuhanMinggu, sisaKebutuhan, hariHabis, tglHabisStr, ageHabis,
+                    lastPostStr: plan.lastPostingDate || "-", statusKalang, pakanHabis: tglHabisStr, bwPanen
+                };
+            }
+
+            const mort = Math.round(plan.docQty * 0.003 * age);
+            const lastPop = plan.docQty - mort;
+            const bw = (0.045 + age * 0.055).toFixed(3);
+            const fcr = (1.4 + age * 0.01).toFixed(3);
+            const fiAct = Math.round(plan.docQty * parseFloat(bw) * parseFloat(fcr) / Math.max(age, 1));
+            const fiCum = fiAct * age;
+            const grpo = Math.ceil(fiCum / 1000);
+            const poItr = grpo + 2;
+            const lastStok = Math.max(0, Math.round(fiCum * 0.12));
+            const kebutuhanMinggu = Math.round(Math.min(calc.totalQty, calc.totalQty / Math.max(sisaHari, 1) * 7));
+            const sisaKebutuhan = Math.round(calc.totalQty);
+            const hariHabis = lastStok > 0 && fiAct > 0 ? Math.floor(lastStok / (fiAct / Math.max(age, 1))) : 3;
+            const tglHabis = new Date(2026, 3, 20 + hariHabis);
+            const tglHabisStr = tglHabis.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+            const ageHabis = age + hariHabis;
+            const lastPostStr = new Date(2026, 3, 20).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+            const statusKalang = "Released";
+            const bwPanen = (parseFloat(bw) + (HARVEST_DAY - age) * 0.055).toFixed(2) + " kg";
+            return { mort, lastPop, bw, fcr, fiAct, fiCum, grpo, poItr, lastStok, kebutuhanMinggu, sisaKebutuhan, hariHabis, tglHabisStr, ageHabis, lastPostStr, statusKalang, pakanHabis: tglHabisStr, bwPanen };
+        }
+
+        // ─── RENDER ───────────────────────────────────────────────────────────
+        function renderView(plan) {
+            const calc  = calcFeedNeed(plan);
+            const sap   = sapMock(plan, calc);
+            const age   = plan.ageCurrent ?? plan.age;
+            const phase = PHASES.find(ph => age + 1 >= ph.dayFrom && age + 1 <= ph.dayTo) || PHASES[PHASES.length - 1];
+            const vit   = STD[age] ? STD[age].v.toFixed(1) : "-";
+            const sisaHari = HARVEST_DAY - age;
+
+            // Update topbar
+            const fcBadge = plan.fcStatus === "Draft"
+                ? `<span class="badge-status badge-draft">${plan.fcStatus}</span>`
+                : plan.fcStatus === "Forecast Created"
+                ? `<span class="badge-status badge-fc">${plan.fcStatus}</span>`
+                : `<span class="badge-status badge-po">${plan.fcStatus}</span>`;
+            document.getElementById("pageTitle").innerHTML = `${plan.planNo} &nbsp;${fcBadge}`;
+            document.getElementById("pageSubtext").textContent = `${getPlanDescription(plan)} · ${plan.company} · ${plan.location ?? plan.farm} · ${plan.id}`;
+
+            // ── Section 1: Info Plan ──────────────────────────────────────────
+            const infoCard = `
+            <div class="v-card">
+                <div class="v-card-header">
+                    <div class="vc-icon" style="background:#ede9fe;color:#7c3aed;"><i class="bi bi-clipboard-data"></i></div>
+                    Info Plan
+                </div>
+                <div class="v-card-body">
+                    <div class="info-grid">
+                        <div class="info-item"><div class="ik">Plan No</div><div class="iv">${plan.planNo}</div></div>
+                        <div class="info-item"><div class="ik">Plan Description</div><div class="iv">${getPlanDescription(plan)}</div></div>
+                        <div class="info-item"><div class="ik">Status FC</div><div class="iv">${plan.fcStatus}</div></div>
+                        <div class="info-item"><div class="ik">Status Plan</div><div class="iv">${plan.status}</div></div>
+                        <div class="info-item"><div class="ik">Company</div><div class="iv">${plan.company}</div></div>
+                        <div class="info-item"><div class="ik">Location</div><div class="iv">${plan.location ?? plan.farm}</div></div>
+                        <div class="info-item"><div class="ik">Warehouse</div><div class="iv">${plan.wh}</div></div>
+                        <div class="info-item"><div class="ik">Kandang</div><div class="iv">${plan.id}</div></div>
+                        <div class="info-item"><div class="ik">DOC Type</div><div class="iv">${plan.docType || "-"}</div></div>
+                        <div class="info-item"><div class="ik">DOC Awal</div><div class="iv num">${fmt(plan.docQty)} ekor</div></div>
+                        <div class="info-item"><div class="ik">Umur Saat Ini</div><div class="iv num" style="color:#92400e;">Hari ${age}</div></div>
+                        <div class="info-item"><div class="ik">Sisa Hari ke Panen</div><div class="iv num" style="color:#dc2626;">${sisaHari} hari</div></div>
+                        <div class="info-item"><div class="ik">Fase Pakan</div><div class="iv">${phase.name}</div></div>
+                    </div>
+                </div>
+            </div>`;
+
+            // ── Section 2: Kalkulator Kebutuhan Pakan (input SAP + hasil kalkulasi) ──
+            let phaseRows = "";
+            let grandTotal = 0;
+            calc.phaseResults.forEach((pc, idx) => {
+                grandTotal += pc.qty;
+                if (pc.skipped) {
+                    phaseRows += `<tr class="skipped">
+                        <td>${PHASES[idx].name}</td>
+                        <td>Hari ${PHASES[idx].dayFrom}–${PHASES[idx].dayTo}</td>
+                        <td class="r">—</td><td class="r">—</td><td class="r">—</td>
+                        <td class="r" style="font-size:11px;">Sudah lewat</td>
+                    </tr>`;
+                } else {
+                    phaseRows += `<tr>
+                        <td><strong>${PHASES[idx].name}</strong></td>
+                        <td>Hari ${PHASES[idx].dayFrom}–${PHASES[idx].dayTo}</td>
+                        <td class="r" style="color:#166534;">${pc.avgVitality.toFixed(2)}%</td>
+                        <td class="r" style="color:#1d4ed8;">${pc.avgFeedCons.toFixed(4)}</td>
+                        <td class="r"><span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;">${pc.days} hari</span></td>
+                        <td class="r" style="font-weight:700;font-size:14px;">${fmt(pc.qty, 2)} kg</td>
+                    </tr>`;
+                }
+            });
+
+            const calcCard = `
+            <div class="v-card">
+                <div class="v-card-header">
+                    <div class="vc-icon" style="background:#f0fdf4;color:#166534;"><i class="bi bi-calculator"></i></div>
+                    Kalkulator Kebutuhan Pakan
+                    <span class="ms-auto" style="font-size:11px;font-weight:400;color:#6b7280;">Data SAP: ${sap.lastPostStr}</span>
+                </div>
+                <div class="v-card-body">
+
+                    <!-- Parameter Input dari SAP — tabel mirip ForecastList -->
+                    <div style="font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">
+                        <i class="bi bi-database-check me-1" style="color:#1d4ed8;"></i>Parameter Input (Last Posting SAP)
+                    </div>
+                    <div style="overflow-x:auto;margin-bottom:0;">
+                        <table class="matrix-table" style="width:auto;min-width:100%;font-size:12px;">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Populasi</th>
+                                    <th rowspan="2">Last Posting Date</th>
+                                    <th colspan="11">Last Posting</th>
+                                    <th rowspan="2" class="th-yellow">Status Kalang</th>
+                                    <th rowspan="2" class="th-yellow">Pakan Habis</th>
+                                    <th rowspan="2" class="th-yellow">BW/PANEN</th>
+                                    <th rowspan="2">Kebutuhan Minggu Depan</th>
+                                    <th rowspan="2">Sisa Kebutuhan</th>
+                                    <th colspan="2">Estimate Habis Kapan</th>
+                                </tr>
+                                <tr>
+                                    <th>Age</th><th>Mort</th><th>Last Populasi</th><th>BW</th><th>FCR</th>
+                                    <th>FI Act</th><th>FI Cum Pakan Terima</th><th>GRPO/IT</th><th>PO/ITR</th>
+                                    <th>Last Stok</th><th>Age</th>
+                                    <th>Date</th><th>Age</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:700;">${fmt(plan.docQty)}</td>
+                                    <td>${sap.lastPostStr}</td>
+                                    <td>${plan.ageLastPosting ?? plan.age}</td>
+                                    <td>${fmt(sap.mort)}</td>
+                                    <td>${fmt(sap.lastPop)}</td>
+                                    <td>${sap.bw != null ? fmt(sap.bw, 3) + ' kg' : '-'}</td>
+                                    <td>${sap.fcr != null ? fmt(sap.fcr, 3) : '-'}</td>
+                                    <td>${sap.fiAct != null ? fmt(sap.fiAct, 3) + ' kg' : '-'}</td>
+                                    <td>${sap.fiCum != null ? fmt(sap.fiCum, 3) + ' kg' : '-'}</td>
+                                    <td>${sap.grpo != null ? fmt(sap.grpo) : '-'}</td>
+                                    <td>${sap.poItr != null ? fmt(sap.poItr) : '-'}</td>
+                                    <td>${fmt(sap.lastStok)} kg</td>
+                                    <td>${plan.ageCurrent ?? plan.age}</td>
+                                    <td class="td-yellow">${sap.statusKalang}</td>
+                                    <td class="td-yellow">${sap.pakanHabis}</td>
+                                    <td class="td-yellow">${sap.bwPanen}</td>
+                                    <td style="font-weight:700;color:#1a237e;">${fmt(sap.kebutuhanMinggu)} kg</td>
+                                    <td style="font-weight:700;color:#92400e;">${fmt(sap.sisaKebutuhan)} kg</td>
+                                    <td>${sap.tglHabisStr}</td>
+                                    <td>Hari ${sap.ageHabis}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>`;
+
+            // ── Section 4: Rekomendasi Item ───────────────────────────────────
+            let rekRows = [];
+            try {
+                const saved = localStorage.getItem("IBOCS_rekom_" + plan.planNo);
+                if (saved) rekRows = JSON.parse(saved);
+            } catch(e) {}
+
+            let rekContent = "";
+            if (rekRows.length === 0) {
+                rekContent = `<div class="empty-state">
+                    <i class="bi bi-stars" style="font-size:28px;display:block;margin-bottom:8px;color:#d1d5db;"></i>
+                    Belum ada rekomendasi item untuk plan ini.<br>
+                    <a href="customer_ForecastAdd.html" style="font-size:12px;color:#2563eb;font-weight:700;">Buka Add Forecast</a> untuk mengisi.
+                </div>`;
+            } else {
+                const totalQty = rekRows.reduce((s, r) => s + (parseFloat(r.qty) || 0), 0);
+                rekContent = `
+                <div class="rekom-list mb-3">
+                    ${rekRows.map((r, i) => `
+                    <div class="rekom-card">
+                        <div class="rc-no">Item ${i + 1}</div>
+                        <div class="rc-name">${r.itemName || "-"}</div>
+                        <div class="rc-code">${r.itemCode || "-"} · ${r.uom || "Kg"}</div>
+                        <div class="rc-qty">${fmt(parseFloat(r.qty) || 0)}</div>
+                        <div class="rc-uom">${r.uom || "Kg"}</div>
+                    </div>`).join("")}
+                </div>
+                <div style="background:#fef9c3;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:12px;font-weight:700;color:#92400e;">Total ${rekRows.length} item</span>
+                    <span style="font-size:18px;font-weight:700;color:#92400e;">${fmt(totalQty, 0)} kg</span>
+                </div>`;
+            }
+
+            const rekCard = `
+            <div class="v-card">
+                <div class="v-card-header">
+                    <div class="vc-icon" style="background:#fef3c7;color:#d97706;"><i class="bi bi-stars"></i></div>
+                    Rekomendasi Item Pakan
+                </div>
+                <div class="v-card-body">${rekContent}</div>
+            </div>`;
+
+            document.getElementById("mainContent").innerHTML = infoCard + calcCard + rekCard;
+        }
+
+        // ─── FC MODE (dari ForecastHistory) ──────────────────────────────────
+        function getFcList() {
+            const DEMO_FC = [
+                { fcNo:"FC-001", fcDate:"2026-04-29", company:"PT TOP Distribusi", farm:"Farm Deli",   warehouse:"WH-KDG01", planNo:"PL-001", status:"Draft",           lines:[] },
+                { fcNo:"FC-002", fcDate:"2026-04-29", company:"PT TOP Distribusi", farm:"Farm Deli",   warehouse:"WH-KDG02", planNo:"PL-002", status:"Forecast Created", lines:[] },
+                { fcNo:"FC-003", fcDate:"2026-04-28", company:"PT AYM",            farm:"Farm Binjai", warehouse:"WH-KDG03", planNo:"PL-008", status:"PO Created",       lines:[] },
+            ];
+            const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const storedNos = new Set(stored.map(f => f.fcNo));
+            return [...stored, ...DEMO_FC.filter(d => !storedNos.has(d.fcNo))];
+        }
+
+        function renderFcView(fc) {
+            const statusColor = { Draft:"#374151", "Forecast Created":"#1d4ed8", Confirmed:"#166534", "PO Created":"#92400e", Closed:"#6b7280" };
+            const statusBg    = { Draft:"#f3f4f6", "Forecast Created":"#dbeafe", Confirmed:"#dcfce7", "PO Created":"#fef3c7", Closed:"#f3f4f6" };
+
+            document.getElementById("pageTitle").innerHTML = `${fc.fcNo} <span style="background:${statusBg[fc.status]||'#f3f4f6'};color:${statusColor[fc.status]||'#374151'};padding:3px 10px;border-radius:12px;font-size:13px;font-weight:700;margin-left:8px;">${fc.status}</span>`;
+            document.getElementById("pageSubtext").textContent = `${fc.planDesc || fc.planName || fc.planNo || "-"} · ${fc.company} · ${fc.farm} · ${fc.warehouse} · ${fc.fcDate}`;
+
+            const lines = fc.lines || [];
+            const totalQty = lines.reduce((s, l) => s + (parseFloat(l.recommendedQty || l.standardNeed || 0)), 0);
+
+            const linesRows = lines.length ? lines.map(l => {
+                const qty = parseFloat(l.recommendedQty || l.standardNeed || 0);
+                return `<tr>
+                    <td style="font-weight:700;color:#6366f1;">${l.itemCode || "-"}</td>
+                    <td>${l.itemName || "-"}</td>
+                    <td>${l.rit || "RIT 1"}</td>
+                    <td style="text-align:right;font-weight:700;color:#1a237e;">${fmt(qty)} kg</td>
+                </tr>`;
+            }).join("") : `<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:20px;">Tidak ada item</td></tr>`;
+
+            let actionBtn = "";
+            if (fc.status === "Draft" || fc.status === "Forecast Created") {
+                actionBtn = `<button onclick="doConfirmFc('${fc.fcNo}')" style="padding:10px 20px;background:#16a34a;color:#fff;border:0;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;"><i class="bi bi-check-circle me-1"></i>Confirm Forecast</button>`;
+            } else if (fc.status === "Confirmed") {
+                actionBtn = `<button onclick="doGeneratePO('${fc.fcNo}')" style="padding:10px 20px;background:#2563eb;color:#fff;border:0;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;"><i class="bi bi-bag-plus me-1"></i>Generate PO</button>`;
+            } else if (fc.status === "PO Created") {
+                actionBtn = `<a href="customer_orders.html" style="padding:10px 20px;background:#f0f6ff;color:#1d4ed8;border:1.5px solid #bfdbfe;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;"><i class="bi bi-box-arrow-up-right me-1"></i>Lihat PO</a>`;
+            }
+
+            // Bangun pseudo-plan dari data forecast untuk kalkulator
+            const fcPlan = {
+                planNo: fc.planNo || "-",
+                docQty: fc.totalPop || fc.initialStock || fc.currentPop || 0,
+                age: typeof fc.rawAge === "number" ? fc.rawAge : parseInt(fc.age) || 0,
+                company: fc.company, farm: fc.farm, id: fc.kdgId || fc.warehouse,
+                wh: fc.warehouse, docType: fc.docType || null, status: fc.status, planDesc: fc.planDesc || fc.planName
+            };
+            const fcCalc = calcFeedNeed(fcPlan);
+            const fcSap  = sapMock(fcPlan, fcCalc);
+
+            document.getElementById("mainContent").innerHTML = `
+            <div class="v-card">
+                <div class="v-card-header">
+                    <div class="vc-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="bi bi-file-earmark-text"></i></div>
+                    Detail Forecast
+                </div>
+                <div class="v-card-body">
+                    <div class="info-grid mb-4">
+                        <div class="info-item"><div class="ik">Forecast No</div><div class="iv">${fc.fcNo}</div></div>
+                        <div class="info-item"><div class="ik">Tanggal</div><div class="iv">${fc.fcDate}</div></div>
+                        <div class="info-item"><div class="ik">Status</div><div class="iv">${fc.status}</div></div>
+                        <div class="info-item"><div class="ik">Plan No</div><div class="iv">${fc.planNo || "-"}</div></div>
+                        <div class="info-item"><div class="ik">Plan Description</div><div class="iv">${getPlanDescription(fcPlan)}</div></div>
+                        <div class="info-item"><div class="ik">Company</div><div class="iv">${fc.company}</div></div>
+                        <div class="info-item"><div class="ik">Warehouse</div><div class="iv">${fc.warehouse}</div></div>
+                    </div>
+
+                    <!-- Kalkulator / Matrix -->
+                    <div style="font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">
+                        <i class="bi bi-calculator me-1" style="color:#1d4ed8;"></i>Kalkulator (Data SAP: ${fcSap.lastPostStr})
+                    </div>
+                    <div style="overflow-x:auto;margin-bottom:20px;">
+                        <table class="matrix-table" style="width:auto;min-width:100%;font-size:12px;">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Populasi</th>
+                                    <th rowspan="2">Last Posting Date</th>
+                                    <th colspan="11">Last Posting</th>
+                                    <th rowspan="2" class="th-yellow">Status Kalang</th>
+                                    <th rowspan="2" class="th-yellow">Pakan Habis</th>
+                                    <th rowspan="2" class="th-yellow">BW/PANEN</th>
+                                    <th rowspan="2">Kebutuhan Minggu Depan</th>
+                                    <th rowspan="2">Sisa Kebutuhan</th>
+                                    <th colspan="2">Estimate Habis Kapan</th>
+                                </tr>
+                                <tr>
+                                    <th>Age</th><th>Mort</th><th>Last Populasi</th><th>BW</th><th>FCR</th>
+                                    <th>FI Act</th><th>FI Cum Pakan Terima</th><th>GRPO/IT</th><th>PO/ITR</th>
+                                    <th>Last Stok</th><th>Age</th>
+                                    <th>Date</th><th>Age</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:700;">${fmt(fcPlan.docQty)}</td>
+                                    <td>${fcSap.lastPostStr}</td>
+                                    <td>${fcPlan.age}</td>
+                                    <td>${fcSap.mort}</td>
+                                    <td>${fmt(fcSap.lastPop)}</td>
+                                    <td>${fcSap.bw} kg</td>
+                                    <td>${fcSap.fcr}</td>
+                                    <td>${fmt(fcSap.fiAct)} kg</td>
+                                    <td>${fmt(fcSap.fiCum)} kg</td>
+                                    <td>${fcSap.grpo}</td>
+                                    <td>${fcSap.poItr}</td>
+                                    <td>${fmt(fcSap.lastStok)} kg</td>
+                                    <td>${fcPlan.age}</td>
+                                    <td class="td-yellow">${fcSap.statusKalang}</td>
+                                    <td class="td-yellow">${fcSap.pakanHabis}</td>
+                                    <td class="td-yellow">${fcSap.bwPanen}</td>
+                                    <td style="font-weight:700;color:#1a237e;">${fmt(fcSap.kebutuhanMinggu)} kg</td>
+                                    <td style="font-weight:700;color:#92400e;">${fmt(fcSap.sisaKebutuhan)} kg</td>
+                                    <td>${fcSap.tglHabisStr}</td>
+                                    <td>Hari ${fcSap.ageHabis}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="font-size:11px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px;">
+                        <i class="bi bi-box-seam me-1" style="color:#2563eb;"></i>Item Forecast
+                    </div>
+                    <div style="overflow-x:auto;margin-bottom:16px;">
+                        <table class="phase-table">
+                            <thead><tr><th>Item Code</th><th>Item Name</th><th>RIT</th><th class="r">Qty (kg)</th></tr></thead>
+                            <tbody>${linesRows}</tbody>
+                            <tfoot><tr class="row-total"><td colspan="3">Total</td><td class="r" style="font-size:15px;">${fmt(totalQty)} kg</td></tr></tfoot>
+                        </table>
+                    </div>
+                    <div style="display:flex;justify-content:flex-end;gap:10px;">
+                        <a href="customer_ForecastList.html" class="btn-secondary-action"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+                        ${actionBtn}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function doConfirmFc(fcNo) {
+            if (!confirm(`Konfirmasi forecast ${fcNo}?`)) return;
+            updateFcStatus(fcNo, "Confirmed");
+        }
+
+        function doGeneratePO(fcNo) {
+            if (!confirm(`Generate PO dari forecast ${fcNo}?`)) return;
+
+            const fc = getFcList().find(f => f.fcNo === fcNo);
+            if (!fc || !fc.lines || fc.lines.length === 0) {
+                alert("Forecast tidak memiliki item. Tidak bisa generate PO.");
+                return;
+            }
+
+            const LS_ORDERS      = "IBOCS_customer_orders";
+            const LS_ORDER_LINES = "IBOCS_customer_order_lines";
+
+            const orders     = JSON.parse(localStorage.getItem(LS_ORDERS)      || "[]");
+            const orderLines = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+
+            const today = new Date();
+            const yyyy  = today.getFullYear();
+            const mm    = String(today.getMonth() + 1).padStart(2, "0");
+            const dd    = String(today.getDate()).padStart(2, "0");
+            const dateStr = `${yyyy}-${mm}-${dd}`;
+            const poNo = "PO-FC-" + fcNo.replace(/[^0-9]/g, "");
+
+            const newOrder = {
+                no:           poNo,
+                customerName: fc.company || "-",
+                customer:     fc.company || "-",
+                date:         dateStr,
+                requiredDate: dateStr,
+                status:       "Open",
+                warehouse:    fc.warehouse || "-",
+                planNo:       fc.planNo    || "-",
+                fcRef:        fcNo,
+                week:         fc.period    || "-",
+                sourceType:   "Feed",
+                total:        0
+            };
+
+            const poLines = fc.lines.map(l => ({
+                sku:   l.itemCode || "-",
+                name:  l.itemName || "-",
+                qty:   parseFloat(l.recommendedQty || l.standardNeed || 0),
+                price: 0,
+                uom:   l.uom || "Kg"
+            }));
+
+            orders.unshift(newOrder);
+            orderLines[poNo] = poLines;
+
+            localStorage.setItem(LS_ORDERS,      JSON.stringify(orders));
+            localStorage.setItem(LS_ORDER_LINES, JSON.stringify(orderLines));
+
+            updateFcStatus(fcNo, "PO Created");
+        }
+
+        function updateFcStatus(fcNo, newStatus) {
+            const list = getFcList().map(f => f.fcNo === fcNo ? { ...f, status: newStatus } : f);
+            localStorage.setItem("IBOCS_fc_list", JSON.stringify(list.filter(f => !["FC-001","FC-002","FC-003"].includes(f.fcNo))));
+            window.location.reload();
+        }
+
+        // ─── INIT ─────────────────────────────────────────────────────────────
+        document.addEventListener("DOMContentLoaded", () => {
+            new SidebarSystem(null, 'forecast').render();
+
+            const params = new URLSearchParams(window.location.search);
+            const planNo = params.get("planNo");
+            const fcNo   = params.get("fcNo");
+
+            if (fcNo) {
+                const fc = getFcList().find(f => f.fcNo === fcNo);
+                if (!fc) {
+                    document.getElementById("mainContent").innerHTML = `<div class="empty-state"><i class="bi bi-exclamation-circle" style="font-size:28px;display:block;margin-bottom:8px;color:#f87171;"></i>Forecast <strong>${fcNo}</strong> tidak ditemukan.</div>`;
+                    return;
+                }
+                renderFcView(fc);
+                return;
+            }
+
+            if (!planNo) {
+                document.getElementById("mainContent").innerHTML = `<div class="empty-state"><i class="bi bi-exclamation-circle" style="font-size:28px;display:block;margin-bottom:8px;color:#f87171;"></i>Parameter tidak ditemukan.</div>`;
+                return;
+            }
+
+            const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+            if (!plan) {
+                document.getElementById("mainContent").innerHTML = `<div class="empty-state"><i class="bi bi-exclamation-circle" style="font-size:28px;display:block;margin-bottom:8px;color:#f87171;"></i>Plan <strong>${planNo}</strong> tidak ditemukan.</div>`;
+                return;
+            }
+
+            renderView(plan);
+        });
+    </script>
+</body>
+</html>

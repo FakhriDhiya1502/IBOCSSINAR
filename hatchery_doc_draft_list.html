@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | DO Draft DOC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f7fb; color: #222; }
+        .card { background: #fff; border-radius: 14px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+        .card-header { padding: 13px 16px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; }
+        .card-body { padding: 16px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+        .summary-box { border: 1px solid #e8ebf1; border-radius: 10px; padding: 14px 16px; background: #fafbfe; }
+        .summary-box .lbl { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+        .summary-box .val { font-size: 24px; font-weight: 700; }
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
+        .filter-row .f { flex: 1 1 150px; }
+        .filter-row label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; }
+        .filter-row select, .filter-row input { width: 100%; height: 36px; border: 1px solid #d5dae3; border-radius: 8px; padding: 0 10px; font-size: 13px; background: #fff; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 860px; }
+        th, td { padding: 10px 12px; border-bottom: 1px solid #edf0f5; font-size: 13px; text-align: left; vertical-align: middle; }
+        th { background: #f9fafc; font-size: 12px; color: #555; font-weight: 700; white-space: nowrap; }
+        tbody tr:hover { background: #fafcff; cursor: pointer; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .tag-draft    { background: #fef9c3; color: #92400e; }
+        .tag-open     { background: #e0e7ff; color: #3730a3; }
+        .tag-generated{ background: #dcfce7; color: #166534; }
+        .tag-dogrpo   { background: #ccfbf1; color: #0f766e; }
+        .tag-pogen    { background: #ede9fe; color: #5b21b6; }
+        .tag-internal { background: #dbeafe; color: #1d4ed8; }
+        .tag-external { background: #f3e8ff; color: #7c3aed; }
+        .btn-xs { padding: 5px 10px; border-radius: 7px; border: 0; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; }
+        .btn-view { background: #dbeafe; color: #1d4ed8; }
+        .btn-edit { background: #fef3c7; color: #92400e; }
+        .btn-del  { background: #fee2e2; color: #991b1b; }
+        .btn-primary-sm { padding: 8px 16px; border-radius: 8px; border: 0; font-size: 13px; font-weight: 700; background: #1a237e; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+        .qty-warn { color: #d97706; font-size: 11px; font-weight: 700; }
+        @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2,1fr); } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Hatchery Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0">DO Draft DOC</h5>
+                        <div class="text-muted" style="font-size:13px;">Daftar semua DO Draft Day-Old Chick</div>
+                    </div>
+                    <a href="hatchery_doc_draft_add.html" class="btn-primary-sm" id="btnNew">
+                        <i class="bi bi-plus-lg me-1"></i> Buat DO Draft
+                    </a>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-grid" id="summaryGrid"></div>
+
+                <!-- Filter & Table -->
+                <div class="card">
+                    <div class="card-header">Daftar DO Draft</div>
+                    <div class="card-body">
+                        <div class="filter-row">
+                            <div class="f">
+                                <label>DOC Type</label>
+                                <select id="fType">
+                                    <option value="">Semua</option>
+                                    <option value="internal">Hatchery</option>
+                                    <option value="external">Trading</option>
+                                </select>
+                            </div>
+                            <div class="f">
+                                <label>Customer</label>
+                                <select id="fCustomer">
+                                    <option value="">Semua</option>
+                                </select>
+                            </div>
+                            <div class="f">
+                                <label>Status DO</label>
+                                <select id="fStatus">
+                                    <option value="">Semua</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Open">Open</option>
+                                    <option value="DO Generated">DO Generated</option>
+                                    <option value="DO & GRPO Generated">DO &amp; GRPO Generated</option>
+                                </select>
+                            </div>
+                            <div class="f">
+                                <label>Status PO</label>
+                                <select id="fStatusPO">
+                                    <option value="">Semua</option>
+                                    <option value="PO Generated">PO Generated</option>
+                                    <option value="none">Belum PO</option>
+                                </select>
+                            </div>
+                            <div class="f">
+                                <label>Dari Tanggal</label>
+                                <input type="date" id="fDateFrom">
+                            </div>
+                            <div class="f">
+                                <label>Sampai</label>
+                                <input type="date" id="fDateTo">
+                            </div>
+                            <div>
+                                <label>&nbsp;</label>
+                                <div style="display:flex;gap:8px;">
+                                    <button class="btn-xs btn-view" onclick="applyFilter()" style="height:36px;padding:0 14px;">Filter</button>
+                                    <button class="btn-xs" style="background:#f3f4f6;color:#374151;height:36px;padding:0 14px;" onclick="resetFilter()">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>No. DO Draft</th>
+                                        <th>Tanggal</th>
+                                        <th>DOC Type</th>
+                                        <th>Plan Tujuan</th>
+                                        <th>Customer</th>
+                                        <th style="text-align:center">Lines</th>
+                                        <th>Status DO</th>
+                                        <th>Status PO</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                        </div>
+                        <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
+                            <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
+                            Tidak ada DO Draft ditemukan
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="doc_draft_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sidebar = new SidebarSystem(null, "doc_draft_list");
+        sidebar.render();
+
+        // User info
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        document.getElementById("userInfo").textContent = userData.name || userData.role || "-";
+        document.getElementById("userBtn").textContent = userData.name || "User";
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            location.href = "login.html";
+        });
+
+        // Hanya admin_hatchery yg bisa buat DO Draft baru
+        if (userData.role !== "admin_hatchery" && userData.role !== "super_admin") {
+            document.getElementById("btnNew").style.display = "none";
+        }
+
+        let allDrafts = [];
+
+        function hasMismatch(draft) {
+            return draft.lines.some(line => {
+                const totalAfter = line.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
+                return totalAfter !== (line.qtyBefore || 0);
+            });
+        }
+
+        function renderSummary(drafts) {
+            const total  = drafts.length;
+            const cDraft = drafts.filter(d => d.status === "Draft").length;
+            const cOpen  = drafts.filter(d => d.status === "Open").length;
+            const doGen  = drafts.filter(d => d.status === "DO Generated").length;
+            const doGrpo = drafts.filter(d => d.status === "DO & GRPO Generated").length;
+            const poGen  = drafts.filter(d => d.statusPO === "PO Generated").length;
+
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-box">
+                    <div class="lbl">Total DO Draft</div>
+                    <div class="val">${total}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="lbl">Draft</div>
+                    <div class="val" style="color:#92400e">${cDraft}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="lbl">Open</div>
+                    <div class="val" style="color:#3730a3">${cOpen}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="lbl">DO Generated</div>
+                    <div class="val" style="color:#166534">${doGen}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="lbl">DO &amp; GRPO Generated</div>
+                    <div class="val" style="color:#0f766e">${doGrpo}</div>
+                </div>
+                <div class="summary-box">
+                    <div class="lbl">PO Generated</div>
+                    <div class="val" style="color:#5b21b6">${poGen}</div>
+                </div>`;
+        }
+
+        function renderTable(drafts) {
+            const tbody = document.getElementById("tableBody");
+            const empty = document.getElementById("emptyState");
+            if (!drafts.length) {
+                tbody.innerHTML = "";
+                empty.style.display = "block";
+                return;
+            }
+            empty.style.display = "none";
+
+            const role = userData.role;
+            tbody.innerHTML = drafts.map(d => {
+                const typeTag = d.docType === "internal"
+                    ? `<span class="tag tag-internal">Hatchery</span>`
+                    : `<span class="tag tag-external">Trading</span>`;
+                const statusTag = d.status === "Draft"
+                    ? `<span class="tag tag-draft">Draft</span>`
+                    : d.status === "Open"
+                        ? `<span class="tag tag-open">Open</span>`
+                        : d.status === "DO & GRPO Generated"
+                            ? `<span class="tag tag-dogrpo">DO &amp; GRPO Generated</span>`
+                            : `<span class="tag tag-generated">DO Generated</span>`;
+
+                const statusPOTag = d.statusPO === "PO Generated"
+                    ? `<span class="tag tag-pogen">PO Generated</span>`
+                    : `<span style="color:#9ca3af;font-size:11px;">—</span>`;
+
+                const planLabel = d.planCode
+                    ? `${d.planCode}<span style="font-size:11px;color:#6b7280"> — ${d.planName || ""}</span>`
+                    : `<span style="color:#9ca3af;font-size:11px;">—</span>`;
+
+                const canEdit = d.status === "Draft" &&
+                    (role === "admin_hatchery" || role === "super_admin");
+
+                const actions = `
+                    <a href="hatchery_doc_draft_view.html?id=${d.id}" class="btn-xs btn-view">View</a>
+                    ${canEdit ? `<a href="hatchery_doc_draft_add.html?id=${d.id}" class="btn-xs btn-edit">Edit</a>` : ""}`;
+
+                return `<tr onclick="location.href='hatchery_doc_draft_view.html?id=${d.id}'">
+                    <td><strong>${d.id}</strong></td>
+                    <td>${d.date}</td>
+                    <td>${typeTag}</td>
+                    <td>${planLabel}</td>
+                    <td>${d.customerName}</td>
+                    <td style="text-align:center">${d.lines.length}</td>
+                    <td>${statusTag}</td>
+                    <td>${statusPOTag}</td>
+                    <td onclick="event.stopPropagation()">
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;">${actions}</div>
+                    </td>
+                </tr>`;
+            }).join("");
+        }
+
+        function applyFilter() {
+            const type     = document.getElementById("fType").value;
+            const cust     = document.getElementById("fCustomer").value;
+            const status   = document.getElementById("fStatus").value;
+            const statusPO = document.getElementById("fStatusPO").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo   = document.getElementById("fDateTo").value;
+
+            let filtered = allDrafts.filter(d => {
+                if (type     && d.docType !== type)                            return false;
+                if (cust     && d.customer !== cust)                           return false;
+                if (status   && d.status !== status)                           return false;
+                if (statusPO === "PO Generated" && d.statusPO !== "PO Generated") return false;
+                if (statusPO === "none"         && d.statusPO === "PO Generated") return false;
+                if (dateFrom && d.date < dateFrom)                             return false;
+                if (dateTo   && d.date > dateTo)                               return false;
+                return true;
+            });
+            renderTable(filtered);
+        }
+
+        function resetFilter() {
+            ["fType","fCustomer","fStatus","fStatusPO","fDateFrom","fDateTo"].forEach(id => {
+                const el = document.getElementById(id);
+                el.value = "";
+            });
+            renderTable(allDrafts);
+        }
+
+        function init() {
+            allDrafts = docDraftLoadAll();
+
+            // Populate customer filter
+            const custSel = document.getElementById("fCustomer");
+            const custMap = {};
+            allDrafts.forEach(d => { custMap[d.customer] = d.customerName; });
+            Object.entries(custMap).forEach(([code, name]) => {
+                custSel.innerHTML += `<option value="${code}">${name}</option>`;
+            });
+
+            renderSummary(allDrafts);
+            renderTable(allDrafts);
+        }
+
+        init();
+    </script>
+</body>
+</html>

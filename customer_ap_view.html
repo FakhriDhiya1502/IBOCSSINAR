@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AP Invoice — View</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1f2937; font-size: 13px; }
+        :root { --primary: #1a237e; --line: #d0d7e3; --soft: #f5f7fb; --muted: #6b7280; }
+
+        .topnav { background: var(--primary); padding: 10px 24px; display:flex; align-items:center; gap:16px; }
+        .topnav .brand { color:#fff; font-weight:800; font-size:17px; text-decoration:none; }
+        .topnav .portal-label { color:rgba(255,255,255,.5); font-size:12px; }
+        .topnav .nav-user { color:rgba(255,255,255,.7); font-size:12px; margin-left:auto; }
+
+        .page-wrap { padding: 20px 24px; }
+        .page-title { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+        .page-title h4 { margin:0; font-size:17px; font-weight:700; color:var(--primary); }
+
+        .inv-card { background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.06); overflow:hidden; }
+        .inv-titlebar { background:#e8ecf8; border-bottom:2px solid var(--primary); padding:9px 18px; font-weight:700; font-size:14px; color:var(--primary); display:flex; align-items:center; justify-content:space-between; }
+
+        .inv-header { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--line); }
+        .inv-header-left { padding:16px 20px; border-right:1px solid var(--line); }
+        .inv-header-right { padding:16px 20px; }
+
+        .field-row { display:grid; grid-template-columns:140px 1fr; align-items:center; margin-bottom:8px; }
+        .field-row:last-child { margin-bottom:0; }
+        .field-row label { font-size:11.5px; font-weight:600; color:var(--muted); }
+        .field-row .val { font-size:13px; font-weight:600; color:#1f2937; }
+        .field-row .val.mono { font-family:ui-monospace,SFMono-Regular,monospace; color:var(--primary); }
+
+        .inv-tabs { border-bottom:1px solid var(--line); background:#f8fafc; display:flex; }
+        .inv-tab { padding:9px 20px; border:none; background:transparent; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+        .inv-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:#fff; }
+
+        .inv-table-wrap { overflow-x:auto; }
+        table.inv-table { width:100%; border-collapse:collapse; min-width:800px; }
+        table.inv-table th { background:#f0f3fa; font-size:11px; font-weight:700; color:var(--muted); padding:8px 12px; border-bottom:1.5px solid var(--line); text-align:left; white-space:nowrap; }
+        table.inv-table td { padding:8px 12px; border-bottom:1px solid #edf0f7; vertical-align:middle; white-space:nowrap; }
+        table.inv-table .group-row td { background:#eef2ff; font-weight:700; color:var(--primary); border-top:2px solid #c7d2fe; padding:8px 16px; font-size:12px; }
+
+        .inv-footer { display:grid; grid-template-columns:1fr 320px; border-top:1px solid var(--line); }
+        .inv-footer-left { padding:14px 20px; }
+        .inv-footer-right { border-left:1px solid var(--line); padding:12px 20px; }
+
+        .total-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #edf0f7; font-size:13px; }
+        .total-row:last-child { border-bottom:none; padding-top:8px; font-size:14px; font-weight:700; }
+        .total-row label { color:var(--muted); font-size:12px; }
+        .total-row .val { font-weight:600; color:#1f2937; min-width:140px; text-align:right; }
+        .total-row.grand .val { color:var(--primary); font-size:14px; }
+
+        .action-bar { background:#f8fafc; border-top:1.5px solid var(--line); padding:12px 20px; display:flex; justify-content:flex-end; align-items:center; gap:10px; }
+        .btn-back { padding:8px 18px; background:#e5e7eb; color:#374151; border:none; border-radius:7px; font-weight:700; font-size:13px; cursor:pointer; }
+        .btn-back:hover { background:#d1d5db; }
+        .btn-print { padding:8px 18px; background:#fff; color:var(--primary); border:1.5px solid var(--primary); border-radius:7px; font-weight:700; font-size:13px; cursor:pointer; }
+        .btn-print:hover { background:#eef2ff; }
+
+        .status-badge { padding:3px 12px; border-radius:20px; font-size:12px; font-weight:700; }
+        .s-open   { background:#eff6ff; color:#1d4ed8; }
+        .s-draft  { background:#fefce8; color:#854d0e; }
+        .s-posted { background:#f0fdf4; color:#166534; }
+        .s-paid   { background:#f5f3ff; color:#5b21b6; }
+
+        .not-found { text-align:center; padding:60px; color:var(--muted); }
+        .not-found i { font-size:3rem; display:block; margin-bottom:12px; }
+
+        @media print {
+            .topnav, .action-bar, #sidebar-container { display:none !important; }
+            .page-wrap { padding:0; }
+            .inv-card { box-shadow:none; border-radius:0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a class="brand" href="customer_dashboard.html">IBOCS</a>
+        <span class="portal-label">Customer Portal</span>
+        <span class="nav-user" id="navUser"></span>
+    </div>
+
+    <div class="container-fluid py-0">
+        <div class="row g-0">
+            <div class="col-lg-2 pt-3 px-2" id="sidebar-container"></div>
+            <div class="col-lg-10 page-wrap">
+
+                <div class="page-title">
+                    <a href="customer_AP.html" class="btn btn-outline-secondary btn-sm rounded-circle" style="width:30px;height:30px;padding:0;line-height:28px;text-align:center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h4><i class="bi bi-file-earmark-minus me-2"></i>A/P Invoice — Detail</h4>
+                </div>
+
+                <div id="notFound" class="inv-card not-found" style="display:none;">
+                    <i class="bi bi-file-earmark-x"></i>
+                    Dokumen AP tidak ditemukan.
+                    <br><br>
+                    <button class="btn-back" onclick="window.location.href='customer_AP.html'">Kembali ke Daftar AP</button>
+                </div>
+
+                <div class="inv-card mb-4" id="invCard">
+                    <div class="inv-titlebar">
+                        <span><i class="bi bi-file-earmark-text me-2"></i>A/P Invoice</span>
+                        <span id="docStatusBadge"></span>
+                    </div>
+
+                    <div class="inv-header">
+                        <div class="inv-header-left">
+                            <div class="field-row"><label>Vendor</label><span class="val mono" id="vVendorCode"></span></div>
+                            <div class="field-row"><label>Name</label><span class="val" id="vVendorName"></span></div>
+                            <div class="field-row"><label>Contact Person</label><span class="val text-muted">-</span></div>
+                            <div class="field-row"><label>Vendor Ref. No.</label><span class="val text-muted" id="vVendorRef">-</span></div>
+                            <div class="field-row"><label>Currency</label><span class="val">IDR — Rupiah</span></div>
+                        </div>
+                        <div class="inv-header-right">
+                            <div class="field-row"><label>No.</label><span class="val mono" id="vDocNo"></span></div>
+                            <div class="field-row"><label>Status</label><span id="vStatus"></span></div>
+                            <div class="field-row"><label>Posting Date</label><span class="val" id="vPostingDate"></span></div>
+                            <div class="field-row"><label>Due Date</label><span class="val" id="vDueDate"></span></div>
+                            <div class="field-row"><label>Document Date</label><span class="val" id="vDocDate"></span></div>
+                            <div class="field-row"><label>GRPO Ref</label><span class="val mono" id="vGrpoRef"></span></div>
+                            <div class="field-row"><label>PO Ref</label><span class="val mono" id="vPoRef"></span></div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="inv-tabs">
+                        <button class="inv-tab active" onclick="switchTab('contents',this)">Contents</button>
+                        <button class="inv-tab" onclick="switchTab('accounting',this)">Accounting</button>
+                    </div>
+
+                    <!-- Contents -->
+                    <div id="tabContents">
+                        <div class="inv-table-wrap">
+                            <table class="inv-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;">#</th>
+                                        <th>Description</th>
+                                        <th>G/L Account</th>
+                                        <th>G/L Account Name</th>
+                                        <th>Distr. Rule</th>
+                                        <th style="text-align:right;">Qty</th>
+                                        <th style="text-align:right;">Unit Price (IDR)</th>
+                                        <th style="text-align:right;">Discount %</th>
+                                        <th style="text-align:right;">Subtotal (IDR)</th>
+                                        <th>Tax Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Accounting -->
+                    <div id="tabAccounting" style="display:none; padding:20px;">
+                        <div class="row g-3" style="max-width:500px;">
+                            <div class="col-6">
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Account Code</div>
+                                <div class="val" id="aAccountCode">-</div>
+                            </div>
+                            <div class="col-6">
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Notes</div>
+                                <div class="val" id="aNotes">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="inv-footer">
+                        <div class="inv-footer-left">
+                            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Purchase Employee</div>
+                            <div class="val">-No Purchase Employee-</div>
+                        </div>
+                        <div class="inv-footer-right">
+                            <div class="total-row">
+                                <label>Total Before Discount</label>
+                                <span class="val" id="tBeforeDisc">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Discount</label>
+                                <span class="val" id="tDiscount">0 %</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Freight</label>
+                                <span class="val" id="tFreight">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Tax</label>
+                                <span class="val" id="tTax">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>WTax Amount</label>
+                                <span class="val">IDR 0</span>
+                            </div>
+                            <div class="total-row grand">
+                                <label style="font-size:13px;color:var(--primary);font-weight:700;">Total</label>
+                                <span class="val" id="tTotal">IDR 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button class="btn-back" onclick="window.location.href='customer_AP.html'">
+                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                        </button>
+                        <button class="btn-print" onclick="window.print()">
+                            <i class="bi bi-printer me-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            new SidebarSystem(null, "ap_list").render();
+            loadDoc();
+        });
+
+        // ── Demo GRPO (same as list/bulk pages) ──────────────────────────────────
+        const DEMO_GRPO = [
+            {
+                grpoNo: "GRPO-0001", grpoDate: "2026-04-05", poNo: "PO-FC-2604-001",
+                store: "Farm Deli", customer: "PT TOP Distribusi", totalQty: 12581, status: "Closed",
+                rows: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",   qtyOrder: 9514, qtyReceived: 9514, unitPrice: 8500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)",  qtyOrder: 3067, qtyReceived: 3067, unitPrice: 9200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-0002", grpoDate: "2026-04-10", poNo: "PO-FC-2604-002",
+                store: "Farm Makmur", customer: "CV. Makmur Sejahtera", totalQty: 11000, status: "Open",
+                rows: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qtyOrder: 4200, qtyReceived: 4200, unitPrice: 7800 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",       qtyOrder: 6800, qtyReceived: 6800, unitPrice: 8200 }
+                ]
+            },
+            {
+                grpoNo: "GRPO-0003", grpoDate: "2026-04-15", poNo: "PO-FC-2604-003",
+                store: "Farm Sejahtera", customer: "PT Agro Maju", totalQty: 5500, status: "Open",
+                rows: [
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qtyOrder: 5500, qtyReceived: 5500, unitPrice: 9200 }
+                ]
+            }
+        ];
+
+        function getGrpoList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_grpo_list") || "[]");
+            const storedNos = new Set(stored.map(g => g.grpoNo));
+            return [...stored, ...DEMO_GRPO.filter(d => !storedNos.has(d.grpoNo))];
+        }
+
+        function enrichLines(doc) {
+            // Already has full data (from bulk processor)
+            if (doc.lines && doc.lines.length && doc.lines[0].unitPrice) return doc.lines;
+            // Try to enrich from GRPO demo/stored data
+            const allGrpo = getGrpoList();
+            const grpoDoc = allGrpo.find(g => g.grpoNo === doc.grpoRef);
+            if (grpoDoc && grpoDoc.rows && grpoDoc.rows.length) {
+                return grpoDoc.rows.map(r => ({
+                    itemCode:  r.itemCode,
+                    itemName:  r.itemName,
+                    qty:       r.qtyReceived || r.qty || 0,
+                    qtyOrder:  r.qtyOrder || 0,
+                    unitPrice: r.unitPrice || 0,
+                    discount:  0,
+                    glAccount: "5120501",
+                    glName:    "COGS DIRECT — FREIGHT EXPENSE",
+                    distrRule: "PROD;HO",
+                    taxCode:   "PPNO-NO"
+                }));
+            }
+            return (doc.lines || []).map(l => ({ ...l, unitPrice: l.unitPrice || 0 }));
+        }
+
+        function fmt(n) { return "IDR " + Math.round(n || 0).toLocaleString("id-ID"); }
+
+        function statusBadge(s) {
+            const text = (!s || s === "Draft") ? "Open" : s;
+            const cls = text === "Open" ? "s-open" : text === "Closed" ? "s-posted" : text === "Paid" ? "s-paid" : "s-open";
+            return `<span class="status-badge ${cls}">${text}</span>`;
+        }
+
+        function loadDoc() {
+            const params = new URLSearchParams(location.search);
+            const no = params.get("no");
+            const apList = JSON.parse(localStorage.getItem("IBOCS_ap_list") || "[]");
+            const doc = apList.find(a => a.apNo === no);
+
+            if (!doc) {
+                document.getElementById("invCard").style.display = "none";
+                document.getElementById("notFound").style.display = "block";
+                return;
+            }
+
+            // Enrich vendor from GRPO if blank
+            const allGrpo = getGrpoList();
+            const grpoDoc = allGrpo.find(g => g.grpoNo === doc.grpoRef);
+            const vendorName = doc.vendor || grpoDoc?.customer || grpoDoc?.store || "-";
+
+            // Header
+            document.getElementById("vVendorCode").textContent  = vendorName.replace(/\s+/g,"").slice(0,8).toUpperCase() || "-";
+            document.getElementById("vVendorName").textContent  = vendorName;
+            document.getElementById("vDocNo").textContent       = doc.apNo;
+            document.getElementById("vStatus").innerHTML        = statusBadge(doc.status);
+            document.getElementById("vPostingDate").textContent = doc.apDate || "-";
+            document.getElementById("vDueDate").textContent     = doc.dueDate || (doc.apDate ? (() => { const d = new Date(doc.apDate); d.setDate(d.getDate()+30); return d.toISOString().split("T")[0]; })() : "-");
+            document.getElementById("vDocDate").textContent     = doc.apDate || "-";
+            document.getElementById("vGrpoRef").textContent     = doc.grpoRef || "-";
+            document.getElementById("vPoRef").textContent       = doc.poRef || grpoDoc?.poNo || "-";
+            document.getElementById("docStatusBadge").innerHTML = statusBadge(doc.status);
+
+            // Accounting tab
+            document.getElementById("aAccountCode").textContent = doc.accountCode || "2100 — Hutang Usaha";
+            document.getElementById("aNotes").textContent       = doc.notes || "-";
+
+            // Contents table — enrich if needed
+            const lines = enrichLines(doc);
+            let lineNo = 0;
+            let totalBeforeDisc = 0;
+
+            const html = lines.length ? lines.map(l => {
+                lineNo++;
+                const subtotal = (l.qty || 0) * (l.unitPrice || 0) * (1 - (l.discount || 0)/100);
+                totalBeforeDisc += (l.qty || 0) * (l.unitPrice || 0);
+                return `<tr>
+                    <td class="text-muted">${lineNo}</td>
+                    <td class="fw-semibold">${l.itemName || "-"}</td>
+                    <td style="color:var(--primary);font-weight:600;">${l.glAccount || "5120501"}</td>
+                    <td class="text-muted">${l.glName || "COGS DIRECT — FREIGHT EXPENSE"}</td>
+                    <td>${l.distrRule || "PROD;HO"}</td>
+                    <td style="text-align:right;font-weight:600;">${(l.qty||0).toLocaleString()}</td>
+                    <td style="text-align:right;">${fmt(l.unitPrice||0)}</td>
+                    <td style="text-align:right;">${(l.discount||0).toFixed(4)}</td>
+                    <td style="text-align:right;font-weight:700;">${fmt(subtotal)}</td>
+                    <td>${l.taxCode || "PPNO-NO"}</td>
+                </tr>`;
+            }).join("") : `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+
+            document.getElementById("contentsBody").innerHTML = html;
+
+            // Totals
+            const discPct   = doc.discountPct || 0;
+            const freight   = doc.freight || 0;
+            const afterDisc = totalBeforeDisc * (1 - discPct/100);
+            const total     = doc.total || (afterDisc + freight);
+
+            document.getElementById("tBeforeDisc").textContent = fmt(totalBeforeDisc);
+            document.getElementById("tDiscount").textContent   = discPct ? discPct + " %" : "0 %";
+            document.getElementById("tFreight").textContent    = fmt(freight);
+            document.getElementById("tTax").textContent        = fmt(0);
+            document.getElementById("tTotal").textContent      = fmt(total || totalBeforeDisc);
+        }
+
+        function switchTab(tab, btn) {
+            document.querySelectorAll(".inv-tab").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("tabContents").style.display   = tab === "contents"   ? "" : "none";
+            document.getElementById("tabAccounting").style.display = tab === "accounting" ? "" : "none";
+        }
+    </script>
+</body>
+</html>

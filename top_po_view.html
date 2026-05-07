@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | View Purchase Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f7fb; color: #222; }
+        .card { background: #fff; border-radius: 14px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+        .card-header { padding: 13px 16px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; display: flex; align-items: center; justify-content: space-between; }
+        .card-body { padding: 16px; }
+        .ig4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
+        .ig3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
+        .field label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
+        .field .val  { font-size: 14px; color: #111827; font-weight: 500; }
+        .field .vm   { font-size: 14px; font-weight: 700; color: #1a237e; }
+        .field.full { grid-column: 1 / -1; }
+        .field .remarks { min-height: 58px; padding: 9px 11px; border: 1px solid #eef0f4; border-radius: 8px; background: #f9fafb; white-space: pre-wrap; }
+        .po-header { background: linear-gradient(135deg, #1a237e 0%, #1565c0 100%); color: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 18px; }
+        .po-header .po-id { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+        .po-header .po-sub { font-size: 13px; opacity: .8; margin-top: 4px; }
+        .po-header .po-badge { background: rgba(255,255,255,0.2); border-radius: 999px; padding: 4px 14px; font-size: 12px; font-weight: 700; display: inline-block; margin-top: 8px; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .t-int { background: #dbeafe; color: #1d4ed8; }
+        .t-ext { background: #f3e8ff; color: #7c3aed; }
+        .lines-wrap { overflow-x: auto; }
+        table.lt { width: 100%; border-collapse: collapse; }
+        table.lt th { font-size: 11px; color: #4b5563; font-weight: 700; padding: 9px 12px; text-align: left; white-space: nowrap; border-bottom: 2px solid #e0e7ef; }
+        table.lt th.hb { background: #e8eaf6; color: #3730a3; }
+        table.lt th.ha { background: #f0fdf4; color: #166534; }
+        table.lt td { padding: 9px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; font-size: 13px; }
+        table.lt td.cb { background: #eef2ff; border-right: 2px solid #c7d2fe; vertical-align: top; }
+        table.lt td.ca { background: #f8fffe; }
+        table.lt tr.tr-sep td { height: 6px; background: #dde3f8; padding: 0; border: none; }
+        .ref-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; font-size: 13px; }
+        .ref-box strong { color: #0369a1; }
+        .btn-pri { padding: 10px 20px; border-radius: 8px; border: 0; font-size: 13px; font-weight: 700; background: #1a237e; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-sec { padding: 10px 20px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-weight: 700; background: #fff; color: #374151; cursor: pointer; text-decoration: none; display: inline-block; }
+        @media (max-width: 900px) { .ig4, .ig3 { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">TOP Portal</span>
+            <div class="ms-auto">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-0">Purchase Order</h5>
+                        <div class="text-muted" style="font-size:13px;" id="pageSubtitle">—</div>
+                    </div>
+                    <a href="top_po_list.html" class="btn-sec"><i class="bi bi-arrow-left me-1"></i> Kembali</a>
+                </div>
+
+                <!-- PO Header Banner -->
+                <div class="po-header" id="poHeader">
+                    <div class="po-id" id="hPoId">—</div>
+                    <div class="po-sub" id="hPoSub">—</div>
+                    <div class="po-badge">Final</div>
+                </div>
+
+                <!-- DO Draft reference -->
+                <div class="ref-box" id="refBox">
+                    <i class="bi bi-link-45deg me-1"></i>
+                    Dibuat dari DO Draft: <strong id="refDoDraftId">—</strong>
+                    &nbsp;·&nbsp;
+                    <a id="linkDoDraft" href="#" style="color:#0369a1;font-weight:700;">Lihat DO Draft →</a>
+                </div>
+
+                <!-- Header Info -->
+                <div class="card">
+                    <div class="card-header">Informasi PO</div>
+                    <div class="card-body">
+                        <div class="ig4">
+                            <div class="field"><label>No. PO</label><div class="vm" id="vId">—</div></div>
+                            <div class="field"><label>Tanggal PO</label><div class="val" id="vDate">—</div></div>
+                            <div class="field"><label>Delivery Date</label><div class="val" id="vDelivery">—</div></div>
+                            <div class="field"><label>DOC Type</label><div id="vDocType">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>Vendor (Penjual)</label><div class="val" id="vVendor">—</div></div>
+                            <div class="field"><label>Customer (Pembeli)</label><div class="val" id="vCustomer">—</div></div>
+                            <div class="field"><label>Contact Person</label><div class="val" id="vContact">—</div></div>
+                            <div class="field"><label>Cust Ref No</label><div class="val" id="vCustRef">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>Gudang Pengirim (SIC)</label><div class="val" id="vWhse">—</div></div>
+                            <div class="field"><label>Plan / Forecast</label><div class="val" id="vPlan">—</div></div>
+                            <div class="field"><label>Dibuat Oleh</label><div class="val" id="vCreatedBy">—</div></div>
+                            <div class="field"><label>Tanggal Dibuat</label><div class="val" id="vCreatedAt">—</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- External Info -->
+                <div class="card" id="extCard" style="display:none;">
+                    <div class="card-header"><i class="bi bi-truck me-2"></i>Informasi DOC External</div>
+                    <div class="card-body">
+                        <div class="ig4">
+                            <div class="field"><label>Vendor External</label><div class="val" id="vExtVendor">—</div></div>
+                            <div class="field"><label>No. Surat Jalan</label><div class="val" id="vNoSJ">—</div></div>
+                            <div class="field"><label>Tgl Surat Jalan</label><div class="val" id="vTglSJ">—</div></div>
+                            <div class="field"><label>No. Polisi</label><div class="val" id="vNoPol">—</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transport -->
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-truck-front-fill me-2"></i>Transport</div>
+                    <div class="card-body">
+                        <div class="ig4">
+                            <div class="field"><label>Vendor Code</label><div class="vm" id="vTransportVendorCode">—</div></div>
+                            <div class="field"><label>Vendor Name</label><div class="val" id="vTransportVendorName">—</div></div>
+                            <div class="field"><label>Driver Name</label><div class="val" id="vDriverName">—</div></div>
+                            <div class="field"><label>No List Transport</label><div class="vm" id="vNoListTransport">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>Bill of Lading</label><div class="vm" id="vBillOfLading">—</div></div>
+                            <div class="field"><label>License Number</label><div class="vm" id="vLicenseNumber">—</div></div>
+                            <div class="field"><label>Container Number</label><div class="vm" id="vContainerNumber">—</div></div>
+                            <div class="field"><label>From Area</label><div class="val" id="vFromArea">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>To Area</label><div class="val" id="vToArea">—</div></div>
+                            <div class="field"><label>Jam Berangkat</label><div class="vm" id="vDepartureTime">—</div></div>
+                            <div class="field"><label>Jam Kedatangan</label><div class="vm" id="vArrivalTime">—</div></div>
+                            <div class="field"><label>Minimum Fee</label><div class="vm" id="vMinimumFee">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>Service Price / KG</label><div class="vm" id="vServicePriceKg">—</div></div>
+                            <div class="field"><label>Total Service</label><div class="vm" id="vTotalService">—</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lines -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>Detail Lines — Item DOC</span>
+                        <span style="font-size:12px;color:#6b7280;" id="totalLines"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="lines-wrap">
+                            <table class="lt">
+                                <thead>
+                                    <tr>
+                                        <th class="hb">Brand</th>
+                                        <th class="hb">Item DOC (dari SIC)</th>
+                                        <th class="hb">UoM</th>
+                                        <th class="hb">Qty Dipesan</th>
+                                        <th class="hb">Harga Beli</th>
+                                        <th class="ha">Item Diterima</th>
+                                        <th class="ha">UoM</th>
+                                        <th class="ha">Qty Diterima</th>
+                                        <th class="ha">Harga Satuan</th>
+                                        <th class="ha">Gudang Tujuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="linesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-chat-left-text me-2"></i>Remarks</div>
+                    <div class="card-body">
+                        <div class="field full"><div class="val remarks" id="vRemarks">—</div></div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+                    <a href="top_po_list.html" class="btn-pri"><i class="bi bi-list-ul me-1"></i> Daftar PO</a>
+                    <a href="top_po_generation_list.html" class="btn-sec">PO Generation</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="po_generation_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sidebar = new SidebarSystem(null, "po_list");
+        sidebar.render();
+
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        document.getElementById("userInfo").textContent = userData.name || userData.role || "-";
+        document.getElementById("userBtn").textContent  = userData.name || "User";
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            location.href = "login.html";
+        });
+
+        const params = new URLSearchParams(location.search);
+        const poId = params.get("id");
+
+        function fmt(v) { return v || "—"; }
+        function fmtQty(n) { return n != null ? Number(n).toLocaleString("id-ID") : "—"; }
+        function fmtPrice(n) { return n != null ? "Rp " + Number(n).toLocaleString("id-ID") : "—"; }
+
+        function renderTransport(po) {
+            const t = po.transport || {};
+            document.getElementById("vTransportVendorCode").textContent = fmt(t.vendorCode);
+            document.getElementById("vTransportVendorName").textContent = fmt(t.vendorName);
+            document.getElementById("vDriverName").textContent = fmt(t.driverName);
+            document.getElementById("vNoListTransport").textContent = fmt(t.noListTransport);
+            document.getElementById("vBillOfLading").textContent = fmt(t.billOfLading);
+            document.getElementById("vLicenseNumber").textContent = fmt(t.licenseNumber);
+            document.getElementById("vContainerNumber").textContent = fmt(t.containerNumber);
+            document.getElementById("vFromArea").textContent = fmt(t.fromArea);
+            document.getElementById("vToArea").textContent = fmt(t.toArea);
+            document.getElementById("vDepartureTime").textContent = fmt(t.departureTime);
+            document.getElementById("vArrivalTime").textContent = fmt(t.arrivalTime);
+            document.getElementById("vMinimumFee").textContent = fmtQty(t.minimumFee);
+            document.getElementById("vServicePriceKg").textContent = fmtQty(t.servicePriceKg);
+            document.getElementById("vTotalService").textContent = fmtQty(t.totalService);
+        }
+
+        function init() {
+            if (!poId) { alert("ID PO tidak ditemukan."); location.href = "top_po_list.html"; return; }
+            const po = poGenGet(poId);
+            if (!po)  { alert("PO tidak ditemukan."); location.href = "top_po_list.html"; return; }
+
+            document.title = `IBOCS | PO — ${po.id}`;
+            document.getElementById("pageSubtitle").textContent = `${po.id} · ${po.customerName}`;
+
+            document.getElementById("hPoId").textContent  = po.id;
+            document.getElementById("hPoSub").textContent = `${po.vendorName} → ${po.customerName} · ${po.date}`;
+
+            document.getElementById("refDoDraftId").textContent  = po.doDraftId;
+            document.getElementById("linkDoDraft").href = `top_po_generation_view.html?id=${po.doDraftId}`;
+
+            document.getElementById("vId").textContent       = po.id;
+            document.getElementById("vDate").textContent     = fmt(po.date);
+            document.getElementById("vDelivery").textContent = fmt(po.deliveryDate);
+            document.getElementById("vDocType").innerHTML    = po.docType === "internal"
+                ? `<span class="tag t-int">Internal</span>` : `<span class="tag t-ext">External</span>`;
+            document.getElementById("vVendor").textContent   = fmt(po.vendorName);
+            document.getElementById("vCustomer").textContent = fmt(po.customerName);
+            document.getElementById("vContact").textContent  = fmt(po.contactPerson);
+            document.getElementById("vCustRef").textContent  = fmt(po.customerRefNo);
+            document.getElementById("vWhse").textContent     = fmt(po.whsePengirimName || po.whsePengirim);
+            document.getElementById("vPlan").textContent     = po.planCode
+                ? `${po.planCode}${po.planName ? " — " + po.planName : ""}`
+                : fmt(po.forecastRef ? po.forecastRef + (po.forecastDesc ? " — " + po.forecastDesc : "") : null);
+            document.getElementById("vCreatedBy").textContent = fmt(po.createdBy);
+            document.getElementById("vCreatedAt").textContent = fmt(po.createdAt);
+            renderTransport(po);
+            document.getElementById("vRemarks").textContent = fmt(po.remarks);
+
+            if (po.docType === "external") {
+                document.getElementById("extCard").style.display = "";
+                document.getElementById("vExtVendor").textContent = fmt(po.externalVendorName || po.externalVendor);
+                document.getElementById("vNoSJ").textContent      = fmt(po.noSuratJalan);
+                document.getElementById("vTglSJ").textContent     = fmt(po.tglSuratJalan);
+                document.getElementById("vNoPol").textContent     = fmt(po.noPol);
+            }
+
+            document.getElementById("totalLines").textContent = `${po.lines.length} line(s)`;
+
+            const tbody = document.getElementById("linesBody");
+            tbody.innerHTML = po.lines.map(line => {
+                const afters = line.afterItems || [];
+                return afters.map((a, i) => {
+                    const isFirst = i === 0;
+                    const beforeCells = isFirst
+                        ? `<td class="cb" rowspan="${afters.length}">${line.brandName || line.brand}</td>
+                           <td class="cb" rowspan="${afters.length}">${line.itemBefore}</td>
+                           <td class="cb" rowspan="${afters.length}">${line.uomBefore || "Ekor"}</td>
+                           <td class="cb" rowspan="${afters.length}" style="text-align:right;font-weight:700;">${fmtQty(line.qtyBefore)}</td>
+                           <td class="cb" rowspan="${afters.length}" style="text-align:right;">${fmtPrice(line.priceBefore)}</td>`
+                        : "";
+                    return `<tr>
+                        ${beforeCells}
+                        <td class="ca">${a.itemAfter}</td>
+                        <td class="ca">${a.uomAfter || "Ekor"}</td>
+                        <td class="ca" style="text-align:right;font-weight:700;">${fmtQty(a.qtyAfter)}</td>
+                        <td class="ca" style="text-align:right;">${fmtPrice(a.priceAfter)}</td>
+                        <td class="ca">${a.whseTujuan || "—"}</td>
+                    </tr>`;
+                }).join("") + `<tr class="tr-sep"><td colspan="10"></td></tr>`;
+            }).join("");
+        }
+
+        init();
+    </script>
+</body>
+</html>

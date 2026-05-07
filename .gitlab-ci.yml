@@ -1,0 +1,11 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir public
+    - cp *.html public/
+    - cp -r * public/ 2>/dev/null || true
+  artifacts:
+    paths:
+      - public
+  only:
+    - main

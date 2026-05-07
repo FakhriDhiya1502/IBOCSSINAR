@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | Forecast List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+        .page {
+            max-width: 100%;
+            border-radius: 12px;
+            background: #fff;
+            padding: 24px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        h1 { margin: 0; font-size: 22px; color: #111827; }
+        .subtext { margin-top: 6px; font-size: 13px; color: #6b7280; }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .summary-box {
+            border: 1px solid #e8ebf1;
+            border-radius: 10px;
+            padding: 14px;
+            background: #fafbfe;
+        }
+        .summary-box .lbl {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            font-weight: 700;
+        }
+        .summary-box .val { font-size: 22px; font-weight: 700; }
+        .filter-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f8fafc;
+            margin-bottom: 16px;
+        }
+        .filter-panel .form-control,
+        .filter-panel .form-select { max-width: 220px; }
+        .table-custom { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .table-custom th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 14px 16px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .table-custom td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .table-custom tbody tr:hover { background: #f8faff; }
+        .fc-link { font-weight: 800; color: #1d4ed8; text-decoration: none; }
+        .fc-link:hover { text-decoration: underline; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .status-draft { background: #f3f4f6; color: #374151; }
+        .status-fc { background: #dbeafe; color: #1d4ed8; }
+        .status-po { background: #fef3c7; color: #92400e; }
+        .empty-state {
+            text-align: center;
+            padding: 52px 24px;
+            color: #94a3b8;
+        }
+        .empty-state i { font-size: 34px; display: block; margin-bottom: 10px; }
+        .btn-action {
+            padding: 9px 16px;
+            border-radius: 8px;
+            border: 0;
+            font-weight: 700;
+            font-size: 13px;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1px solid #dbe3ef;
+            color: #1d4ed8;
+            background: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .btn-icon:hover { background: #eff6ff; }
+        @media (max-width: 900px) {
+            .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .topbar { flex-direction: column; }
+        }
+        @media (max-width: 520px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .filter-panel .form-control,
+            .filter-panel .form-select { max-width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Customer Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="index.html">Ganti Portal</a></li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 fw-bold" style="color:#1a237e;"><i class="bi bi-clipboard2-data me-2"></i>Forecast List</h4>
+                </div>
+
+                <div class="page shadow-sm">
+                    <div class="topbar">
+                        <div>
+                            <h1>Forecast List</h1>
+                            <div class="subtext">Daftar dokumen forecast. Kalkulator dan rekomendasi item diproses dari screen Add.</div>
+                        </div>
+                        <button class="btn-action" onclick="openCompanyPicker()">
+                            <i class="bi bi-plus-lg"></i>Add Forecast
+                        </button>
+                    </div>
+
+                    <div class="summary-grid" id="summaryGrid"></div>
+
+                    <div class="filter-panel">
+                        <input class="form-control form-control-sm" id="searchQ" placeholder="Cari forecast, plan, farm..." oninput="renderForecastList()">
+                        <select class="form-select form-select-sm" id="periodFilter" onchange="renderForecastList()"></select>
+                        <select class="form-select form-select-sm" id="statusFilter" onchange="renderForecastList()"></select>
+                    </div>
+
+                    <div id="forecastSections"></div>
+                </div>
+                <div class="text-center text-muted small mt-4 mb-2">© 2026 IBOCS - Customer Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sess = localStorage.getItem("IBOCS_user");
+        if (!sess) window.location.href = "login.html?role=customer";
+        const user = JSON.parse(sess);
+        if (user.role !== "customer" && user.role !== "super_admin") window.location.href = "index.html";
+        document.getElementById("userBtn").textContent = user.name || "User";
+        document.getElementById("userInfo").textContent = `${user.email} - role=${user.role}`;
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            window.location.href = "index.html";
+        });
+
+        const DEMO_FC = [
+            { fcNo: "FC-001", fcDate: "2026-04-29", period: "Week 18", company: "PT TOP Distribusi", farm: "Farm Deli", warehouse: "WH-KDG01", kdgId: "KDG-01", planNo: "PLAN-2026-001", planName: "Farm Deli / KDG-01", status: "Draft", lines: [{ recommendedQty: 7300 }, { recommendedQty: 5200 }] },
+            { fcNo: "FC-002", fcDate: "2026-04-29", period: "Week 18", company: "PT TOP Distribusi", farm: "Farm Deli", warehouse: "WH-KDG02", kdgId: "KDG-02", planNo: "PLAN-2026-002", planName: "Farm Deli / KDG-02", status: "Forecast Created", lines: [{ recommendedQty: 8000 }, { recommendedQty: 7000 }] },
+            { fcNo: "FC-003", fcDate: "2026-04-28", period: "Week 18", company: "PT AYM", farm: "Farm Binjai", warehouse: "WH-KDG03", kdgId: "KDG-03", planNo: "PLAN-2026-003", planName: "Farm Binjai / KDG-03", status: "PO Created", lines: [{ recommendedQty: 6200 }, { recommendedQty: 4300 }] }
+        ];
+
+        function getFcList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]").map(fc => ({ ...fc, _stored: true }));
+            const storedNos = new Set(stored.map(f => f.fcNo));
+            return [...stored, ...DEMO_FC.filter(d => !storedNos.has(d.fcNo)).map(fc => ({ ...fc, _stored: false }))];
+        }
+
+        function calcTotalQty(fc) {
+            if (typeof fc.totalQty === "number") return fc.totalQty;
+            return (fc.lines || []).reduce((sum, r) => {
+                return sum + (parseFloat(r.recommendedQty || r.standardNeed) || 0) + (parseFloat(r.manualAdjustment) || 0);
+            }, 0);
+        }
+
+        function fmt(n) {
+            return Number(n || 0).toLocaleString("id-ID");
+        }
+
+        function statusClass(status) {
+            if (status === "PO Created") return "status-po";
+            if (status === "Forecast Created" || status === "Confirmed") return "status-fc";
+            return "status-draft";
+        }
+
+        function setupFilters() {
+            const data = getFcList();
+            const periods = ["ALL", ...new Set(data.map(f => f.period || f.week || "Week 18"))];
+            const statuses = ["ALL", ...new Set(data.map(f => f.status || "Draft"))];
+            document.getElementById("periodFilter").innerHTML = periods.map(p => `<option value="${p}">${p === "ALL" ? "Semua Week" : p}</option>`).join("");
+            document.getElementById("statusFilter").innerHTML = statuses.map(s => `<option value="${s}">${s === "ALL" ? "Semua Status" : s}</option>`).join("");
+        }
+
+        function renderSummary(data) {
+            const totalQty = data.reduce((sum, fc) => sum + calcTotalQty(fc), 0);
+            const draft = data.filter(fc => (fc.status || "Draft") === "Draft").length;
+            const periods = new Set(data.map(fc => fc.period || fc.week || "Week 18")).size;
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-box"><div class="lbl">Total Forecast</div><div class="val" style="color:#1a237e;">${data.length}</div></div>
+                <div class="summary-box"><div class="lbl">Draft</div><div class="val" style="color:#475569;">${draft}</div></div>
+                <div class="summary-box"><div class="lbl">Total QTY</div><div class="val" style="color:#166534;">${fmt(totalQty)} <span style="font-size:14px;font-weight:400;">kg</span></div></div>
+                <div class="summary-box"><div class="lbl">Week Aktif</div><div class="val" style="color:#92400e;">${periods}</div></div>`;
+        }
+
+        const TABLE_HEAD = `
+            <table class="table-custom">
+                <thead><tr>
+                    <th>No Forecast</th><th>Plan</th><th>Nama Plan</th>
+                    <th>Week</th><th>Farm / Kandang</th>
+                    <th>Total QTY</th><th>Status</th><th style="width:80px;">Action</th>
+                </tr></thead>
+                <tbody>`;
+        const TABLE_FOOT = `</tbody></table>`;
+
+        function renderForecastList() {
+            const q      = document.getElementById("searchQ").value.trim().toLowerCase();
+            const period = document.getElementById("periodFilter").value || "ALL";
+            const status = document.getElementById("statusFilter").value || "ALL";
+
+            const data = getFcList().filter(fc => {
+                const fcPeriod = fc.period || fc.week || "Week 18";
+                const haystack = [fc.fcNo, fc.planNo, fc.planName, fc.company, fc.farm, fc.kdgId, fc.warehouse].join(" ").toLowerCase();
+                return (!q || haystack.includes(q))
+                    && (period === "ALL" || fcPeriod === period)
+                    && (status === "ALL" || (fc.status || "Draft") === status);
+            }).sort((a, b) => String(b.fcNo).localeCompare(String(a.fcNo)));
+
+            renderSummary(data);
+            const container = document.getElementById("forecastSections");
+
+            if (!data.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-inbox"></i>
+                        <div class="fw-bold text-dark">Belum Ada Forecast</div>
+                        <div class="small mt-1">Gunakan Add Forecast untuk membuat dokumen baru.</div>
+                        <button class="btn-action mt-3" onclick="openCompanyPicker()"><i class="bi bi-plus-lg"></i>Add Forecast</button>
+                    </div>`;
+                return;
+            }
+
+            const companies = [...new Set(data.map(fc => fc.company || "Lainnya"))];
+            container.innerHTML = companies.map(company => {
+                const rows = data.filter(fc => (fc.company || "Lainnya") === company);
+                const totalQty = rows.reduce((s, fc) => s + calcTotalQty(fc), 0);
+
+                const rowsHtml = rows.map(fc => {
+                    const st = fc.status || "Draft";
+                    const editBtn = st === "Draft" && fc._stored
+                        ? `<a class="btn-icon" title="Edit" href="customer_ForecastAdd.html?company=${encodeURIComponent(company)}&fcNo=${encodeURIComponent(fc.fcNo)}"><i class="bi bi-pencil"></i></a>`
+                        : "";
+                    return `<tr>
+                        <td><a class="fc-link" href="customer_ForecastView.html?fcNo=${encodeURIComponent(fc.fcNo)}">${fc.fcNo}</a></td>
+                        <td class="fw-bold">${fc.planNo || "-"}</td>
+                        <td>${fc.planName || fc.planDesc || "-"}</td>
+                        <td>${fc.period || fc.week || "-"}</td>
+                        <td>${fc.farm || "-"} / ${fc.kdgId || fc.warehouse || "-"}</td>
+                        <td class="fw-bold text-success">${fmt(calcTotalQty(fc))} kg</td>
+                        <td><span class="status-badge ${statusClass(st)}">${st}</span></td>
+                        <td><div class="d-flex gap-1">
+                            <a class="btn-icon" title="View" href="customer_ForecastView.html?fcNo=${encodeURIComponent(fc.fcNo)}"><i class="bi bi-eye"></i></a>
+                            ${editBtn}
+                        </div></td>
+                    </tr>`;
+                }).join("");
+
+                return `
+                <div class="mb-4">
+                    <div style="display:flex;align-items:center;justify-content:space-between;background:#1a237e;border-radius:10px 10px 0 0;padding:10px 16px;">
+                        <div>
+                            <span style="font-size:13px;font-weight:700;color:#fff;"><i class="bi bi-building me-2"></i>${company}</span>
+                            <span style="font-size:11px;color:#c7d2fe;margin-left:12px;">${rows.length} forecast</span>
+                            <span style="font-size:11px;color:#c7d2fe;margin-left:8px;">·</span>
+                            <span style="font-size:11px;color:#c7d2fe;margin-left:8px;">${fmt(totalQty)} kg</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-light fw-bold" style="font-size:12px;" onclick="openCompanyPicker()">
+                            <i class="bi bi-plus-lg me-1"></i>Add
+                        </button>
+                    </div>
+                    <div style="border:1.5px solid #e0e7ef;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;">
+                        ${TABLE_HEAD}${rowsHtml}${TABLE_FOOT}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        // Company list dummy — di real app ambil dari user session / API
+        const ALL_COMPANIES = ["PT TOP Distribusi", "PT AYM", "PT BMAX", "PT CTU"];
+
+        function openCompanyPicker() {
+            const userCompany = user.company || null;
+            const isAdmin = user.role === "super_admin";
+
+            // Customer biasa: langsung redirect
+            if (!isAdmin && userCompany) {
+                window.location.href = `customer_ForecastAdd.html?company=${encodeURIComponent(userCompany)}`;
+                return;
+            }
+
+            // Admin: tampilkan picker
+            const companies = isAdmin ? ALL_COMPANIES : [userCompany || ALL_COMPANIES[0]];
+            const cards = companies.map(c => {
+                const fcCount = getFcList().filter(f => f.company === c).length;
+                return `<div class="company-pick-card" onclick="goToAdd('${encodeURIComponent(c)}')">
+                    <div class="fw-bold" style="font-size:14px;color:#1a237e;">${c}</div>
+                    <div class="text-muted" style="font-size:12px;margin-top:4px;">${fcCount} forecast aktif</div>
+                    <i class="bi bi-arrow-right-circle" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;color:#c7d2fe;"></i>
+                </div>`;
+            }).join("");
+
+            document.getElementById("companyPickerBody").innerHTML = cards;
+            new bootstrap.Modal(document.getElementById("companyPickerModal")).show();
+        }
+
+        function goToAdd(encodedCompany) {
+            window.location.href = `customer_ForecastAdd.html?company=${encodedCompany}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            new SidebarSystem(null, "forecast").render();
+            setupFilters();
+            renderForecastList();
+        });
+    </script>
+
+    <!-- Company Picker Modal -->
+    <div class="modal fade" id="companyPickerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background:#1a237e;">
+                    <h5 class="modal-title fw-bold text-white"><i class="bi bi-building me-2"></i>Pilih Company</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3" id="companyPickerBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .company-pick-card {
+            position: relative;
+            padding: 14px 40px 14px 14px;
+            border: 1.5px solid #e0e7ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: #f8faff;
+            transition: all .15s;
+        }
+        .company-pick-card:hover { background: #eef2ff; border-color: #6366f1; }
+        .company-pick-card:last-child { margin-bottom: 0; }
+    </style>
+</body>
+
+</html>

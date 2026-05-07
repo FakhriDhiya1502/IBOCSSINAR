@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer | AR Detail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1f2937; font-size: 13px; }
+
+        :root { --primary: #1a237e; --line: #d0d7e3; --soft: #f5f7fb; --muted: #6b7280; }
+
+        .topnav { background: var(--primary); padding: 10px 24px; display:flex; align-items:center; gap:16px; }
+        .topnav .brand { color:#fff; font-weight:800; font-size:17px; text-decoration:none; }
+        .topnav .portal-label { color:rgba(255,255,255,.5); font-size:12px; }
+        .topnav .nav-user { color:rgba(255,255,255,.7); font-size:12px; margin-left:auto; }
+
+        .page-wrap { padding: 20px 24px; }
+        .page-title { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+        .page-title h4 { margin:0; font-size:17px; font-weight:700; color:var(--primary); }
+
+        .mode-badge { padding:3px 12px; border-radius:20px; font-size:11.5px; font-weight:700; }
+        .mode-do { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+        .mode-ar { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+
+        .inv-card { background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,.06); overflow:hidden; }
+        .inv-titlebar { background:#e8ecf8; border-bottom:2px solid var(--primary); padding:9px 18px; font-weight:700; font-size:14px; color:var(--primary); display:flex; align-items:center; gap:8px; }
+
+        .inv-header { display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--line); }
+        .inv-header-left { padding:16px 20px; border-right:1px solid var(--line); }
+        .inv-header-right { padding:16px 20px; }
+
+        .field-row { display:grid; grid-template-columns:140px 1fr; align-items:center; margin-bottom:7px; }
+        .field-row:last-child { margin-bottom:0; }
+        .field-row label { font-size:11.5px; font-weight:600; color:var(--muted); }
+        .field-row input, .field-row select {
+            border:1px solid #c5cfe0; border-radius:5px; padding:5px 9px;
+            font-size:13px; background:#f5f7fb; color:#374151; width:100%;
+            outline:none; font-family:inherit;
+        }
+
+        .inv-tabs { border-bottom:1px solid var(--line); background:#f8fafc; display:flex; }
+        .inv-tab { padding:9px 20px; border:none; background:transparent; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+        .inv-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:#fff; }
+
+        .inv-table-wrap { overflow-x:auto; }
+        table.inv-table { width:100%; border-collapse:collapse; min-width:700px; }
+        table.inv-table th { background:#f0f3fa; font-size:11px; font-weight:700; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--line); text-align:left; white-space:nowrap; }
+        table.inv-table td { padding:7px 10px; border-bottom:1px solid #edf0f7; vertical-align:middle; white-space:nowrap; }
+        table.inv-table tr:hover td { background:#f8faff; }
+        table.inv-table .group-row td { background:#eef2ff; font-weight:700; color:var(--primary); border-top:2px solid #c7d2fe; padding:7px 14px; font-size:12px; }
+
+        .inv-footer { display:grid; grid-template-columns:1fr 340px; border-top:1px solid var(--line); }
+        .inv-footer-left { padding:14px 20px; display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+        .inv-footer-right { border-left:1px solid var(--line); padding:12px 20px; }
+
+        .total-row { display:flex; justify-content:space-between; align-items:center; padding:5px 0; border-bottom:1px solid #edf0f7; font-size:13px; }
+        .total-row:last-child { border-bottom:none; padding-top:8px; font-size:14px; font-weight:700; }
+        .total-row label { color:var(--muted); font-size:12px; }
+        .total-row .val { font-weight:600; color:#1f2937; min-width:140px; text-align:right; }
+        .total-row.grand .val { color:var(--primary); font-size:14px; }
+
+        .action-bar { background:#fff; border-top:2px solid var(--line); padding:12px 20px; display:flex; justify-content:flex-end; align-items:center; gap:10px; }
+
+        .status-badge { padding:2px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+        .s-open { background:#eff6ff; color:#1d4ed8; }
+        .s-generated { background:#ecfdf5; color:#065f46; }
+
+        .info-banner { background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 16px; margin-bottom:16px; font-size:12.5px; color:#92400e; display:flex; align-items:center; gap:8px; }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a class="brand" href="customer_dashboard.html">IBOCS</a>
+        <span class="portal-label">Customer Portal</span>
+        <span class="nav-user" id="navUser"></span>
+    </div>
+
+    <div class="container-fluid py-0">
+        <div class="row g-0">
+            <div class="col-lg-2 pt-3 px-2" id="sidebar-container"></div>
+            <div class="col-lg-10 page-wrap">
+
+                <div class="page-title">
+                    <a href="customer_AR.html" class="btn btn-outline-secondary btn-sm rounded-circle" style="width:30px;height:30px;padding:0;line-height:28px;text-align:center;">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h4 id="pageTitle"><i class="bi bi-file-earmark-plus me-2"></i>Detail</h4>
+                    <span class="mode-badge" id="modeBadge"></span>
+                </div>
+
+                <div class="info-banner" id="infoBanner" style="display:none;">
+                    <i class="bi bi-eye"></i>
+                    <span id="infoBannerText"></span>
+                </div>
+
+                <div class="inv-card mb-4">
+                    <div class="inv-titlebar">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span id="cardTitle">A/R Invoice</span>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="inv-header">
+                        <div class="inv-header-left">
+                            <div class="field-row">
+                                <label id="lblParty">Customer</label>
+                                <input type="text" id="fCustomerCode" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Name</label>
+                                <input type="text" id="fCustomerName" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Currency</label>
+                                <input type="text" value="IDR — Rupiah" readonly>
+                            </div>
+                        </div>
+                        <div class="inv-header-right">
+                            <div class="field-row">
+                                <label>No.</label>
+                                <input type="text" id="fDocNo" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Status</label>
+                                <div><span class="status-badge s-open" id="fStatus">Open</span></div>
+                            </div>
+                            <div class="field-row">
+                                <label>Posting Date</label>
+                                <input type="text" id="fPostingDate" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Due Date</label>
+                                <input type="text" id="fDueDate" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label id="lblRef1">DO Ref</label>
+                                <input type="text" id="fDoRef" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label id="lblRef2">Order Ref</label>
+                                <input type="text" id="fOrderRef" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="inv-tabs">
+                        <button class="inv-tab active" onclick="switchInvTab('contents', this)">Contents</button>
+                        <button class="inv-tab" onclick="switchInvTab('accounting', this)">Accounting</button>
+                    </div>
+
+                    <!-- Contents tab -->
+                    <div id="tabContents">
+                        <div class="inv-table-wrap">
+                            <table class="inv-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:36px;">#</th>
+                                        <th>Description</th>
+                                        <th style="width:110px;">G/L Account</th>
+                                        <th>G/L Account Name</th>
+                                        <th style="width:90px;">Distr. Rule</th>
+                                        <th style="width:80px;text-align:right;">Qty</th>
+                                        <th style="width:140px;text-align:right;">Unit Price (IDR)</th>
+                                        <th style="width:90px;text-align:right;">Discount %</th>
+                                        <th style="width:90px;">Tax Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contentsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Accounting tab -->
+                    <div id="tabAccounting" style="display:none; padding:16px 20px;">
+                        <div class="row g-3" style="max-width:500px;">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold" style="font-size:11.5px;color:var(--muted);">Account Code</label>
+                                <input type="text" class="form-control form-control-sm" id="gAccount" readonly>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" style="font-size:11.5px;color:var(--muted);">Catatan Internal</label>
+                                <textarea class="form-control form-control-sm" id="gNotes" rows="2" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="inv-footer">
+                        <div class="inv-footer-left">
+                            <div>
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Sales Employee</div>
+                                <input type="text" value="-No Sales Employee-" readonly style="border:1px solid #d0d7e3;border-radius:5px;padding:5px 9px;font-size:13px;width:200px;background:#f5f7fb;">
+                            </div>
+                        </div>
+                        <div class="inv-footer-right">
+                            <div class="total-row">
+                                <label>Total Before Discount</label>
+                                <span class="val" id="totBeforeDisc">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Discount</label>
+                                <span class="val" id="totDiscount">0%</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Freight</label>
+                                <span class="val" id="totFreight">IDR 0</span>
+                            </div>
+                            <div class="total-row">
+                                <label>Tax</label>
+                                <span class="val" id="totTax">IDR 0</span>
+                            </div>
+                            <div class="total-row grand">
+                                <label style="font-size:13px;color:var(--primary);font-weight:700;">Total</label>
+                                <span class="val" id="totGrand">IDR 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action bar -->
+                    <div class="action-bar">
+                        <button class="btn btn-outline-secondary" onclick="window.location.href='customer_AR.html'">
+                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            new SidebarSystem(null, "ar_list").render();
+            loadView();
+        });
+
+        const DEMO_DO = [
+            {
+                doNo: "DO-SIC-0001", orderNo: "ORD-SIC-2604-001", company: "SIC", customer: "TOP",
+                status: "Shipped", eta: "2026-04-05",
+                items: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 5000, uom: "Kg", unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qty: 9200, uom: "Kg", unitPrice: 8500 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0002", orderNo: "ORD-SIC-2604-002", company: "SIC", customer: "TOP",
+                status: "Shipped", eta: "2026-04-10",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qty: 4500, uom: "Kg", unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qty: 4250, uom: "Kg", unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0003", orderNo: "ORD-SIC-2604-003", company: "SIC", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-06",
+                items: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qty: 6000, uom: "Kg", unitPrice: 8500 },
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",  qty: 4500, uom: "Kg", unitPrice: 8200 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0004", orderNo: "ORD-SIC-2604-004", company: "SIC", customer: "AYM",
+                status: "Shipped", eta: "2026-04-08",
+                items: [
+                    { itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 4000, uom: "Kg", unitPrice: 7800 },
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)",     qty: 8000, uom: "Kg", unitPrice: 8500 }
+                ]
+            },
+            {
+                doNo: "DO-SIC-0005", orderNo: "ORD-SIC-2604-005", company: "SIC", customer: "AYM",
+                status: "Shipped", eta: "2026-04-17",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)",   qty: 5300, uom: "Kg", unitPrice: 8200 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)", qty: 4000, uom: "Kg", unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0001", orderNo: "ORD-CTU-2604-001", company: "CTU", customer: "TOP",
+                status: "Shipped", eta: "2026-04-19",
+                items: [{ itemCode: "DOC-001", itemName: "DOC Broiler FS", qty: 6000, uom: "Ekor", unitPrice: 6500 }]
+            },
+            {
+                doNo: "DO-CTU-0002", orderNo: "ORD-CTU-2604-002", company: "CTU", customer: "TOP",
+                status: "Shipped", eta: "2026-04-23",
+                items: [
+                    { itemCode: "FEED-002", itemName: "Pakan Starter (BR-1)", qty: 4000, uom: "Kg",    unitPrice: 8500 },
+                    { itemCode: "DOC-002",  itemName: "DOC Broiler PS",        qty: 3500, uom: "Ekor", unitPrice: 6800 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0003", orderNo: "ORD-CTU-2604-003", company: "CTU", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-15",
+                items: [
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",         qty: 3500, uom: "Ekor", unitPrice: 6500 },
+                    { itemCode: "FEED-004", itemName: "Pakan Finisher (BR-3)",  qty: 4300, uom: "Kg",   unitPrice: 9200 }
+                ]
+            },
+            {
+                doNo: "DO-CTU-0004", orderNo: "ORD-CTU-2604-004", company: "CTU", customer: "BMAX",
+                status: "Shipped", eta: "2026-04-21",
+                items: [{ itemCode: "FEED-001", itemName: "Pakan Pre-Starter (BR-0)", qty: 5200, uom: "Kg", unitPrice: 7800 }]
+            },
+            {
+                doNo: "DO-CTU-0005", orderNo: "ORD-CTU-2604-005", company: "CTU", customer: "AYM",
+                status: "Shipped", eta: "2026-04-22",
+                items: [{ itemCode: "DOC-002", itemName: "DOC Broiler PS", qty: 5000, uom: "Ekor", unitPrice: 6800 }]
+            },
+            {
+                doNo: "DO-CTU-0006", orderNo: "ORD-CTU-2604-006", company: "CTU", customer: "AYM",
+                status: "Shipped", eta: "2026-04-24",
+                items: [
+                    { itemCode: "FEED-003", itemName: "Pakan Grower (BR-2)", qty: 3800, uom: "Kg",    unitPrice: 8200 },
+                    { itemCode: "DOC-001",  itemName: "DOC Broiler FS",       qty: 3000, uom: "Ekor", unitPrice: 6500 }
+                ]
+            }
+        ];
+
+        function getDoList() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_customer_deliveries") || "[]");
+            const storedNos = new Set(stored.map(d => d.doNo));
+            return [...stored, ...DEMO_DO.filter(d => !storedNos.has(d.doNo))];
+        }
+
+        function fmt(n) { return "IDR " + Math.round(n).toLocaleString("id-ID"); }
+
+        function loadView() {
+            const params = new URLSearchParams(window.location.search);
+            const doNo = params.get("do");
+
+            if (!doNo) {
+                document.getElementById("pageTitle").innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Parameter tidak valid`;
+                return;
+            }
+
+            const arList = JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]");
+            const existingAR = arList.find(a => a.doRef === doNo);
+
+            if (existingAR) {
+                loadArView(existingAR);
+            } else {
+                loadDoPreview(doNo);
+            }
+        }
+
+        function loadArView(ar) {
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-file-earmark-plus me-2"></i>Detail AR — ${ar.arNo}`;
+            document.getElementById("modeBadge").className = "mode-badge mode-ar";
+            document.getElementById("modeBadge").textContent = "AR Generated";
+            document.getElementById("cardTitle").textContent = "A/R Invoice";
+            document.getElementById("infoBanner").style.display = "flex";
+            document.getElementById("infoBannerText").textContent = `Dokumen AR ini sudah digenerate dari ${ar.doRef}. Tampilan read-only.`;
+
+            document.getElementById("lblParty").textContent = "Customer";
+            document.getElementById("fCustomerCode").value = (ar.customer || "").replace(/\s+/g,"").slice(0,8).toUpperCase();
+            document.getElementById("fCustomerName").value = ar.customer || "-";
+            document.getElementById("fDocNo").value = ar.arNo;
+            document.getElementById("fPostingDate").value = ar.arDate || "-";
+            document.getElementById("fDueDate").value = ar.dueDate || "-";
+            document.getElementById("lblRef1").textContent = "DO Ref";
+            document.getElementById("fDoRef").value = ar.doRef || "-";
+            document.getElementById("lblRef2").textContent = "Order Ref";
+            document.getElementById("fOrderRef").value = ar.orderRef || "-";
+
+            const statusEl = document.getElementById("fStatus");
+            statusEl.textContent = ar.status || "Open";
+            statusEl.className = "status-badge " + (ar.status === "Open" ? "s-open" : "s-generated");
+
+            document.getElementById("gAccount").value = ar.accountCode || "-";
+            document.getElementById("gNotes").value = ar.notes || "";
+
+            let html = "";
+            let lineNo = 0;
+            (ar.lines || []).forEach(l => {
+                lineNo++;
+                html += `<tr>
+                    <td class="text-muted">${lineNo}</td>
+                    <td>${l.itemName || "-"}</td>
+                    <td>${l.glAccount || "-"}</td>
+                    <td>${l.glName || "-"}</td>
+                    <td>${l.distrRule || "-"}</td>
+                    <td style="text-align:right;">${(l.qty || 0).toLocaleString()}</td>
+                    <td style="text-align:right;">${l.unitPrice ? l.unitPrice.toLocaleString("id-ID") : "-"}</td>
+                    <td style="text-align:right;">${(l.discount || 0)}%</td>
+                    <td>${l.taxCode || "-"}</td>
+                </tr>`;
+            });
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+
+            const total = ar.totalBeforeDisc || 0;
+            document.getElementById("totBeforeDisc").textContent = fmt(total);
+            document.getElementById("totDiscount").textContent = (ar.discountPct || 0) + "%";
+            document.getElementById("totFreight").textContent = fmt(ar.freight || 0);
+            document.getElementById("totTax").textContent = fmt(0);
+            document.getElementById("totGrand").textContent = fmt(ar.total || total);
+        }
+
+        function loadDoPreview(doNo) {
+            const allDo = getDoList();
+            const d = allDo.find(x => x.doNo === doNo);
+
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-truck me-2"></i>Preview DO — ${doNo}`;
+            document.getElementById("modeBadge").className = "mode-badge mode-do";
+            document.getElementById("modeBadge").textContent = "DO Preview";
+            document.getElementById("cardTitle").textContent = "Delivery Order Detail";
+            document.getElementById("infoBanner").style.display = "flex";
+            document.getElementById("infoBannerText").textContent = `DO ini belum di-generate menjadi AR. Tampilan preview data DO.`;
+
+            if (!d) {
+                document.getElementById("contentsBody").innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Data DO tidak ditemukan.</td></tr>`;
+                return;
+            }
+
+            document.getElementById("lblParty").textContent = "Customer";
+            document.getElementById("fCustomerCode").value = (d.customer || "").slice(0,8).toUpperCase();
+            document.getElementById("fCustomerName").value = d.customer || "-";
+            document.getElementById("fDocNo").value = d.doNo;
+            document.getElementById("fPostingDate").value = d.eta || "-";
+            document.getElementById("fDueDate").value = "-";
+            document.getElementById("lblRef1").textContent = "Order Ref";
+            document.getElementById("fDoRef").value = d.orderNo || "-";
+            document.getElementById("lblRef2").textContent = "Status";
+            document.getElementById("fOrderRef").value = d.status || "Shipped";
+
+            const statusEl = document.getElementById("fStatus");
+            statusEl.textContent = "Belum di-AR";
+            statusEl.className = "status-badge s-open";
+
+            document.getElementById("gAccount").value = "-";
+            document.getElementById("gNotes").value = "";
+
+            let html = "";
+            let lineNo = 0;
+            let grandTotal = 0;
+            (d.items || []).forEach(l => {
+                lineNo++;
+                const qty = l.qty || 0;
+                const price = l.unitPrice || 0;
+                const total = qty * price;
+                grandTotal += total;
+                html += `<tr>
+                    <td class="text-muted">${lineNo}</td>
+                    <td>${l.itemName || "-"}</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td style="text-align:right;">${qty.toLocaleString()}</td>
+                    <td style="text-align:right;">${price ? price.toLocaleString("id-ID") : "-"}</td>
+                    <td style="text-align:right;">0%</td>
+                    <td>-</td>
+                </tr>`;
+            });
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+
+            document.getElementById("totBeforeDisc").textContent = fmt(grandTotal);
+            document.getElementById("totDiscount").textContent = "0%";
+            document.getElementById("totFreight").textContent = fmt(0);
+            document.getElementById("totTax").textContent = fmt(0);
+            document.getElementById("totGrand").textContent = fmt(grandTotal);
+        }
+
+        function switchInvTab(tab, btn) {
+            document.querySelectorAll(".inv-tab").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            document.getElementById("tabContents").style.display   = tab === "contents"   ? "" : "none";
+            document.getElementById("tabAccounting").style.display = tab === "accounting" ? "" : "none";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IBOCS | Add Forecast</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .page {
+            max-width: 100%;
+            border-radius: 12px;
+            background: #fff;
+            padding: 24px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .subtext {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 13px 16px;
+            font-weight: 700;
+            font-size: 13px;
+            border-bottom: 1px solid #eef0f4;
+            background: #fafbfe;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .summary-box {
+            border: 1px solid #e8ebf1;
+            border-radius: 10px;
+            padding: 14px;
+            background: #fafbfe;
+        }
+
+        .summary-box .lbl {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .summary-box .val {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .btn-action {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 0;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-action:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary-action {
+            padding: 9px 16px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            background: #fff;
+            color: #374151;
+        }
+
+        /* Matrix table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 10px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .matrix-table thead tr:first-child th {
+            background: #1a237e;
+            color: #fff;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .matrix-table thead tr:nth-child(2) th {
+            background: #f1f3f9;
+            color: #374151;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .matrix-table thead tr:nth-child(3) th {
+            background: #f1f3f9;
+            color: #374151;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .matrix-table th.th-yellow {
+            background: #fef08a !important;
+            color: #713f12 !important;
+        }
+
+        .matrix-table td.td-yellow {
+            background: #fefce8;
+            color: #713f12;
+            font-weight: 600;
+        }
+
+        .matrix-table td {
+            text-align: center;
+        }
+
+        .matrix-table tbody tr:hover {
+            background: #f8faff;
+        }
+
+        .matrix-table .sticky-col {
+            position: sticky;
+            background: #fff;
+            z-index: 4;
+        }
+
+        .matrix-table th.sticky-col {
+            background: #1a237e;
+            color: #fff;
+            z-index: 8;
+        }
+
+        .matrix-table thead tr:nth-child(2) th.sticky-col {
+            background: #1a237e;
+            color: #fff;
+        }
+
+        .matrix-table .sticky-check {
+            left: 0;
+            min-width: 40px;
+            width: 40px;
+        }
+
+        .matrix-table .sticky-plan {
+            left: 40px;
+            min-width: 130px;
+            width: 130px;
+        }
+
+        .matrix-table .sticky-desc {
+            left: 170px;
+            min-width: 170px;
+            width: 170px;
+            white-space: normal;
+            line-height: 1.25;
+        }
+
+        .matrix-table .sticky-location {
+            left: 340px;
+            min-width: 90px;
+            width: 90px;
+        }
+
+        .matrix-table .sticky-kandang {
+            left: 430px;
+            min-width: 90px;
+            width: 90px;
+            box-shadow: 4px 0 8px rgba(15, 23, 42, 0.08);
+        }
+
+        .matrix-table tbody tr:hover .sticky-col {
+            background: #f8faff;
+        }
+
+        .formula-tip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+            min-height: 20px;
+            cursor: help;
+            border-bottom: 1px dotted rgba(26, 35, 126, 0.45);
+        }
+
+        .formula-popover {
+            position: fixed;
+            min-width: 260px;
+            max-width: 360px;
+            white-space: pre-line;
+            text-align: left;
+            background: #111827;
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 11px;
+            line-height: 1.45;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.28);
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .12s ease;
+        }
+
+        .formula-popover.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .formula-popover::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 100%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: #111827;
+        }
+
+        .col-feed {
+            background: #f9fafc;
+            font-weight: 700;
+            min-width: 180px;
+        }
+
+        .col-phase {
+            background: #f9fafc;
+            color: #6b7280;
+            font-size: 11px;
+            min-width: 90px;
+        }
+
+        .col-uom {
+            background: #f9fafc;
+            color: #6b7280;
+            font-size: 11px;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .cell-vitality {
+            color: #166534;
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .cell-feedcons {
+            color: #1d4ed8;
+            text-align: right;
+            min-width: 90px;
+        }
+
+        .cell-qty {
+            text-align: right;
+            min-width: 90px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cell-qty:hover {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .cell-qty-skip {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .row-total td {
+            background: #fef9c3;
+            font-weight: 700;
+        }
+
+        .row-total .col-feed {
+            background: #fef9c3;
+        }
+
+        .kdg-header-main {
+            background: #1a237e !important;
+            color: #fff !important;
+        }
+
+        .kdg-sub {
+            font-size: 10px;
+            font-weight: 400;
+            opacity: 0.85;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Chip */
+        .chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 700;
+            margin: 1px;
+        }
+
+        .chip-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .chip-blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .chip-orange {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Company section */
+        .company-section {
+            margin-bottom: 22px;
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px 14px;
+            background: #1a237e;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .company-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            flex: 1;
+        }
+
+        .company-stat {
+            font-size: 11px;
+            color: #c7d2fe;
+            white-space: nowrap;
+        }
+
+        .company-table-wrap {
+            border: 1.5px solid #e0e7ef;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            overflow: hidden;
+        }
+
+        /* Filter bar */
+        .filter-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 20px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: #f1f5f9;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #475569;
+            transition: all .2s ease;
+        }
+
+        .filter-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .filter-btn.active {
+            background: #eef2ff;
+            color: #4338ca;
+            border-color: #c7d2fe;
+            box-shadow: 0 1px 2px rgba(67, 56, 202, 0.05);
+        }
+
+        /* Row action buttons */
+        .btn-info-plan {
+            padding: 0 7px;
+            border: 1px solid #c4b5fd;
+            border-radius: 5px;
+            background: #f5f3ff;
+            cursor: pointer;
+            height: 24px;
+            font-size: 11px;
+            color: #6d28d9;
+            white-space: nowrap;
+        }
+
+        .btn-info-plan:hover {
+            background: #ede9fe;
+        }
+
+        .btn-rekom {
+            padding: 0 7px;
+            border: 1.5px solid #2563eb;
+            border-radius: 5px;
+            background: #eff6ff;
+            cursor: pointer;
+            height: 24px;
+            font-size: 11px;
+            color: #1d4ed8;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .btn-rekom:hover {
+            background: #dbeafe;
+        }
+
+        .btn-rekom.has-items {
+            background: #2563eb;
+            color: #fff;
+            border-color: #1d4ed8;
+        }
+
+        .btn-rekom.has-items:hover {
+            background: #1d4ed8;
+        }
+
+        /* Plan info modal */
+        .pi-section {
+            padding: 10px 16px 4px;
+        }
+
+        .pi-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            color: #6d28d9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pi-section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e9d5ff;
+        }
+
+        .pi-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 12px;
+            margin-bottom: 6px;
+        }
+
+        .pi-item {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 7px 10px;
+        }
+
+        .pi-item .pik {
+            font-size: 10px;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 2px;
+        }
+
+        .pi-item .piv {
+            font-size: 13px;
+            color: #111;
+            font-weight: 500;
+        }
+
+        .pi-item .piv.num {
+            color: #1a237e;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        /* Rekomendasi modal */
+        .rekom-item {
+            background: #f8faff;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .rekom-item .rqty {
+            font-size: 22px;
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .rekom-item .rsub {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .rekom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        /* Formula box (kept for calc modal) */
+        .formula-box {
+            background: #f8faff;
+            border: 1px solid #dbeafe;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #374151;
+            margin-bottom: 14px;
+        }
+
+        .formula-box .f-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1d4ed8;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 4px;
+        }
+
+        .formula-box code {
+            background: #e0e7ff;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 11px;
+            color: #3730a3;
+        }
+
+        /* Modal */
+        .modal-header {
+            background: #1a237e;
+            color: #fff;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+        .calc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .calc-table th {
+            background: #f1f3f9;
+            font-size: 11px;
+            padding: 7px 10px;
+            border-bottom: 2px solid #e5e7eb;
+            text-align: right;
+        }
+
+        .calc-table th:first-child {
+            text-align: center;
+        }
+
+        .calc-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f3f4f6;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .calc-table td:first-child {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .calc-table tr.phase-total td {
+            background: #f0fdf4;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        @media (max-width: 900px) {
+
+            .summary-grid,
+            .info-grid,
+            .calc-result-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .rekom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .summary-grid,
+            .info-grid,
+            .calc-result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Customer Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                        id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="index.html">Ganti Portal</a></li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0 fw-bold" style="color:#1a237e;"><i class="bi bi-plus-square me-2"></i>Add Forecast
+                    </h4>
+                    <a href="customer_ForecastList.html" class="btn btn-outline-secondary btn-sm fw-bold">
+                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+
+                <div class="page shadow-sm">
+                    <div class="topbar">
+                        <div>
+                            <h1>Add Forecast</h1>
+                            <div class="subtext">Pilih plan, tentukan week, cek kalkulator kebutuhan pakan, lalu simpan
+                                dokumen forecast.</div>
+                        </div>
+                        <div style="min-width:220px;">
+                            <label class="form-label mb-1 small fw-bold text-muted">Forecast Period</label>
+                            <select class="form-select form-select-sm fw-bold" id="forecastPeriod"
+                                onchange="renderPlanCards()">
+                                <option value="Week 18">Week 18</option>
+                                <option value="Week 19">Week 19</option>
+                                <option value="Week 20">Week 20</option>
+                                <option value="Week 21">Week 21</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="summary-grid mb-3" id="summaryGrid"></div>
+
+                    <!-- Filters -->
+                    <div id="filterContainer"></div>
+
+                    <!-- Plans by Company -->
+                    <div id="plansContainer"></div>
+
+                </div>
+                <div class="text-center text-muted small mt-4 mb-2">© 2026 IBOCS — Customer Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Action Bar -->
+    <div id="bulkActionBar"
+        style="display:none; position:fixed; bottom:0; left:0; right:0; background:#fff; padding:16px 24px; box-shadow:0 -4px 20px rgba(0,0,0,0.08); z-index:1000; justify-content:flex-end; gap:12px; align-items:center;">
+        <div class="text-muted small me-auto d-none d-md-block">Sistem akan membuat dokumen forecast terpisah sesuai
+            Forecast Period yang dipilih.</div>
+        <div style="font-weight:700; color:#1a237e;" class="me-3"><span id="bulkActionCount">0</span> Plan Dipilih</div>
+        <button class="btn btn-primary px-4 fw-bold" style="border-radius:8px;" id="btnBulkSubmit"
+            onclick="startReviewFlow()">
+            <i class="bi bi-clipboard2-check me-2"></i>Buat Forecast
+        </button>
+    </div>
+
+    <!-- Plan Info Modal -->
+    <div class="modal fade" id="planInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background:#5b21b6;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i>Detail Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="planInfoBody"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Get Data Plan Modal -->
+    <div class="modal fade" id="getDataModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-cloud-arrow-down me-2"></i>Tarik Plan dari SAP —
+                        <span id="getDataCompany">-</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3 border-bottom bg-light">
+                        <div class="row g-2">
+                            <div class="col">
+                                <label class="form-label mb-1"
+                                    style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Location</label>
+                                <select class="form-select form-select-sm" id="getDataFarmFilter"
+                                    onchange="onGetDataFarmChange()">
+                                    <option value="">Semua Farm</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label class="form-label mb-1"
+                                    style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;">Kandang</label>
+                                <select class="form-select form-select-sm" id="getDataKdgFilter"
+                                    onchange="renderGetDataList()">
+                                    <option value="">Semua Kandang</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3" id="getDataPreview"></div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-secondary btn-sm fw-bold"
+                        data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary btn-sm fw-bold px-4" id="btnTarikSubmit"
+                        onclick="submitGetData()">
+                        <i class="bi bi-cloud-download me-1"></i>Tarik <span id="getDataCountBadge"
+                            class="badge bg-white text-primary ms-1">0</span> Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Item Search Modal -->
+    <div class="modal fade" id="itemSearchModal" tabindex="-1" aria-hidden="true"
+        style="z-index: 1060; background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background:#1a237e;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-search me-2"></i>Pilih Item Pakan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="p-3 border-bottom">
+                        <input type="text" class="form-control form-control-sm" id="itemSearchQ"
+                            placeholder="Ketik nama atau kode item..." oninput="filterItemSearch(this.value)">
+                    </div>
+                    <div id="itemSearchList" style="max-height:380px;overflow-y:auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Forecast Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header" style="background:#1a237e;">
+                    <h5 class="modal-title fw-bold text-white" id="reviewModalTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="reviewModalBody"></div>
+                <div class="modal-footer" id="reviewModalFooter"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Toast Container -->
+    <div id="toastContainer"
+        style="position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        // ─── SESSION GUARD ────────────────────────────────────────────────────────
+        const sess = localStorage.getItem("IBOCS_user");
+        if (!sess) window.location.href = "login.html?role=customer";
+        const user = JSON.parse(sess);
+        if (user.role !== "customer" && user.role !== "super_admin") window.location.href = "index.html";
+        document.getElementById("userBtn").textContent = user.name || "User";
+        document.getElementById("userInfo").textContent = `${user.email} • role=${user.role}`;
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            window.location.href = "index.html";
+        });
+
+        // ─── REVIEW FLOW STATE ────────────────────────────────────────────────────
+        let _reviewPlans = [];
+        let _reviewStep = 0;
+        let _reviewData = {};
+        let _reviewModalInst = null;
+
+        // ─── STD ANALYSIS ─────────────────────────────────────────────────────────
+        const STD = [
+            { d: 1, m: 0.00, v: 100.00, fd: 0.0010 },
+            { d: 2, m: 0.10, v: 99.90, fd: 0.0020 },
+            { d: 3, m: 0.10, v: 99.80, fd: 0.0030 },
+            { d: 4, m: 0.10, v: 99.70, fd: 0.0040 },
+            { d: 5, m: 0.10, v: 99.60, fd: 0.0050 },
+            { d: 6, m: 0.10, v: 99.50, fd: 0.0060 },
+            { d: 7, m: 0.10, v: 99.40, fd: 0.0070 },
+            { d: 8, m: 0.20, v: 99.20, fd: 0.0090 },
+            { d: 9, m: 0.20, v: 99.00, fd: 0.0120 },
+            { d: 10, m: 0.20, v: 98.80, fd: 0.0150 },
+            { d: 11, m: 0.20, v: 98.60, fd: 0.0180 },
+            { d: 12, m: 0.20, v: 98.40, fd: 0.0220 },
+            { d: 13, m: 0.20, v: 98.20, fd: 0.0260 },
+            { d: 14, m: 0.20, v: 98.00, fd: 0.0300 },
+            { d: 15, m: 0.20, v: 97.80, fd: 0.0350 },
+            { d: 16, m: 0.20, v: 97.60, fd: 0.0400 },
+            { d: 17, m: 0.20, v: 97.40, fd: 0.0450 },
+            { d: 18, m: 0.20, v: 97.20, fd: 0.0500 },
+            { d: 19, m: 0.20, v: 97.00, fd: 0.0560 },
+            { d: 20, m: 0.20, v: 96.80, fd: 0.0620 },
+            { d: 21, m: 0.20, v: 96.60, fd: 0.0680 },
+            { d: 22, m: 0.30, v: 96.30, fd: 0.0750 },
+            { d: 23, m: 0.30, v: 96.00, fd: 0.0820 },
+            { d: 24, m: 0.30, v: 95.70, fd: 0.0890 },
+            { d: 25, m: 0.30, v: 95.40, fd: 0.0960 },
+            { d: 26, m: 0.30, v: 95.10, fd: 0.1030 },
+            { d: 27, m: 0.30, v: 94.80, fd: 0.1100 },
+            { d: 28, m: 0.30, v: 94.50, fd: 0.1160 },
+            { d: 29, m: 0.30, v: 94.20, fd: 0.1220 },
+            { d: 30, m: 0.30, v: 93.90, fd: 0.1280 },
+            { d: 31, m: 0.30, v: 93.60, fd: 0.1330 },
+            { d: 32, m: 0.30, v: 93.30, fd: 0.1380 },
+            { d: 33, m: 0.30, v: 93.00, fd: 0.1420 },
+            { d: 34, m: 0.30, v: 92.70, fd: 0.1460 },
+            { d: 35, m: 0.30, v: 92.40, fd: 0.1500 },
+        ];
+
+        const PHASES = [
+            { code: "FEED-001", name: "Pakan Pre-Starter (S-0)", dayFrom: 1, dayTo: 7, uom: "Kg" },
+            { code: "FEED-002", name: "Pakan Starter (BR-1)", dayFrom: 8, dayTo: 21, uom: "Kg" },
+            { code: "FEED-004", name: "Pakan Finisher (BR-3)", dayFrom: 22, dayTo: 35, uom: "Kg" },
+        ];
+
+        // ─── DEMO PLANS (mapped from kandang aktif) ───────────────────────────────
+        let DEMO_PLANS = [];
+
+        let _sapPlansPool = [
+            {
+                planNo: "100004423", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi",
+                location: "Pekalongan", id: "F0001364", wh: "F0001364", docQty: 9700, docType: "DOC Broiler",
+                ageLastPosting: 22, ageCurrent: 27, lastPostingDate: "29-Apr-26",
+                sapData: { mort: 269, lastPop: 9431, bw: 0.985, fcr: 1.297, fiAct: 1.242, fiCum: 12050, grpo: 22700, poItr: null, lastStok: 10650 }
+            },
+            {
+                planNo: "100004424", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi",
+                location: "Blora", id: "F0001471", wh: "F0001471", docQty: 30800, docType: "DOC Broiler",
+                ageLastPosting: 19, ageCurrent: 24, lastPostingDate: "29-Apr-26",
+                sapData: { mort: 738, lastPop: 30370, bw: 0.75, fcr: 1.225, fiAct: 0.082, fiCum: 0.906, grpo: 43000, poItr: null, lastStok: 16600 }
+            },
+            {
+                planNo: "100004425", fcStatus: "Draft", status: "Active", company: "PT TOP Distribusi",
+                location: "Klaten", id: "F0001470", wh: "F0001470", docQty: 7200, docType: "DOC Broiler",
+                ageLastPosting: 18, ageCurrent: 21, lastPostingDate: "1-May-26",
+                sapData: { mort: 446, lastPop: 6826, bw: 0.586, fcr: 1.212, fiAct: 0.08, fiCum: 0.674, grpo: 9000, poItr: null, lastStok: 3550 }
+            },
+            {
+                planNo: "100000271", fcStatus: "Draft", status: "Active", company: "PT AYM",
+                location: "Ponorogo", id: "F0000274", wh: "F0000274", docQty: 5000, docType: "DOC Broiler",
+                ageLastPosting: 12, ageCurrent: 14, lastPostingDate: "2-May-26",
+                sapData: { mort: 46, lastPop: 5004, bw: 0.345, fcr: 1.303, fiAct: 0.04, fiCum: 0.45, grpo: 4000, poItr: 1750 }
+            },
+            {
+                planNo: "100000272", fcStatus: "Draft", status: "Active", company: "PT AYM",
+                location: "Malang", id: "F0000073", wh: "F0000073", docQty: 8500, docType: "DOC Broiler",
+                ageLastPosting: 11, ageCurrent: 13, lastPostingDate: "1-May-26",
+                sapData: { mort: 155, lastPop: 8430, bw: 0.325, fcr: 1.113, fiAct: 0.059, fiCum: 0.359, grpo: 5500, poItr: 2450 }
+            },
+            {
+                planNo: "100000273", fcStatus: "Draft", status: "Active", company: "PT AYM",
+                location: "Tuban", id: "F0000173", wh: "F0000173", docQty: 9900, docType: "DOC Broiler",
+                ageLastPosting: 11, ageCurrent: 13, lastPostingDate: "1-May-26",
+                sapData: { mort: 329, lastPop: 9670, bw: 0.187, fcr: 1.244, fiAct: 0.031, fiCum: 0.227, grpo: 5000, poItr: 2750 }
+            },
+            {
+                planNo: "21000235", fcStatus: "Draft", status: "Active", company: "PT CTU",
+                location: "Pasuruan", id: "FSR0001", wh: "FSR0001", docQty: 9315, docType: "DOC Layer",
+                ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",
+                sapData: { mort: 386, lastPop: 8929, bw: null, fcr: null, fiAct: null, fiCum: null, grpo: 37700, poItr: null, lastStok: 1844, statusKalang: "GROWTH", kebutuhanMinggu: 4500, sisaKebutuhan: 18200 }
+            },
+            {
+                planNo: "21000236", fcStatus: "Draft", status: "Active", company: "PT CTU",
+                location: "Pasuruan", id: "FSR0002", wh: "FSR0002", docQty: 9460, docType: "DOC Layer",
+                ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",
+                sapData: { mort: 326, lastPop: 9134, bw: null, fcr: null, fiAct: null, fiCum: null, grpo: 37250, poItr: null, lastStok: 979, statusKalang: "GROWTH", kebutuhanMinggu: 3800, sisaKebutuhan: 15400 }
+            },
+            {
+                planNo: "21000237", fcStatus: "Draft", status: "Active", company: "PT CTU",
+                location: "Pasuruan", id: "FSR0003", wh: "FSR0003", docQty: 8940, docType: "DOC Layer",
+                ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",
+                sapData: { mort: 276, lastPop: 8664, bw: null, fcr: null, fiAct: null, fiCum: null, grpo: 31850, poItr: null, lastStok: 1537, statusKalang: "GROWTH", kebutuhanMinggu: 4200, sisaKebutuhan: 16800 }
+            },
+            {
+                planNo: "21000238", fcStatus: "Draft", status: "Active", company: "PT CTU",
+                location: "Pasuruan", id: "FSR0004", wh: "FSR0004", docQty: 9460, docType: "DOC Layer",
+                ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",
+                sapData: { mort: 291, lastPop: 9169, bw: null, fcr: null, fiAct: null, fiCum: null, grpo: 32150, poItr: null, lastStok: 836, statusKalang: "GROWTH", kebutuhanMinggu: 3600, sisaKebutuhan: 14400 }
+            },
+            {
+                planNo: "21000239", fcStatus: "Draft", status: "Active", company: "PT CTU",
+                location: "Pasuruan", id: "FSR0005", wh: "FSR0005", docQty: 9520, docType: "DOC Layer",
+                ageLastPosting: 98, ageCurrent: 98, lastPostingDate: "2-May-26",
+                sapData: { mort: 211, lastPop: 9309, bw: null, fcr: null, fiAct: null, fiCum: null, grpo: 22900, poItr: null, lastStok: 1415, statusKalang: "GROWTH", kebutuhanMinggu: 4100, sisaKebutuhan: 16400 }
+            },
+            { planNo: "PLAN-2026-008", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX A", id: "KDG-08", wh: "WH-KDG08", docQty: 22000, docType: "DOC Broiler Ross 308", age: 23 },
+            { planNo: "PLAN-2026-009", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX A", id: "KDG-09", wh: "WH-KDG09", docQty: 18000, docType: "DOC Broiler Cobb 500", age: 7 },
+            { planNo: "PLAN-2026-010", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX B", id: "KDG-10", wh: "WH-KDG10", docQty: 20000, docType: "DOC Broiler Ross 308", age: 11 },
+            { planNo: "PLAN-2026-018", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX A", id: "KDG-18", wh: "WH-KDG18", docQty: 25000, docType: "DOC Broiler Ross 308", age: 1 },
+            { planNo: "PLAN-2026-019", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX B", id: "KDG-19", wh: "WH-KDG19", docQty: 16000, docType: "DOC Broiler Cobb 500", age: 9 },
+            { planNo: "PLAN-2026-020", fcStatus: "Draft", status: "Active", company: "PT BMAX", farm: "Farm BMAX B", id: "KDG-20", wh: "WH-KDG20", docQty: 20000, docType: "DOC Broiler Ross 308", age: 7 },
+        ];
+
+        const HARVEST_DAY = 35;
+
+        // ─── KALKULASI ────────────────────────────────────────────────────────────
+        function calcFeedNeed(plan) {
+            const { docQty } = plan;
+            const age = plan.ageCurrent ?? plan.age;
+            const phaseResults = PHASES.map((ph, idx) => {
+                const startDay = Math.max(ph.dayFrom, age + 1);
+                const endDay = Math.min(ph.dayTo, HARVEST_DAY);
+                if (startDay > endDay) return { phaseIdx: idx, qty: 0, avgVitality: null, avgFeedCons: null, days: 0, skipped: true };
+
+                let totalQty = 0, sumV = 0, sumFc = 0, count = 0;
+                for (let d = startDay; d <= endDay; d++) {
+                    const row = STD[d - 1];
+                    totalQty += docQty * (row.v / 100) * row.fd;
+                    sumV += row.v;
+                    sumFc += row.fd;
+                    count++;
+                }
+                return { phaseIdx: idx, qty: totalQty, avgVitality: sumV / count, avgFeedCons: sumFc / count, days: count, skipped: false };
+            });
+            const totalQty = phaseResults.reduce((s, r) => s + r.qty, 0);
+            return { phaseResults, totalQty };
+        }
+
+        function fmt(n, dec = 0) { return n.toLocaleString("id-ID", { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
+
+        function getPlanDescription(plan) {
+            if (!plan) return "-";
+            const age = plan.ageCurrent ?? plan.age;
+            if (plan.planDesc || plan.planDescription) return plan.planDesc || plan.planDescription;
+            if (plan.docType && age != null) return `${plan.docType} - Hari ${age}`;
+            if (plan.docType) return plan.docType;
+            const location = plan.location ?? plan.farm;
+            return [location, plan.id].filter(Boolean).join(" / ") || "-";
+        }
+
+        function escHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, ch => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+            }[ch]));
+        }
+
+        function tip(valueHtml, lines) {
+            return `<span class="formula-tip" data-tip="${escHtml(lines.join("\n"))}">${valueHtml}</span>`;
+        }
+
+        function fmtDate(date) {
+            return date.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" });
+        }
+
+        function parsePlanDate(value) {
+            if (!value) return null;
+            const parsed = new Date(value);
+            if (!Number.isNaN(parsed.getTime())) return parsed;
+
+            const match = String(value).match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2,4})$/);
+            if (!match) return null;
+            const months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+            const month = months[match[2]];
+            if (month === undefined) return null;
+            const year = match[3].length === 2 ? 2000 + parseInt(match[3], 10) : parseInt(match[3], 10);
+            return new Date(year, month, parseInt(match[1], 10));
+        }
+
+        function addDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function diffDays(fromDate, toDate) {
+            const msPerDay = 24 * 60 * 60 * 1000;
+            return Math.round((toDate - fromDate) / msPerDay);
+        }
+
+        function ceilTo(n, step = 50) {
+            return Math.ceil(n / step) * step;
+        }
+
+        function getStdRows() {
+            let cumFi = 0;
+            return STD.map(row => {
+                cumFi += row.fd || 0;
+                return {
+                    age: row.d,
+                    bw: row.bw ?? (0.045 + row.d * 0.055),
+                    fiCum: row.fiCum ?? cumFi
+                };
+            });
+        }
+
+        function lookupStdByTargetBW(targetBW) {
+            const rows = getStdRows();
+            return rows.find(row => row.bw >= targetBW) || rows[rows.length - 1];
+        }
+
+        function lookupStdByCumFi(cumFi, matchMode = 1) {
+            const rows = getStdRows();
+            if (matchMode === -1) {
+                let found = rows[0];
+                rows.forEach(row => { if (row.fiCum <= cumFi) found = row; });
+                return found;
+            }
+            return rows.find(row => row.fiCum >= cumFi) || rows[rows.length - 1];
+        }
+
+        function lookupCumFiByAge(age) {
+            const rows = getStdRows();
+            const safeAge = Math.max(1, Math.min(HARVEST_DAY, Math.round(age)));
+            return (rows.find(row => row.age === safeAge) || rows[rows.length - 1]).fiCum;
+        }
+
+        // ─── FILTER STATE ─────────────────────────────────────────────────────────
+        let _activeCompany = "ALL"; // set dari URL param
+
+        // ─── RENDER BY COMPANY ────────────────────────────────────────────────────
+        function renderPlanCards() {
+            renderSummary();
+
+            if (DEMO_PLANS.length === 0) {
+                document.getElementById("filterContainer").innerHTML = "";
+                document.getElementById("plansContainer").innerHTML = `
+                    <div style="text-align:center;padding:60px 24px;border:2px dashed #e0e7ef;border-radius:12px;background:#fafbfe;">
+                        <i class="bi bi-cloud-arrow-down" style="font-size:40px;color:#c7d2fe;display:block;margin-bottom:16px;"></i>
+                        <div style="font-size:16px;font-weight:700;color:#1a237e;margin-bottom:8px;">Belum Ada Plan</div>
+                        <div style="font-size:13px;color:#6b7280;margin-bottom:20px;">Tarik data plan dari SAP untuk mulai membuat forecast.</div>
+                        <button class="btn btn-primary fw-bold px-4" style="border-radius:8px;" onclick="openGetData('${_activeCompany}')">
+                            <i class="bi bi-cloud-arrow-down me-2"></i>Tarik Plan dari SAP
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            const companies = [...new Set(DEMO_PLANS.map(p => p.company))];
+
+            document.getElementById("plansContainer").innerHTML = companies.map(company => {
+                const tableHeader = `
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="sticky-col sticky-check" style="text-align:center;"><input type="checkbox" onchange="toggleAllBulk(this, '${company}')"></th>
+                            <th rowspan="2" class="sticky-col sticky-plan">Plan No</th>
+                            <th rowspan="2" class="sticky-col sticky-desc">Plan Description</th>
+                            <th rowspan="2" class="sticky-col sticky-location">Location</th>
+                            <th rowspan="2" class="sticky-col sticky-kandang">Kandang</th>
+                            <th rowspan="2">Populasi</th>
+                            <th rowspan="2">Last Posting Date</th>
+                            <th colspan="7">Status Last Posting</th>
+                            <th colspan="4" class="th-yellow">Status Sekarang</th>
+                            <th colspan="2" class="th-yellow">Panen</th>
+                            <th colspan="3" class="th-yellow">Pakan Habis</th>
+                            <th rowspan="2">BW PANEN</th>
+                            <th rowspan="2">Kebutuhan Minggu Depan</th>
+                            <th rowspan="2">Sisa Kebutuhan</th>
+                            <th colspan="3">Estimate Habis Kapan</th>
+                            <th rowspan="2" style="min-width:80px;">Aksi</th>
+                        </tr>
+                        <tr>
+                            <th>Age</th><th>Mort</th><th>Last Populasi</th><th>BW</th><th>FCR</th>
+                            <th>FI Act</th><th>FI Cum Pakan Terima</th><th>GRPO/IT</th><th>PO/ITR</th>
+                            <th>Last Stok</th><th>Age</th>
+                            <th class="th-yellow">Tanggal</th><th class="th-yellow">Ekor</th>
+                            <th class="th-yellow">Date</th><th class="th-yellow">Age</th><th class="th-yellow">Diff</th>
+                            <th>Date</th><th>Age</th><th>Diff</th>
+                        </tr>
+                    </thead>`;
+
+                const plans = DEMO_PLANS.filter(p => p.company === company);
+                const totalPop = plans.reduce((s, p) => s + p.docQty, 0);
+                const totalKebutuhan = plans.reduce((s, p) => s + Math.round(sapMock(p, calcFeedNeed(p)).kebutuhanMinggu), 0);
+
+                const rows = plans.map(plan => {
+                    const calc = calcFeedNeed(plan);
+                    const sap = sapMock(plan, calc);
+                    const safeCompanyKey = company.replace(/\s+/g, '-');
+                    const isChecked = _selectedPlansForBulk.includes(plan.planNo) ? "checked" : "";
+                    const periodGuard = canSubmitForecast(plan.planNo, getSelectedPeriod());
+                    const isDisabled = periodGuard.ok ? "" : "disabled";
+                    const disabledMsg = !periodGuard.ok ? `title="${periodGuard.reason}"` : "";
+                    const blockReason = !periodGuard.ok ? "Sudah ada forecast" : "";
+
+                    return `<tr>
+                        <td class="sticky-col sticky-check" style="text-align:center;">
+                            <input type="checkbox" class="cb-bulk-${safeCompanyKey}" value="${plan.planNo}" onchange="toggleBulk('${plan.planNo}', this.checked)" ${isChecked} ${isDisabled} ${disabledMsg}>
+                            ${blockReason ? `<div style="font-size:9px;color:#f87171;margin-top:2px;white-space:nowrap;">${blockReason}</div>` : ""}
+                        </td>
+                        <td class="sticky-col sticky-plan" style="font-weight:700;color:#1a237e;white-space:nowrap;">${plan.planNo}</td>
+                        <td class="sticky-col sticky-desc" style="font-weight:600;color:#374151;">${getPlanDescription(plan)}</td>
+                        <td class="sticky-col sticky-location" style="white-space:nowrap;">${plan.location ?? plan.farm}</td>
+                        <td class="sticky-col sticky-kandang">${plan.id}</td>
+                        <td style="font-weight:700;">${fmt(plan.docQty)}</td>
+                        <td>${sap.lastPostStr}</td>
+                        <td>${tip(plan.ageLastPosting ?? plan.age, [
+                        "Age Last Posting",
+                        "= Last Posting Date - Tanggal CI",
+                        `= ${sap.lastPostStr} - ${fmtDate(addDays(parsePlanDate(sap.lastPostStr) || new Date(2026, 3, 20), -(sap.formula.ageLastPosting || 0)))}`,
+                        `= ${sap.formula.ageLastPosting} hari`
+                    ])}</td>
+                        <td>${sap.mort}</td>
+                        <td>${tip(fmt(sap.lastPop), [
+                        "Last Populasi",
+                        "= Populasi + Bonus - Mort",
+                        `= ${fmt(sap.formula.popBonus)} - ${fmt(sap.mort)}`,
+                        `= ${fmt(sap.lastPop)} ekor`
+                    ])}</td>
+                        <td>${sap.bw != null ? fmt(sap.bw, 3) + ' kg' : '-'}</td>
+                        <td>${sap.fcr != null ? tip(fmt(sap.fcr, 3), [
+                        "FCR",
+                        "Untuk data TOP, nilai FCR dipakai dari SAP/dummy.",
+                        "= Pakan Terpakai / Last Populasi / BW",
+                        `= ${fmt(sap.formula.pakanTerpakai, 3)} / ${fmt(sap.lastPop)} / ${fmt(sap.bw, 3)}`,
+                        `= ${fmt(sap.fcr, 3)}`
+                    ]) : '-'}</td>
+                        <td>${sap.fiAct != null ? tip(fmt(sap.fiAct, 3) + ' kg', [
+                        "FI Act",
+                        "Untuk data TOP, nilai FI Act dipakai dari SAP/dummy.",
+                        "= Pakan Terpakai / (Populasi + Bonus)",
+                        `= ${fmt(sap.formula.pakanTerpakai, 3)} / ${fmt(sap.formula.popBonus)}`,
+                        `= ${fmt(sap.fiAct, 3)} kg/ekor`
+                    ]) : '-'}</td>
+                        <td>${sap.fiCum != null ? tip(fmt(sap.fiCum, 3) + ' kg', [
+                        "FI Cum Pakan Terima",
+                        "= Lookup STD SAP by Target BW",
+                        `Target BW = ${fmt(sap.formula.targetBW, 2)} kg`,
+                        `FI Cum STD = ${fmt(sap.fiCum, 3)} kg/ekor`
+                    ]) : '-'}</td>
+                        <td>${sap.grpo != null ? fmt(sap.grpo) : '-'}</td>
+                        <td>${sap.poItr != null ? fmt(sap.poItr) : '-'}</td>
+                        <td>${tip(fmt(sap.lastStok) + ' kg', [
+                        "Last Stok",
+                        sap.formula.poItrCalc === 0 ? "Untuk TOP, Last Stock dipakai dari SAP/dummy." : "= GRPO/IT + PO/ITR - Pakan Terpakai",
+                        `GRPO/IT = ${fmt(sap.grpo)}; PO/ITR = ${fmt(sap.formula.poItrCalc)}`,
+                        `Pakan Terpakai = ${fmt(sap.formula.pakanTerpakai, 3)}`,
+                        `= ${fmt(sap.lastStok, 3)} kg`
+                    ])}</td>
+                        <td>${tip(sap.ageNow, [
+                        "Age Now",
+                        "= Today - Tanggal CI",
+                        "Untuk dummy masih memakai ageCurrent/age dari plan jika tersedia.",
+                        `= ${sap.ageNow} hari`
+                    ])}</td>
+                        <td class="td-yellow">${sap.panenDateStr}</td>
+                        <td class="td-yellow">${tip(fmt(sap.panenEkor), [
+                        "Ekor Panen",
+                        "Field asli: input manual.",
+                        "Dummy rule: jika Age Now >= 27, pakai 30% x Last Populasi.",
+                        `= ${sap.ageNow} >= 27 ? 30% x ${fmt(sap.lastPop)} : 0`,
+                        `= ${fmt(sap.panenEkor)} ekor`
+                    ])}</td>
+                        <td class="td-yellow">${sap.tglHabisStr}</td>
+                        <td class="td-yellow">Hari ${sap.ageHabis}</td>
+                        <td class="td-yellow">${tip(`${sap.pakanHabisDiff} hari`, [
+                        "Diff Pakan Habis",
+                        "Current: sebelum tambahan forecast.",
+                        "= Age Habis Pakan - Age Last Posting",
+                        `= ${sap.ageHabis} - ${sap.formula.ageLastPosting}`,
+                        `= ${sap.pakanHabisDiff} hari`
+                    ])}</td>
+                        <td>${sap.bwPanen}</td>
+                        <td style="font-weight:700;color:#1a237e;">${tip(fmt(sap.kebutuhanMinggu) + ' kg', [
+                        "Kebutuhan Total Pakan",
+                        "= CEILING((Populasi + Bonus) x FI Cum STD, 50)",
+                        `= CEILING(${fmt(sap.formula.popBonus)} x ${fmt(sap.fiCum, 3)}, 50)`,
+                        `= ${fmt(sap.kebutuhanMinggu)} kg`
+                    ])}</td>
+                        <td style="font-weight:700;color:#92400e;">${tip(fmt(sap.sisaKebutuhan) + ' kg', [
+                        "Sisa Kebutuhan",
+                        "= MAX(0, Kebutuhan Total - (GRPO/IT + PO/ITR))",
+                        `= ${fmt(sap.kebutuhanMinggu)} - (${fmt(sap.grpo)} + ${fmt(sap.formula.poItrCalc)})`,
+                        `Raw = ${fmt(sap.formula.sisaKebutuhanRaw)} kg`,
+                        `Display = ${fmt(sap.sisaKebutuhan)} kg`
+                    ])}</td>
+                        <td>${sap.tglEstimasiHabisStr}</td>
+                        <td>Hari ${sap.ageEstimasiHabis}</td>
+                        <td>${tip(`${sap.estimasiHabisDiff} hari`, [
+                        "Diff Estimasi Habis",
+                        "After forecast: Last Stok + MAX(0, Sisa Kebutuhan)",
+                        `Forecast Qty = ${fmt(sap.formula.forecastQty)} kg`,
+                        `Stok setelah forecast = ${fmt(sap.lastStok)} + ${fmt(sap.formula.forecastQty)} = ${fmt(sap.formula.lastStokAfterForecast)} kg`,
+                        `Tambahan hari = ${fmt(sap.formula.forecastQty)} / ${fmt(sap.formula.dailyFeedAfterCurrent, 3)} = ${sap.formula.extraDaysFromForecast} hari`,
+                        "= Age Estimasi Habis - Age Last Posting",
+                        `= ${sap.ageEstimasiHabis} - ${sap.formula.ageLastPosting}`,
+                        `= ${sap.estimasiHabisDiff} hari`
+                    ])}</td>
+                        <td style="white-space:nowrap;">
+                            <button class="btn-info-plan me-1" onclick="openPlanInfo('${plan.planNo}')"><i class="bi bi-info-circle"></i></button>
+                            <a href="customer_ForecastView.html?planNo=${plan.planNo}" class="btn-info-plan" style="display:inline-flex;align-items:center;text-decoration:none;gap:3px;"><i class="bi bi-eye"></i> View</a>
+                        </td>
+                    </tr>`;
+                }).join("");
+
+                return `<div class="company-section">
+                    <div class="company-header d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="company-name"><i class="bi bi-building me-2"></i>${company}</div>
+                            <span class="company-stat">${plans.length} plan</span>
+                            <span class="company-stat">·</span>
+                            <span class="company-stat">${fmt(totalPop)} ekor</span>
+                            <span class="company-stat">·</span>
+                            <span class="company-stat">Kebutuhan: ${fmt(totalKebutuhan)} kg</span>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary bg-white fw-bold" style="border-radius:8px;" onclick="openGetData('${company}')"><i class="bi bi-cloud-download me-1"></i>Tarik Plan Baru</button>
+                    </div>
+                    <div class="company-table-wrap">
+                        <div style="overflow-x:auto;">
+                            <table class="matrix-table" style="width:auto;min-width:100%;">
+                                ${tableHeader}
+                                <tbody>${rows}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+            initFormulaTooltips();
+        }
+
+
+        // ─── SAP MOCK DATA ────────────────────────────────────────────────────────
+        function initFormulaTooltips() {
+            let popover = document.getElementById("formulaPopover");
+            if (!popover) {
+                popover = document.createElement("div");
+                popover.id = "formulaPopover";
+                popover.className = "formula-popover";
+                document.body.appendChild(popover);
+            }
+
+            const placePopover = (target) => {
+                const rect = target.getBoundingClientRect();
+                const popRect = popover.getBoundingClientRect();
+                let left = rect.left + (rect.width / 2) - (popRect.width / 2);
+                let top = rect.top - popRect.height - 12;
+
+                left = Math.max(12, Math.min(left, window.innerWidth - popRect.width - 12));
+                if (top < 12) top = rect.bottom + 12;
+
+                popover.style.left = `${left}px`;
+                popover.style.top = `${top}px`;
+            };
+
+            document.querySelectorAll(".formula-tip").forEach(el => {
+                el.onmouseenter = () => {
+                    popover.textContent = el.dataset.tip || "";
+                    popover.classList.add("show");
+                    placePopover(el);
+                };
+                el.onmousemove = () => placePopover(el);
+                el.onmouseleave = () => popover.classList.remove("show");
+            });
+        }
+
+        function sapMock(plan, calc) {
+            const sd = plan.sapData || {};
+            const ageLastPosting = plan.ageLastPosting ?? plan.age ?? plan.ageCurrent ?? 0;
+            const lastPostingDate = parsePlanDate(plan.lastPostingDate) || new Date(2026, 3, 20);
+            const tanggalCI = parsePlanDate(plan.tanggalCI) || addDays(lastPostingDate, -ageLastPosting);
+            const ageNow = plan.ageCurrent ?? plan.age ?? diffDays(tanggalCI, new Date());
+            const popBonus = sd.popBonus ?? plan.popBonus ?? (plan.docQty * 1.01);
+            const mort = sd.mort ?? Math.round(plan.docQty * 0.003 * ageLastPosting);
+            const lastPop = sd.lastPop ?? Math.max(0, Math.round(popBonus - mort));
+            const bw = sd.bw ?? (0.045 + ageLastPosting * 0.055).toFixed(3);
+            const fcr = sd.fcr ?? null;
+            const fiAct = sd.fiAct ?? +(sd.pakanTerpakai ? sd.pakanTerpakai / Math.max(popBonus, 1) : (0.045 + ageLastPosting * 0.055)).toFixed(3);
+            const pakanTerpakai = sd.pakanTerpakai
+                ?? (fcr != null && bw != null ? fcr * lastPop * parseFloat(bw) : fiAct * popBonus);
+            const targetBW = sd.targetBW ?? plan.targetBW ?? 1.8;
+            const targetStd = lookupStdByTargetBW(targetBW);
+            const fiCum = targetStd.fiCum;
+            const grpo = sd.grpo ?? Math.ceil(pakanTerpakai / 1000);
+            const poItr = sd.poItr !== undefined ? sd.poItr : Math.max(0, grpo + 2);
+            const poItrCalc = poItr ?? 0;
+            const lastStok = sd.lastStok !== undefined ? sd.lastStok : Math.max(0, (grpo + poItrCalc) - pakanTerpakai);
+            const kebutuhanMinggu = ceilTo(popBonus * fiCum, 50);
+            const sisaKebutuhanRaw = kebutuhanMinggu - (grpo + poItrCalc);
+            const sisaKebutuhan = Math.max(0, sisaKebutuhanRaw);
+
+            const defaultPanenOffset = ageLastPosting >= 21 ? 3 : 5;
+            const panenDate = parsePlanDate(sd.tanggalPanen || plan.tanggalPanen) || addDays(lastPostingDate, defaultPanenOffset);
+            const usiaAkhir = Math.max(ageLastPosting, diffDays(tanggalCI, panenDate));
+            const panenEkor = sd.ekorPanen ?? plan.ekorPanen ?? (ageNow >= 27 ? Math.round(lastPop * 0.3) : 0);
+            const stockAkhir = Math.max(0, lastPop - panenEkor);
+            const ageFiAct = lookupStdByCumFi(fiAct, 1).age;
+            const cumFiSampaiPanen = lookupCumFiByAge(ageFiAct + usiaAkhir - ageLastPosting);
+            const pakanPakaiSampaiPanen = stockAkhir > 0
+                ? Math.min(ceilTo(stockAkhir * Math.max(0, cumFiSampaiPanen - fiAct), 50), lastStok)
+                : 0;
+            const cumFiSisaPakan = stockAkhir > 0 ? +((lastStok - pakanPakaiSampaiPanen) / stockAkhir).toFixed(3) : 0;
+            const cumFiStdTotal = +(cumFiSampaiPanen + Math.max(0, cumFiSisaPakan)).toFixed(3);
+            const usiaCumFiStd1 = lookupStdByCumFi(cumFiStdTotal, 1).age;
+            const usiaCumFiStd2 = lookupStdByCumFi(cumFiSampaiPanen, 1).age;
+            const ageHabis = cumFiStdTotal <= cumFiSampaiPanen
+                ? usiaAkhir
+                : usiaCumFiStd1 - usiaCumFiStd2 + usiaAkhir;
+            const tglHabis = addDays(tanggalCI, ageHabis);
+            const pakanHabisDiff = ageHabis - ageLastPosting;
+
+            const forecastQty = sd.orderTotal ?? plan.orderTotal ?? Math.max(0, sisaKebutuhan);
+            const lastStokAfterForecast = lastStok + forecastQty;
+            const feedRowForEstimate = STD[Math.min(Math.max(ageHabis, 1), STD.length) - 1] || STD[STD.length - 1];
+            const dailyFeedAfterCurrent = stockAkhir > 0 ? stockAkhir * feedRowForEstimate.fd : 0;
+            const extraDaysFromForecast = forecastQty > 0 && dailyFeedAfterCurrent > 0
+                ? Math.ceil(forecastQty / dailyFeedAfterCurrent)
+                : 0;
+            const ageEstimasiHabis = ageHabis + extraDaysFromForecast;
+            const tglEstimasiHabis = addDays(tanggalCI, ageEstimasiHabis);
+            const estimasiHabisDiff = ageEstimasiHabis - ageLastPosting;
+            const targetBWNum = parseFloat(targetBW) || 0;
+
+            return {
+                mort, lastPop, bw, fcr, fiAct, fiCum, grpo, poItr, ageNow,
+                lastStok, kebutuhanMinggu, sisaKebutuhan,
+                hariHabis: pakanHabisDiff, tglHabisStr: fmtDate(tglHabis), ageHabis,
+                panenDateStr: fmtDate(panenDate), panenEkor, pakanHabisDiff,
+                tglEstimasiHabisStr: fmtDate(tglEstimasiHabis), ageEstimasiHabis, estimasiHabisDiff,
+                lastPostStr: plan.lastPostingDate || fmtDate(lastPostingDate),
+                statusKalang: "Released", pakanHabis: fmtDate(tglHabis), bwPanen: `${targetBWNum.toFixed(2)} kg`,
+                formula: {
+                    ageLastPosting, ageNow, popBonus, pakanTerpakai, targetBW: targetBWNum, poItrCalc, sisaKebutuhanRaw,
+                    stockAkhir, panenDateStr: fmtDate(panenDate), forecastQty, lastStokAfterForecast,
+                    dailyFeedAfterCurrent, extraDaysFromForecast,
+                    pakanPakaiSampaiPanen, cumFiSampaiPanen, cumFiStdTotal
+                }
+            };
+        }
+
+        // ─── SUMMARY ──────────────────────────────────────────────────────────────
+        function renderSummary() {
+            const totalPlan = DEMO_PLANS.length;
+            const totalPop = DEMO_PLANS.reduce((s, p) => s + p.docQty, 0);
+            const totalKebutuhan = DEMO_PLANS.reduce((s, p) => s + Math.round(sapMock(p, calcFeedNeed(p)).kebutuhanMinggu), 0);
+            const drafted = DEMO_PLANS.filter(p => p.fcStatus === "Draft").length;
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-box"><div class="lbl">Total Plan Aktif</div><div class="val" style="color:#1a237e;">${totalPlan}</div></div>
+                <div class="summary-box"><div class="lbl">Total Populasi</div><div class="val">${fmt(totalPop)}</div></div>
+                <div class="summary-box"><div class="lbl">Total Kebutuhan Pakan</div><div class="val" style="color:#166534;">${fmt(totalKebutuhan)} <span style="font-size:14px;font-weight:400;">kg</span></div></div>
+                <div class="summary-box"><div class="lbl">Belum Di-forecast</div><div class="val" style="color:#92400e;">${drafted}</div></div>`;
+        }
+
+        // ─── REVIEW FLOW ──────────────────────────────────────────────────────────
+        function startReviewFlow() {
+            if (_selectedPlansForBulk.length === 0) return;
+            _reviewPlans = [..._selectedPlansForBulk];
+            _reviewData = {};
+            _reviewPlans.forEach(planNo => {
+                const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+                if (!plan) return;
+                const sap = sapMock(plan, calcFeedNeed(plan));
+                const totalQty = Math.max(0, Math.ceil(sap.sisaKebutuhan));
+                _reviewData[planNo] = {
+                    items: [{ id: Date.now() + Math.random(), itemCode: "", itemName: "", qty: totalQty, uom: "Kg" }],
+                    totalQty,
+                    skipped: false
+                };
+            });
+            _reviewStep = 0;
+            renderReviewStep();
+            const el = document.getElementById("reviewModal");
+            if (!_reviewModalInst) _reviewModalInst = new bootstrap.Modal(el);
+            _reviewModalInst.show();
+        }
+
+        function renderReviewStep() {
+            const total = _reviewPlans.length;
+            const isSummary = _reviewStep >= total;
+            if (isSummary) { renderReviewSummary(); return; }
+
+            const planNo = _reviewPlans[_reviewStep];
+            const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+            const period = getSelectedPeriod();
+            const guard = canSubmitForecast(planNo, period);
+            const data = _reviewData[planNo];
+            const totalQty = data.items.reduce((s, r) => s + (parseFloat(r.qty) || 0), 0);
+            const age = plan.ageCurrent ?? plan.age;
+
+            document.getElementById("reviewModalTitle").innerHTML =
+                `<i class="bi bi-clipboard2-check me-2"></i>Review Forecast — Plan ${_reviewStep + 1} / ${total}`;
+
+            const guardHtml = !guard.ok
+                ? `<div class="alert alert-warning mx-3 mt-3 mb-0 py-2 small"><i class="bi bi-exclamation-triangle me-1"></i>${guard.reason} — Plan ini akan dilewati saat submit.</div>`
+                : "";
+
+            document.getElementById("reviewModalBody").innerHTML = `
+                ${guardHtml}
+                <div class="p-3 border-bottom" style="background:#f8faff;">
+                    <div class="row g-2">
+                        <div class="col-6 col-md-3">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Plan No</div>
+                            <div class="fw-bold" style="color:#1a237e;">${plan.planNo}</div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Plan Description</div>
+                            <div class="fw-bold">${getPlanDescription(plan)}</div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Company</div>
+                            <div class="fw-bold">${plan.company}</div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Farm / Kandang</div>
+                            <div>${plan.location ?? plan.farm} / ${plan.id}</div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Umur</div>
+                            <div>Hari ${age ?? "-"}</div>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <div style="font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;">Populasi</div>
+                            <div class="fw-bold">${fmt(plan.docQty)} ekor</div>
+                        </div>
+                    </div>
+                    <div class="mt-2 d-flex gap-2">
+                        <span class="badge bg-primary">${period}</span>
+                        <span class="badge bg-light text-dark border">Total: ${fmt(totalQty)} Kg</span>
+                    </div>
+                </div>
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="fw-bold" style="font-size:13px;"><i class="bi bi-box-seam me-1 text-primary"></i>Rekomendasi Item Pakan</div>
+                        <button class="btn btn-sm btn-outline-primary fw-bold" style="font-size:12px;" onclick="reviewAddItem('${planNo}')">
+                            <i class="bi bi-plus-circle me-1"></i>Tambah Item
+                        </button>
+                    </div>
+                    <div id="reviewItemList">${renderReviewItemRows(planNo)}</div>
+                </div>`;
+
+            const isFirst = _reviewStep === 0;
+            const isLast = _reviewStep === total - 1;
+            document.getElementById("reviewModalFooter").innerHTML = `
+                <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="reviewSkip('${planNo}')">Lewati</button>
+                <div class="ms-auto d-flex gap-2">
+                    ${!isFirst ? `<button class="btn btn-outline-secondary btn-sm fw-bold" onclick="reviewPrev()"><i class="bi bi-arrow-left me-1"></i>Sebelumnya</button>` : ""}
+                    <button class="btn btn-primary btn-sm fw-bold px-4" onclick="reviewNext()">
+                        ${isLast ? `<i class="bi bi-list-check me-1"></i>Lihat Summary` : `Selanjutnya <i class="bi bi-arrow-right ms-1"></i>`}
+                    </button>
+                </div>`;
+        }
+
+        function renderReviewItemRows(planNo) {
+            const items = _reviewData[planNo]?.items || [];
+            if (!items.length) return `<div class="text-center text-muted py-3 small">Belum ada item.</div>`;
+            return items.map((r, idx) => `
+                <div class="d-flex align-items-center gap-2 p-2 mb-2" style="background:#f8faff;border-radius:8px;border:1px solid #e0e7ef;">
+                    <div style="width:22px;height:22px;background:#e0e7ff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#3730a3;flex-shrink:0;">${idx + 1}</div>
+                    <div style="flex:1;min-width:0;">
+                        ${r.itemCode
+                    ? `<div class="fw-bold" style="font-size:12px;">${r.itemName}</div><div style="font-size:10px;color:#6b7280;">${r.itemCode} · ${r.uom}</div>`
+                    : `<div style="font-size:12px;color:#9ca3af;">Belum ada item dipilih</div>`}
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size:11px;white-space:nowrap;" onclick="openItemSearchReview('${planNo}',${r.id})">
+                        <i class="bi bi-search me-1"></i>Pilih
+                    </button>
+                    <div style="width:110px;">
+                        <input type="number" class="form-control form-control-sm text-end" value="${r.qty}"
+                            oninput="reviewSyncItem('${planNo}',${r.id},'qty',this.value)">
+                    </div>
+                    <div style="font-size:11px;color:#6b7280;width:25px;">${r.uom}</div>
+                    <button class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:11px;" onclick="reviewRemoveItem('${planNo}',${r.id})" ${items.length <= 1 ? "disabled" : ""}>
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>`).join("");
+        }
+
+        function reviewAddItem(planNo) {
+            _reviewData[planNo].items.push({ id: Date.now(), itemCode: "", itemName: "", qty: 0, uom: "Kg" });
+            document.getElementById("reviewItemList").innerHTML = renderReviewItemRows(planNo);
+        }
+
+        function reviewRemoveItem(planNo, id) {
+            if (_reviewData[planNo].items.length <= 1) return;
+            _reviewData[planNo].items = _reviewData[planNo].items.filter(r => r.id !== id);
+            document.getElementById("reviewItemList").innerHTML = renderReviewItemRows(planNo);
+        }
+
+        function reviewSyncItem(planNo, id, field, value) {
+            const data = _reviewData[planNo];
+            if (!data) return;
+            const row = data.items.find(r => r.id === id);
+            if (row) row[field] = field === "qty" ? parseFloat(value) || 0 : value;
+            // Kalau qty row 1 berubah dan sudah ada row 2, update sisa qty row 2
+            if (field === "qty" && data.items.length === 2 && data.items[0].id === id) {
+                data.items[1].qty = Math.max(0, (data.totalQty || 0) - (parseFloat(value) || 0));
+                document.getElementById("reviewItemList").innerHTML = renderReviewItemRows(planNo);
+            }
+        }
+
+        function reviewNext() { _reviewStep++; renderReviewStep(); }
+        function reviewPrev() { if (_reviewStep > 0) _reviewStep--; renderReviewStep(); }
+        function reviewSkip(planNo) { _reviewData[planNo].skipped = true; reviewNext(); }
+
+        function renderReviewSummary() {
+            document.getElementById("reviewModalTitle").innerHTML =
+                `<i class="bi bi-list-check me-2"></i>Summary — Konfirmasi Forecast`;
+            const period = getSelectedPeriod();
+            let willCreate = 0;
+            const rows = _reviewPlans.map(planNo => {
+                const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+                const data = _reviewData[planNo];
+                const guard = canSubmitForecast(planNo, period);
+                const totalQty = data.items.reduce((s, r) => s + (parseFloat(r.qty) || 0), 0);
+                const skip = data.skipped || !guard.ok;
+                if (!skip) willCreate++;
+                return `<tr ${skip ? 'style="opacity:.5"' : ''}>
+                    <td>${skip ? '<i class="bi bi-dash-circle text-danger"></i>' : '<i class="bi bi-check-circle-fill text-success"></i>'}</td>
+                    <td class="fw-bold" style="color:#1a237e;">${plan.planNo}</td>
+                    <td>${getPlanDescription(plan)}</td>
+                    <td>${plan.location ?? plan.farm} / ${plan.id}</td>
+                    <td>${data.items.length} item</td>
+                    <td class="fw-bold">${skip ? '-' : fmt(totalQty) + ' Kg'}</td>
+                    <td>${skip ? '<span class="badge bg-secondary">Dilewati</span>' : '<span class="badge bg-primary">Akan Dibuat</span>'}</td>
+                </tr>`;
+            }).join("");
+
+            document.getElementById("reviewModalBody").innerHTML = `
+                <div class="p-3">
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>${willCreate} forecast</strong> akan dibuat untuk <strong>${period}</strong>.
+                    </div>
+                    <table class="table table-sm" style="font-size:13px;">
+                        <thead class="table-light">
+                            <tr><th style="width:32px;"></th><th>Plan No</th><th>Plan Description</th><th>Location / Kandang</th><th>Item</th><th>Total QTY</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+
+            document.getElementById("reviewModalFooter").innerHTML = `
+                <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="reviewBackToLast()">
+                    <i class="bi bi-arrow-left me-1"></i>Edit
+                </button>
+                <div class="ms-auto d-flex gap-2">
+                    <button class="btn btn-outline-primary btn-sm fw-bold px-3" onclick="submitReviewForecast('Draft')" ${willCreate === 0 ? "disabled" : ""}>
+                        <i class="bi bi-floppy me-1"></i>Save Draft
+                    </button>
+                    <button class="btn btn-primary btn-sm fw-bold px-4" onclick="submitReviewForecast('Forecast Created')" ${willCreate === 0 ? "disabled" : ""}>
+                        <i class="bi bi-send me-1"></i>Submit Forecast
+                    </button>
+                </div>`;
+        }
+
+        function reviewBackToLast() { _reviewStep = _reviewPlans.length - 1; renderReviewStep(); }
+
+        function submitReviewForecast(status) {
+            const period = getSelectedPeriod();
+            const history = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            let count = 0;
+            _reviewPlans.forEach(planNo => {
+                const data = _reviewData[planNo];
+                const guard = canSubmitForecast(planNo, period);
+                if (data.skipped || !guard.ok) return;
+                const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+                if (!plan) return;
+                const totalQty = data.items.reduce((s, r) => s + (parseFloat(r.qty) || 0), 0);
+                const fcNo = "FC-" + new Date().getFullYear() + "-" + String(history.length + count + 1).padStart(3, '0');
+                const lines = data.items.map(r => ({
+                    itemCode: r.itemCode, itemName: r.itemName, flag: "Auto",
+                    standardNeed: r.qty, currentStock: 0, recommendedQty: r.qty,
+                    manualAdjustment: 0, uom: r.uom || "Kg"
+                }));
+                const today = new Date();
+                history.push({
+                    fcNo, fcDate: today.toISOString().split('T')[0], period,
+                    planNo: plan.planNo, planName: `${plan.location ?? plan.farm} / ${plan.id}`,
+                    planDesc: getPlanDescription(plan),
+                    company: plan.company, farm: plan.location ?? plan.farm, warehouse: plan.wh, kdgId: plan.id,
+                    status, docType: plan.docType, age: (plan.ageCurrent ?? plan.age) + " Hari", rawAge: plan.ageCurrent ?? plan.age,
+                    docCodeMale: "-", docCodeFemale: "-", docNameMale: "-", docNameFemale: "-",
+                    initialStock: plan.docQty, currentPop: plan.docQty, totalPop: plan.docQty,
+                    totalQty, lines
+                });
+                plan.fcStatus = status === "Draft" ? "Draft" : "Forecast Created";
+                count++;
+            });
+            localStorage.setItem("IBOCS_fc_list", JSON.stringify(history));
+            _reviewModalInst.hide();
+            showToast(`${count} Forecast (${period}) berhasil ${status === 'Draft' ? 'disimpan sebagai Draft' : 'disubmit'}. <a href="customer_ForecastList.html" style="color:#166534;font-weight:700;">Lihat List →</a>`, "success");
+            _selectedPlansForBulk = [];
+            renderPlanCards();
+            updateBulkActionBar();
+        }
+
+        // ─── ITEM SEARCH (untuk review modal) ────────────────────────────────────
+        let _itemSearchTargetPlanNo = null;
+        let _itemSearchTargetRowId = null;
+
+        function openItemSearchReview(planNo, rowId) {
+            _itemSearchTargetPlanNo = planNo;
+            _itemSearchTargetRowId = rowId;
+            document.getElementById("itemSearchQ").value = "";
+            filterItemSearch("");
+            const el = document.getElementById("itemSearchModal");
+            let m = bootstrap.Modal.getInstance(el);
+            if (!m) m = new bootstrap.Modal(el, { backdrop: false });
+            m.show();
+        }
+
+        function selectItem(code, name, uom) {
+            if (_itemSearchTargetPlanNo && _reviewData[_itemSearchTargetPlanNo]) {
+                const data = _reviewData[_itemSearchTargetPlanNo];
+                const row = data.items.find(r => r.id === _itemSearchTargetRowId);
+                if (row) {
+                    row.itemCode = code; row.itemName = name; row.uom = uom;
+                    // Auto-add row 2 dengan sisa qty saat item pertama dipilih
+                    if (data.items.length === 1) {
+                        const sisaQty = Math.max(0, (data.totalQty || 0) - (row.qty || 0));
+                        data.items.push({ id: Date.now() + Math.random(), itemCode: "", itemName: "", qty: sisaQty, uom: "Kg" });
+                    }
+                }
+                bootstrap.Modal.getInstance(document.getElementById("itemSearchModal")).hide();
+                document.getElementById("reviewItemList").innerHTML = renderReviewItemRows(_itemSearchTargetPlanNo);
+            }
+            _itemSearchTargetPlanNo = null;
+            _itemSearchTargetRowId = null;
+        }
+
+        // ─── PLAN INFO MODAL ──────────────────────────────────────────────────────
+        function openPlanInfo(planNo) {
+            const plan = DEMO_PLANS.find(p => p.planNo === planNo);
+            if (!plan) return;
+            const age = plan.ageCurrent ?? plan.age;
+            const sisaHari = HARVEST_DAY - age;
+            const phase = PHASES.find(ph => age + 1 >= ph.dayFrom && age + 1 <= ph.dayTo) || PHASES[PHASES.length - 1];
+            const vit = STD[age] ? STD[age].v.toFixed(1) : "-";
+            document.getElementById("planInfoBody").innerHTML = `
+                <div class="pi-section pt-3">
+                    <div class="pi-section-title">Identitas Plan</div>
+                    <div class="pi-grid">
+                        <div class="pi-item"><div class="pik">Plan No</div><div class="piv">${plan.planNo}</div></div>
+                        <div class="pi-item"><div class="pik">Plan Description</div><div class="piv">${getPlanDescription(plan)}</div></div>
+                        <div class="pi-item"><div class="pik">Status</div><div class="piv">${plan.status}</div></div>
+                        <div class="pi-item"><div class="pik">Company</div><div class="piv">${plan.company}</div></div>
+                        <div class="pi-item"><div class="pik">Location</div><div class="piv">${plan.location ?? plan.farm}</div></div>
+                        <div class="pi-item"><div class="pik">Kandang</div><div class="piv">${plan.id}</div></div>
+                        <div class="pi-item"><div class="pik">Warehouse</div><div class="piv">${plan.wh}</div></div>
+                    </div>
+                </div>
+                <div class="pi-section">
+                    <div class="pi-section-title">DOC & Populasi</div>
+                    <div class="pi-grid">
+                        <div class="pi-item"><div class="pik">DOC Type</div><div class="piv">${plan.docType}</div></div>
+                        <div class="pi-item"><div class="pik">DOC Awal</div><div class="piv num">${fmt(plan.docQty)} ekor</div></div>
+                        <div class="pi-item"><div class="pik">Umur Saat Ini</div><div class="piv num" style="color:#92400e;">Hari ${age}</div></div>
+                        <div class="pi-item"><div class="pik">Sisa Hari</div><div class="piv num" style="color:#dc2626;">${sisaHari} hari</div></div>
+                        <div class="pi-item"><div class="pik">Fase Pakan</div><div class="piv">${phase.name}</div></div>
+                        <div class="pi-item"><div class="pik">Vitality Std Hari Ini</div><div class="piv num" style="color:#166534;">${vit}%</div></div>
+                    </div>
+                </div>
+                <div style="height:8px;"></div>`;
+            new bootstrap.Modal(document.getElementById("planInfoModal")).show();
+        }
+
+        function filterItemSearch(q) {
+            const items = M.getItemsByCategory("Feed");
+            const filtered = q
+                ? items.filter(i => i.name.toLowerCase().includes(q.toLowerCase()) || i.code.toLowerCase().includes(q.toLowerCase()))
+                : items;
+            document.getElementById("itemSearchList").innerHTML = filtered.length
+                ? filtered.map(i => `
+                    <div style="padding:10px 16px;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:10px;"
+                        onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background=''"
+                        onclick="selectItem('${i.code}', '${i.name.replace(/'/g, "\\'")}', '${i.uom}')">
+                        <div>
+                            <div style="font-size:11px;font-weight:700;color:#6366f1;">${i.code}</div>
+                            <div style="font-size:13px;font-weight:600;">${i.name}</div>
+                            <div style="font-size:11px;color:#6b7280;">${i.uom} · Rp ${i.price?.toLocaleString("id-ID") ?? "-"}/kg</div>
+                        </div>
+                    </div>`).join("")
+                : `<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">Item tidak ditemukan</div>`;
+        }
+
+        // ─── GET DATA PLAN (SAP) ──────────────────────────────────────────────────
+        let _activeGetDataCompany = null;
+        let _selectedGetDataPlans = [];
+
+        function openGetData(company) {
+            _activeGetDataCompany = company;
+            _selectedGetDataPlans = [];
+            document.getElementById("getDataCompany").textContent = company;
+
+            const farms = [...new Set(_sapPlansPool.filter(p => p.company === company).map(p => p.location ?? p.farm))].sort();
+            document.getElementById("getDataFarmFilter").innerHTML =
+                `<option value="">Semua Location</option>` + farms.map(f => `<option value="${f}">${f}</option>`).join("");
+            document.getElementById("getDataKdgFilter").innerHTML = `<option value="">Semua Kandang</option>`;
+
+            renderGetDataList();
+            new bootstrap.Modal(document.getElementById("getDataModal")).show();
+        }
+
+        function onGetDataFarmChange() {
+            const farm = document.getElementById("getDataFarmFilter").value;
+            const kdgs = farm
+                ? [...new Set(_sapPlansPool.filter(p => p.company === _activeGetDataCompany && (p.location ?? p.farm) === farm).map(p => p.id))].sort()
+                : [];
+            document.getElementById("getDataKdgFilter").innerHTML =
+                `<option value="">Semua Kandang</option>` + kdgs.map(k => `<option value="${k}">${k}</option>`).join("");
+            renderGetDataList();
+        }
+
+        function renderGetDataList() {
+            const farm = document.getElementById("getDataFarmFilter").value;
+            const kdg = document.getElementById("getDataKdgFilter").value;
+
+            const filtered = _sapPlansPool.filter(p => {
+                if (p.company !== _activeGetDataCompany) return false;
+                if (farm && (p.location ?? p.farm) !== farm) return false;
+                if (kdg && p.id !== kdg) return false;
+                return true;
+            });
+
+            _selectedGetDataPlans = filtered.map(p => p.planNo);
+            document.getElementById("getDataCountBadge").textContent = filtered.length;
+            document.getElementById("btnTarikSubmit").disabled = filtered.length === 0;
+
+            if (!filtered.length) {
+                document.getElementById("getDataPreview").innerHTML =
+                    `<div class="text-center text-muted py-4 small">Tidak ada plan baru di SAP untuk lokasi ini.</div>`;
+                return;
+            }
+
+            document.getElementById("getDataPreview").innerHTML = `
+                <div class="alert alert-info py-2 small mb-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>${filtered.length} plan</strong> dari lokasi ini akan ditarik sekaligus.
+                </div>
+                <table class="table table-sm mb-0" style="font-size:13px;">
+                    <thead class="table-light">
+                        <tr><th>Plan No</th><th>Location</th><th>Kandang</th><th>Umur</th><th class="text-end">Populasi</th></tr>
+                    </thead>
+                    <tbody>
+                        ${filtered.map(p => `<tr>
+                            <td class="fw-bold text-primary">${p.planNo}</td>
+                            <td>${p.location ?? p.farm}</td><td>${p.id}</td>
+                            <td>Hari ${p.ageCurrent ?? p.age}</td>
+                            <td class="text-end">${fmt(p.docQty)}</td>
+                        </tr>`).join("")}
+                    </tbody>
+                </table>`;
+        }
+
+        function submitGetData() {
+            if (!_selectedGetDataPlans.length) return;
+            const toMove = _sapPlansPool.filter(p => _selectedGetDataPlans.includes(p.planNo));
+            _sapPlansPool = _sapPlansPool.filter(p => !_selectedGetDataPlans.includes(p.planNo));
+            DEMO_PLANS.push(...toMove);
+            bootstrap.Modal.getInstance(document.getElementById("getDataModal")).hide();
+            showToast(`${toMove.length} plan berhasil ditarik dari SAP.`, "success");
+            renderPlanCards();
+        }
+
+        // ─── FORECAST GUARD ──────────────────────────────────────────────────────
+        function getSelectedPeriod() {
+            return document.getElementById("forecastPeriod")?.value || "Week 18";
+        }
+
+        function getLastFcForPlan(planNo) {
+            const history = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const forPlan = history.filter(f => f.planNo === planNo);
+            if (!forPlan.length) return null;
+            return forPlan[forPlan.length - 1];
+        }
+
+        function canSubmitForecast(planNo, period) {
+            const history = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const samePeriod = history.find(f => f.planNo === planNo && (f.period || f.week) === period);
+            if (!samePeriod) return { ok: true };
+            return { ok: false, reason: `Forecast ${samePeriod.fcNo} untuk ${planNo} ${period} sudah ada.` };
+        }
+
+        // ─── BULK FORECAST ACTION ─────────────────────────────────────────────────
+        let _selectedPlansForBulk = [];
+
+        function toggleBulk(planNo, checked) {
+            if (checked) {
+                if (!_selectedPlansForBulk.includes(planNo)) _selectedPlansForBulk.push(planNo);
+            } else {
+                _selectedPlansForBulk = _selectedPlansForBulk.filter(p => p !== planNo);
+            }
+            updateBulkActionBar();
+        }
+
+        function toggleAllBulk(cb, companyKey) {
+            const checked = cb.checked;
+            const rowCbs = document.querySelectorAll('.cb-bulk-' + companyKey.replace(/\s+/g, '-'));
+            rowCbs.forEach(input => {
+                input.checked = checked;
+                toggleBulk(input.value, checked);
+            });
+        }
+
+        function updateBulkActionBar() {
+            const bar = document.getElementById("bulkActionBar");
+            if (!bar) return;
+            const count = _selectedPlansForBulk.length;
+            if (count > 0) {
+                bar.style.display = "flex";
+                document.getElementById("bulkActionCount").textContent = count;
+            } else {
+                bar.style.display = "none";
+            }
+        }
+
+
+        // ─── TOAST NOTIF ─────────────────────────────────────────────────────────
+        function showToast(msg, type = "info") {
+            const colorMap = { success: "#166534", warning: "#92400e", error: "#991b1b", info: "#1e40af" };
+            const bgMap = { success: "#dcfce7", warning: "#fef3c7", error: "#fee2e2", info: "#dbeafe" };
+            const iconMap = { success: "bi-check-circle-fill", warning: "bi-exclamation-triangle-fill", error: "bi-x-circle-fill", info: "bi-info-circle-fill" };
+
+            const container = document.getElementById("toastContainer");
+            const id = "toast-" + Date.now();
+            const el = document.createElement("div");
+            el.id = id;
+            el.style.cssText = `background:${bgMap[type]};color:${colorMap[type]};border-radius:10px;padding:12px 16px;font-size:13px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.12);display:flex;align-items:flex-start;gap:10px;min-width:280px;max-width:380px;`;
+            el.innerHTML = `<i class="bi ${iconMap[type]}" style="margin-top:1px;flex-shrink:0;"></i><span style="flex:1;">${msg}</span><button onclick="document.getElementById('${id}').remove()" style="background:none;border:none;cursor:pointer;color:${colorMap[type]};font-size:16px;line-height:1;padding:0;margin-left:4px;">×</button>`;
+            container.appendChild(el);
+            setTimeout(() => { if (document.getElementById(id)) el.remove(); }, 5000);
+        }
+
+        // ─── INIT ─────────────────────────────────────────────────────────────────
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const company = params.get("company");
+            if (company) {
+                _activeCompany = company;
+                _activeCompanyFilter = company;
+                document.querySelector("h1").textContent = `Add Forecast — ${company}`;
+                document.querySelector(".subtext").textContent = `Plan aktif untuk ${company}. Pilih week, centang plan, lalu buat forecast.`;
+            }
+            new SidebarSystem(null, 'forecast').render();
+            renderPlanCards();
+            updateBulkActionBar();
+        });
+    </script>
+</body>
+
+</html>

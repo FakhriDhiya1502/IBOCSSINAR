@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBOCS | Customer Plan Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f0f2f7;
+            color: #1e293b;
+        }
+
+        /* ── Page Layout ───────────────────────────── */
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-header {
+            padding: 13px 18px;
+            font-weight: 700;
+            font-size: 13px;
+            border-bottom: 1px solid #eef0f4;
+            background: #f8fafc;
+            border-radius: 12px 12px 0 0;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 18px;
+        }
+
+        /* ── Page Title ────────────────────────────── */
+        .page-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0 0 2px;
+        }
+
+        .page-sub {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* ── Filter Grid ───────────────────────────── */
+        .filter-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-grid .field {
+            flex: 1 1 160px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            height: 36px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 13px;
+            background: #fff;
+            color: #1e293b;
+            transition: border-color .15s;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+        }
+
+        /* ── Main Table ────────────────────────────── */
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table.rt {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        table.rt th {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        table.rt td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 12px;
+            vertical-align: middle;
+        }
+
+        table.rt tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.rt tbody tr:hover {
+            background: #f8faff;
+            cursor: pointer;
+        }
+
+        /* ── Badges ────────────────────────────────── */
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .tag-green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .tag-yellow {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        /* ── Buttons ───────────────────────────────── */
+        .btn-view {
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1px solid #c7d2fe;
+            font-size: 11px;
+            font-weight: 700;
+            background: #eef2ff;
+            color: #4338ca;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .btn-view:hover {
+            background: #c7d2fe;
+        }
+
+        /* ── Modal ─────────────────────────────────── */
+        .modal-xl-custom {
+            max-width: 96%;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: #1a237e;
+            color: #fff;
+            padding: 12px 18px;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1) brightness(2);
+            opacity: .8;
+        }
+
+        .modal-body {
+            padding: 0;
+            background: #f4f6fa;
+        }
+
+        /* ── SAP Header Panel ──────────────────────── */
+        .sap-header-panel {
+            padding: 18px 20px;
+            background: #fff;
+            border-bottom: 2px solid #e8ecf3;
+        }
+
+        .sap-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin: 0 0 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e8ecf3;
+        }
+
+        .sap-grid {
+            display: grid;
+            grid-template-columns: 148px 1fr;
+            gap: 5px 12px;
+            align-items: center;
+        }
+
+        .sap-grid label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #475569;
+            margin: 0;
+        }
+
+        .sap-grid input,
+        .sap-grid select {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0 8px;
+            font-size: 11px;
+            height: 26px;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        .sap-grid input:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+            border-color: #e2e8f0;
+        }
+
+        .arrow-link {
+            color: #6366f1;
+            font-weight: 900;
+            margin-right: 4px;
+            font-size: 10px;
+        }
+
+        /* ── SAP Tabs ──────────────────────────────── */
+        .nav-tabs-sap {
+            border-bottom: 2px solid #dde3ee;
+            background: #eef1f8;
+            padding: 8px 12px 0;
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tabs-sap .nav-link {
+            font-size: 11px;
+            color: #475569;
+            padding: 6px 14px;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            font-weight: 600;
+            background: transparent;
+        }
+
+        .nav-tabs-sap .nav-link:hover {
+            background: #fff;
+            border-color: #dde3ee #dde3ee transparent;
+            color: #1e293b;
+        }
+
+        .nav-tabs-sap .nav-link.active {
+            color: #1a237e;
+            background: #f4f6fa;
+            border-color: #dde3ee #dde3ee #f4f6fa;
+            font-weight: 700;
+        }
+
+        .tab-content-sap {
+            padding: 14px;
+            min-height: 280px;
+            background: #f4f6fa;
+        }
+
+        /* ── Grid Table (inside tabs) ──────────────── */
+        table.gt {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #dde3ee;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        table.gt th {
+            background: #eef1f8;
+            font-size: 11px;
+            color: #475569;
+            padding: 6px 10px;
+            border-bottom: 2px solid #dde3ee;
+            border-right: 1px solid #dde3ee;
+            font-weight: 700;
+        }
+
+        table.gt td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #f0f3f8;
+            border-right: 1px solid #f0f3f8;
+            font-size: 11px;
+            color: #334155;
+        }
+
+        table.gt tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.gt tbody tr:hover {
+            background: #f8faff;
+        }
+
+        /* ── Others Form Grid ──────────────────────── */
+        .others-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 32px;
+        }
+
+        .others-grid .sap-grid input:disabled,
+        .others-grid textarea[disabled] {
+            background: #f1f5f9;
+            color: #64748b;
+            border-color: #e2e8f0;
+        }
+
+        .others-grid textarea[disabled] {
+            border-radius: 4px;
+            padding: 6px 8px;
+            resize: none;
+        }
+
+        /* ── Modal Footer ──────────────────────────── */
+        .modal-footer {
+            background: #eef1f8;
+            border-top: 1px solid #dde3ee;
+            padding: 10px 18px;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* ── Customer Section (grouped table) ─────── */
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
+            border: 1px solid #c7d2fe;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .customer-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a237e;
+        }
+
+        .customer-section .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .customer-section table.rt {
+            min-width: 960px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Customer Portal</span>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                        id="userBtn">User</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <div class="page-title">Customer Plan Report</div>
+                        <div class="page-sub">Daftar Plan berjalan yang belum memiliki PO DOC</div>
+                    </div>
+                </div>
+
+                <!-- Filter -->
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-funnel-fill" style="color:#6366f1;"></i> Filter Pencarian
+                    </div>
+                    <div class="card-body">
+                        <div class="filter-grid">
+                            <div class="field">
+                                <label>Customer</label>
+                                <select id="fCust">
+                                    <option value="">-- Semua Customer --</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label>Status</label>
+                                <select id="fStatus">
+                                    <option value="">-- Semua Status --</option>
+                                    <option value="Released">Released</option>
+                                    <option value="Draft">Draft</option>
+                                </select>
+                            </div>
+                            <div class="field" style="flex:0 0 auto;">
+                                <label>&nbsp;</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-primary btn-sm px-4" onclick="renderReport()"><i
+                                            class="bi bi-search me-1"></i>Cari</button>
+                                    <button class="btn btn-outline-secondary btn-sm px-3"
+                                        onclick="resetFilter()">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="card">
+                    <div class="card-header"><i class="bi bi-table" style="color:#6366f1;"></i> Daftar Plan</div>
+                    <div class="card-body p-0">
+                        <div class="table-wrap">
+                            <table class="rt">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Plan No & Deskripsi</th>
+                                        <th>Status</th>
+                                        <th>Warehouse & Hatchery</th>
+                                        <th>Ayam & Batch</th>
+                                        <th>Periode</th>
+                                        <th>Project & Dist. Rules</th>
+                                        <th class="text-end">Initial Stock</th>
+                                        <th class="text-end">Total DOC In</th>
+                                        <th style="width:90px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- Modal Plan Document SAP Style -->
+    <div class="modal fade" id="mdPlanDoc" tabindex="-1">
+        <div class="modal-dialog modal-xl-custom modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-file-earmark-text me-2"></i>Plan Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- SAP Header Panel -->
+                    <div class="sap-header-panel">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="sap-grid">
+                                    <label>Plan Description</label>
+                                    <input type="text" id="mDesc" disabled>
+
+                                    <label>Start Date</label>
+                                    <input type="text" id="mStart" disabled>
+
+                                    <label>End Date</label>
+                                    <input type="text" id="mEnd" disabled>
+
+                                    <label>BP Peternak</label>
+                                    <div class="d-flex"><span class="arrow-link">➜</span><input type="text"
+                                            id="mCustCode" disabled></div>
+
+                                    <label>BP Peternak Name</label>
+                                    <input type="text" id="mCustName" disabled>
+
+                                    <label>Type of Chicken</label>
+                                    <div class="d-flex"><span class="arrow-link">➜</span><input type="text"
+                                            id="mChickType" disabled></div>
+
+                                    <label>Desc of Chicken</label>
+                                    <input type="text" id="mChickDesc" disabled>
+
+                                    <label>Batch Number</label>
+                                    <input type="text" id="mBatch" disabled>
+
+                                    <label>Hatchery</label>
+                                    <input type="text" id="mHatchery" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-5">
+                                <div class="sap-grid">
+                                    <label>No. PLN</label>
+                                    <input type="text" id="mNo" disabled>
+
+                                    <label>Document Date</label>
+                                    <input type="text" id="mDocDate" disabled>
+
+                                    <label>Project</label>
+                                    <input type="text" id="mProject" disabled>
+
+                                    <label>Dist. Rules</label>
+                                    <input type="text" id="mDistRules" disabled>
+
+                                    <label>Initial Stock</label>
+                                    <input type="text" id="mInitStock" disabled style="text-align:right;">
+
+                                    <label>DOC Weight</label>
+                                    <input type="text" id="mDocWeight" disabled style="text-align:right;">
+
+                                    <label>Budget DOC per Ekor</label>
+                                    <input type="text" value="0.00" disabled style="text-align:right;">
+
+                                    <label>Warehouse Code</label>
+                                    <div class="d-flex"><span class="arrow-link">➜</span><input type="text"
+                                            id="mWhseCode" disabled></div>
+
+                                    <label>Warehouse Name</label>
+                                    <input type="text" id="mWhseName" disabled>
+
+                                    <label>Status</label>
+                                    <input type="text" id="mStatus" disabled>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SAP Tabs -->
+                    <ul class="nav nav-tabs nav-tabs-sap" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-sapronak"
+                                type="button">Program Sapronak</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-perf"
+                                type="button">Standard Performance</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-sales"
+                                type="button">Sales</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cogs"
+                                type="button">COGS</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-biaya"
+                                type="button">Biaya</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-adj"
+                                type="button">Adjustment</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-personil"
+                                type="button">Personil</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-others"
+                                type="button">Others</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-bonus"
+                                type="button">Bonus</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-budget"
+                                type="button">Budget</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content tab-content-sap" id="myTabContent">
+                        <div class="tab-pane fade show active" id="tab-sapronak">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Standard Code</th>
+                                        <th>Standard Name</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="arrow-link">➜</span> STD00100</td>
+                                        <td>JG06-20.000</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-perf">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Standard Performance Code</th>
+                                        <th>Standard Performance Name</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="arrow-link">➜</span> 100000000</td>
+                                        <td>STD AHP</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-sales">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Kontrak Pembelian Code</th>
+                                        <th>Kontrak Pembelian Name</th>
+                                        <th>Version</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="arrow-link">➜</span> 100000068</td>
+                                        <td>JG06-SALES</td>
+                                        <td>Harga</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-cogs">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Kontrak Penjualan Code</th>
+                                        <th>Kontrak Penjualan Name</th>
+                                        <th>Version</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="arrow-link">➜</span> 100000155</td>
+                                        <td>JG06-COGS HARGA</td>
+                                        <td>Harga</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><span class="arrow-link">➜</span> 100000124</td>
+                                        <td>JG06-COGS SIMULASI</td>
+                                        <td>Simulasi</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-biaya">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Biaya Code</th>
+                                        <th>Biaya Name</th>
+                                        <th>Version</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" style="color:#999; text-align:center; padding:16px;">No Data
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-adj">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Adjustment</th>
+                                        <th>Adjustment Name</th>
+                                        <th>Version</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" style="color:#999; text-align:center; padding:16px;">No Data
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-personil">
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Employee Id</th>
+                                        <th>Employee Name</th>
+                                        <th>Position</th>
+                                        <th>Mobile Phone</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td><span class="arrow-link">➜</span> 320</td>
+                                        <td>Boge Pradana</td>
+                                        <td>Sales Unit</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><span class="arrow-link">➜</span> 318</td>
+                                        <td>Gilang Arya Praditya</td>
+                                        <td>Penimbang</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td><span class="arrow-link">➜</span> 319</td>
+                                        <td>Kasmiyati -</td>
+                                        <td>Admin Unit</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td><span class="arrow-link">➜</span> 314</td>
+                                        <td>Ma'ruf Noor</td>
+                                        <td>Kepala Produksi</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td><span class="arrow-link">➜</span> 313</td>
+                                        <td>Muhammad Kholil</td>
+                                        <td>Kepala Unit</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td><span class="arrow-link">➜</span> 424</td>
+                                        <td>Sherina Lailatul Atina Wijayanti</td>
+                                        <td>Admin Sales Unit</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td><span class="arrow-link">➜</span> 315</td>
+                                        <td>Tri Sutrisno</td>
+                                        <td>PPL</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-others">
+                            <div class="others-grid">
+                                <div>
+                                    <div class="sap-grid" style="grid-template-columns:120px 1fr;">
+                                        <label>Luas Kandang</label><input type="text" value="75 x 12 = 1.800 m2"
+                                            disabled>
+                                        <label>GPS Location</label><input type="text" disabled>
+                                        <label>Jumlah Lantai</label><input type="text" value="2" disabled>
+                                        <label>Status Kandang</label><input type="text" value="Milik Sendiri" disabled>
+                                        <label>Sub Region</label><input type="text" disabled>
+                                        <label>Sub Unit</label><input type="text" disabled>
+                                    </div>
+                                    <div style="margin-top:20px;">
+                                        <label
+                                            style="font-size:11px; font-weight:600; display:block; margin-bottom:4px;">Remarks</label>
+                                        <textarea disabled
+                                            style="width:100%; height:60px; border:1px solid #ccc; background:#e9ecef; font-size:11px;"></textarea>
+                                    </div>
+                                    <div class="sap-grid" style="grid-template-columns:120px 1fr; margin-top:8px;">
+                                        <label>Approved</label>
+                                        <div class="d-flex gap-2">
+                                            <input type="checkbox" disabled> <span style="font-size:11px;">Approved
+                                                By</span> <input type="text" disabled style="width:80px;">
+                                        </div>
+                                    </div>
+                                    <div class="sap-grid" style="grid-template-columns:120px 1fr; margin-top:8px;">
+                                        <label>PPN</label><input type="text" value="0.00" disabled>
+                                        <label>PPH</label><input type="text" value="0.00" disabled>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="sap-grid" style="grid-template-columns:120px 1fr;">
+                                        <label>Telephone</label><input type="text" value="0822 2361 0559" disabled>
+                                        <label>Alamat</label>
+                                        <textarea disabled
+                                            style="width:100%; height:40px; border:1px solid #ccc; background:#e9ecef; font-size:11px; padding:4px;">Desa Troso Pecangan Jepara JAWA TENGAH</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab-bonus">
+                            <div class="d-flex gap-2 align-items-center mb-2">
+                                <span style="font-size:11px; font-weight:600;">Range Bonus</span> <span
+                                    class="arrow-link" style="margin:0;">➜</span>
+                                <input type="text" value="3" disabled
+                                    style="width:40px; border:1px solid #ccc; background:#e9ecef; font-size:11px; padding:2px 6px;">
+                                <input type="text" value="100000001" disabled
+                                    style="width:100px; border:1px solid #ccc; background:#e9ecef; font-size:11px; padding:2px 6px;">
+                            </div>
+                            <table class="gt mb-4">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Bonus Code</th>
+                                        <th>Bonus Description</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Amount Bonus</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>B0001</td>
+                                        <td>Bonus FCR</td>
+                                        <td>-9.9900</td>
+                                        <td>0.1000</td>
+                                        <td>100.00</td>
+                                        <td>Bonus R003 01.07.2024</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="d-flex gap-2 align-items-center mb-2">
+                                <span style="font-size:11px; font-weight:600;">Static Bonus</span> <span
+                                    class="arrow-link" style="margin:0;">➜</span>
+                                <input type="text" value="4" disabled
+                                    style="width:40px; border:1px solid #ccc; background:#e9ecef; font-size:11px; padding:2px 6px;">
+                                <input type="text" value="100000001" disabled
+                                    style="width:100px; border:1px solid #ccc; background:#e9ecef; font-size:11px; padding:2px 6px;">
+                            </div>
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Bonus Code</th>
+                                        <th>Bonus Description</th>
+                                        <th>Percentage</th>
+                                        <th>Amount Bonus</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>B0007</td>
+                                        <td>Bonus Mortality R003</td>
+                                        <td>0.0000</td>
+                                        <td>100.00</td>
+                                        <td>Bonus R003 01.07.2024</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>B0004</td>
+                                        <td>Bonus Kandang Close House</td>
+                                        <td>0.0000</td>
+                                        <td>100.00</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>B0008</td>
+                                        <td>Bonus Pasar R003</td>
+                                        <td>20.0000</td>
+                                        <td>0.00</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab-budget">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex gap-2 align-items-center">
+                                    <span style="font-size:11px; font-weight:600;">Budget</span>
+                                    <input type="text" disabled
+                                        style="width:150px; border:1px solid #ccc; background:#e9ecef; height:24px;">
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <span style="font-size:11px; font-weight:600;">Description</span>
+                                    <input type="text" disabled
+                                        style="width:150px; border:1px solid #ccc; background:#e9ecef; height:24px;">
+                                </div>
+                            </div>
+                            <table class="gt">
+                                <thead>
+                                    <tr>
+                                        <th style="width:30px;">#</th>
+                                        <th>Number</th>
+                                        <th>IsTitle</th>
+                                        <th>Budget Item</th>
+                                        <th>UOM</th>
+                                        <th>Account</th>
+                                        <th>Budget Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Budget</th>
+                                        <th>Actual Quantity</th>
+                                        <th>Actual</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="11" style="color:#999; text-align:center; padding:16px;">No Data
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-outline-secondary px-4" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        let allPlans = [];
+
+        // User info & logout
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        document.getElementById("userInfo").textContent = userData.name || userData.role || "-";
+        document.getElementById("userBtn").textContent = userData.name || "User";
+        document.getElementById("btnLogout").addEventListener("click", () => {
+            localStorage.removeItem("IBOCS_user");
+            location.href = "login.html";
+        });
+
+        window.onload = () => {
+            new SidebarSystem(null, 'forecast_doc').render();
+            initData();
+            renderReport();
+        };
+
+        function initData() {
+            // Load Customers
+            const cSel = document.getElementById("fCust");
+            M.customers.forEach(c => {
+                cSel.innerHTML += `<option value="${c.code}">${c.name}</option>`;
+            });
+
+            // Format plans from master_data
+            // Add a mock Status (Draft or Released) to simulate report conditions
+            // Exclude VND-CTU plans (not a customer)
+            allPlans = M.plans
+                .filter(p => p.owner !== "VND-CTU")
+                .map((p, idx) => {
+                    return {
+                        ...p,
+                        status: idx % 3 === 0 ? "Draft" : "Released", // mock
+                        poCreated: false // mock condition that no PO DOC exists yet
+                    };
+                });
+        }
+
+        function renderReport() {
+            const fCust = document.getElementById("fCust").value;
+            const fStatus = document.getElementById("fStatus").value;
+
+            const tableWrap = document.querySelector(".table-wrap");
+            const tbody = document.getElementById("reportBody");
+
+            // Format dates safely
+            const fmtDate = (dStr) => {
+                if (!dStr) return "-";
+                const [y, m, d] = dStr.split("-");
+                return `${d}.${m}.${y}`;
+            };
+
+            // Filter plans
+            const list = allPlans.filter(p => {
+                if (p.poCreated) return false;
+                if (fCust && p.owner !== fCust) return false;
+                if (fStatus && p.status !== fStatus) return false;
+                return true;
+            });
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data plan yang sesuai filter.</td></tr>`;
+                // Restore table header visibility
+                tableWrap.querySelector("table").style.display = "";
+                tableWrap.querySelectorAll(".customer-section").forEach(el => el.remove());
+                return;
+            }
+
+            // Group by owner/customer
+            const groups = {};
+            list.forEach(p => {
+                const key = p.owner;
+                if (!groups[key]) {
+                    const custName = p.ownerType === "customer"
+                        ? (M.getCustomer(p.owner) ? M.getCustomer(p.owner).name : p.owner)
+                        : (M.getExternalVendor ? (M.getExternalVendor(p.owner) ? M.getExternalVendor(p.owner).name : p.owner) : p.owner);
+                    groups[key] = { code: key, name: custName, plans: [] };
+                }
+                groups[key].plans.push(p);
+            });
+
+            // Hide the original plain table, we'll render sections below it
+            const origTable = tableWrap.querySelector("table");
+            origTable.style.display = "none";
+            tbody.innerHTML = "";
+
+            // Remove old sections
+            tableWrap.querySelectorAll(".customer-section").forEach(el => el.remove());
+
+            // Render each group as a section
+            Object.values(groups).forEach(grp => {
+                const section = document.createElement("div");
+                section.className = "customer-section mb-4";
+
+                const rows = grp.plans.map(p => {
+                    const badge = p.status === "Released"
+                        ? `<span class="tag tag-green">Released</span>`
+                        : `<span class="tag tag-yellow">Draft</span>`;
+                    const pDate = `${fmtDate(p.startDate)} - ${fmtDate(p.endDate)}`;
+                    const iStock = p.initialStock ? Number(p.initialStock).toLocaleString() : "0";
+                    const dIn = p.totalDocIn ? Number(p.totalDocIn).toLocaleString() : "0";
+
+                    return `
+                    <tr onclick="openDetail('${p.code}')" style="cursor:pointer;">
+                        <td><strong>${p.code}</strong><br><span style="font-size:11px; color:#666;">${p.description}</span></td>
+                        <td>${badge}</td>
+                        <td>${p.warehouseCode}<br><span style="font-size:11px; color:#666;">${p.hatchery || '-'}</span></td>
+                        <td>${p.typeOfChicken} - ${p.descOfChicken}<br><span style="font-size:11px; color:#666;">Batch: ${p.batchNumber || '-'}</span></td>
+                        <td>${pDate}</td>
+                        <td><span style="font-size:11px; color:#666;">${p.project || '-'}</span><br><span style="font-size:11px; color:#666;">${p.distRules || '-'}</span></td>
+                        <td class="text-end fw-bold">${iStock}</td>
+                        <td class="text-end fw-bold">${dIn}</td>
+                        <td><button class="btn-view" onclick="event.stopPropagation(); openDetail('${p.code}')">View Detail</button></td>
+                    </tr>`;
+                }).join("");
+
+                section.innerHTML = `
+                    <div class="customer-header">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <i class="bi bi-building" style="font-size:17px; color:#1a237e;"></i>
+                            <span class="customer-name">${grp.name}</span>
+                            <span style="font-size:12px; color:#6b7280;">${grp.code} · ${grp.plans.length} plan</span>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="rt" style="min-width:1000px;">
+                            <thead>
+                                <tr>
+                                    <th>Plan No & Deskripsi</th>
+                                    <th>Status</th>
+                                    <th>Warehouse & Hatchery</th>
+                                    <th>Ayam & Batch</th>
+                                    <th>Periode</th>
+                                    <th>Project & Dist. Rules</th>
+                                    <th class="text-end">Initial Stock</th>
+                                    <th class="text-end">Total DOC In</th>
+                                    <th style="width:90px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+
+                tableWrap.appendChild(section);
+            });
+        }
+
+        function resetFilter() {
+            document.getElementById("fCust").value = "";
+            document.getElementById("fStatus").value = "";
+            renderReport();
+        }
+
+        function openDetail(planCode) {
+            const p = allPlans.find(x => x.code === planCode);
+            if (!p) return;
+
+            const custName = p.ownerType === "customer"
+                ? (M.getCustomer(p.owner) ? M.getCustomer(p.owner).name : p.owner)
+                : (M.getExternalVendor(p.owner) ? M.getExternalVendor(p.owner).name : p.owner);
+
+            const fmtSAPDate = (dStr) => {
+                if (!dStr) return "";
+                const [y, m, d] = dStr.split("-");
+                return `${d}.${m}.${y}`;
+            }
+
+            // Bind Header
+            document.getElementById("mDesc").value = p.description || "";
+            document.getElementById("mStart").value = fmtSAPDate(p.startDate);
+            document.getElementById("mEnd").value = fmtSAPDate(p.endDate);
+            document.getElementById("mCustCode").value = p.owner || "";
+            document.getElementById("mCustName").value = custName || "";
+            document.getElementById("mChickType").value = p.typeOfChicken || "";
+            document.getElementById("mChickDesc").value = p.descOfChicken || "";
+            document.getElementById("mBatch").value = p.batchNumber || "";
+            document.getElementById("mHatchery").value = p.hatchery || "";
+
+            document.getElementById("mNo").value = p.code || "";
+            document.getElementById("mDocDate").value = fmtSAPDate(p.documentDate);
+            document.getElementById("mProject").value = p.project || "";
+            document.getElementById("mDistRules").value = p.distRules || "";
+            document.getElementById("mInitStock").value = p.initialStock ? Number(p.initialStock).toLocaleString('en-US', { minimumFractionDigits: 2 }) : "0.00";
+            document.getElementById("mDocWeight").value = p.docWeight ? Number(p.docWeight).toLocaleString('en-US', { minimumFractionDigits: 2 }) : "0.00";
+            document.getElementById("mWhseCode").value = p.warehouseCode || "";
+            document.getElementById("mWhseName").value = p.warehouseName || "";
+            document.getElementById("mStatus").value = (p.status || "").toUpperCase();
+
+            const myModal = new bootstrap.Modal(document.getElementById('mdPlanDoc'));
+            myModal.show();
+        }
+    </script>
+</body>
+
+</html>
