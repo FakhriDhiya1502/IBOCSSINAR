@@ -138,7 +138,7 @@
 
         .transport-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+            grid-template-columns: 1fr;
             gap: 14px;
         }
 
@@ -807,16 +807,16 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="field">
-                                    <label>Hatchery<span class="req">*</span></label>
+                                    <label>Hatchery / Warehouse <span class="req">*</span></label>
                                     <select id="fWhsePengirim"
                                         style="width:100%; border:1px solid #d5dae3; border-radius:8px; padding:0 11px; font-size:13px; background:#fff; height:38px;">
-                                        <option value="">-- Pilih Hatchery --</option>
+                                        <option value="">-- Pilih Hatchery / Warehouse --</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3" id="postingDateCol">
                                 <div class="field">
-                                    <label><span id="postingDateLabel">Posting Date</span> <span
+                                    <label><span id="postingDateLabel">GRPO Date</span> <span
                                             class="req">*</span></label>
                                     <input type="date" id="fPostingDate"
                                         style="width:100%; border:1px solid #d5dae3; border-radius:8px; padding:0 11px; font-size:13px; background:#fff; height:38px;">
@@ -916,6 +916,13 @@
                                 <input type="hidden" id="fFromArea">
                                 <input type="hidden" id="fToArea">
                                 <input type="hidden" id="fMinimumFee">
+                                <input type="hidden" id="fBillOfLading">
+                                <input type="hidden" id="fContainerNumber">
+                                <input type="hidden" id="fArrivalTime">
+                                <input type="hidden" id="fTransportIsBilled">
+                                <input type="hidden" id="fTransportTa">
+                                <input type="hidden" id="fTotalServiceInv">
+                                <input type="hidden" id="fNoInvoiceOa">
 
                                 <div class="transport-panel">
                                     <div class="field">
@@ -931,24 +938,12 @@
                                         <input type="text" id="fDriverName">
                                     </div>
                                     <div class="field">
-                                        <label>Bill of Lading</label>
-                                        <input type="text" id="fBillOfLading">
-                                    </div>
-                                    <div class="field">
                                         <label>License Number</label>
                                         <input type="text" id="fLicenseNumber" style="text-transform:uppercase">
                                     </div>
                                     <div class="field">
-                                        <label>Container Number</label>
-                                        <input type="text" id="fContainerNumber" style="text-transform:uppercase">
-                                    </div>
-                                    <div class="field">
-                                        <label>Jam Berangkat</label>
+                                        <label>Jam</label>
                                         <input type="time" id="fDepartureTime">
-                                    </div>
-                                    <div class="field">
-                                        <label>Jam Kedatangan</label>
-                                        <input type="time" id="fArrivalTime">
                                     </div>
                                     <div class="field">
                                         <label>Service Price / KG</label>
@@ -961,28 +956,6 @@
                                     <div class="field wide">
                                         <label>Remarks</label>
                                         <textarea id="fTransportRemarks" rows="3"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="transport-panel billing">
-                                    <div class="field">
-                                        <label>Sudah Ditagih</label>
-                                        <label class="checkbox-field">
-                                            <input type="checkbox" id="fTransportIsBilled">
-                                            <span>Yes</span>
-                                        </label>
-                                    </div>
-                                    <div class="field">
-                                        <label>TA</label>
-                                        <input type="number" id="fTransportTa" min="0" step="0.01" placeholder="0.00">
-                                    </div>
-                                    <div class="field">
-                                        <label>Total Service Inv</label>
-                                        <input type="number" id="fTotalServiceInv" min="0" step="0.01" placeholder="0.00">
-                                    </div>
-                                    <div class="field">
-                                        <label>No Invoice OA</label>
-                                        <input type="text" id="fNoInvoiceOa">
                                     </div>
                                 </div>
                             </div>
@@ -1004,7 +977,6 @@
 
                 <div class="d-flex justify-content-end align-items-center mb-4 flex-wrap gap-2">
                     <div class="d-flex gap-2">
-                        <a href="hatchery_doc_draft_list.html" class="btn-sec">Batal</a>
                         <button class="btn-pri" onclick="saveDraft()"><i class="bi bi-save me-1"></i> Simpan Semua
                             Draft</button>
                     </div>
@@ -1087,7 +1059,10 @@
         }
 
         function transportChecked(id) {
-            return !!document.getElementById(id)?.checked;
+            const el = document.getElementById(id);
+            if (!el) return false;
+            if (el.type === "hidden") return el.value === "true";
+            return !!el.checked;
         }
 
         function collectTransportData() {
@@ -1137,7 +1112,7 @@
         }
 
         function newFarmItem() {
-            return { id: uniqueId(), farmCode: "", farmName: "" };
+            return { id: uniqueId(), farmCode: "", farmName: "", qty: 0 };
         }
 
         function newPlan() {
@@ -1156,7 +1131,7 @@
             document.getElementById("fPostingDate").value = today;
             document.getElementById("fDeliveryDate").value = today;
             document.getElementById("fDepartureTime").value = timeNow;
-            document.getElementById("fArrivalTime").value = timeNow;
+            document.getElementById("fArrivalTime").value = "";
 
             const custSel = document.getElementById("fCustomer");
             M.customers.forEach(c => {
@@ -1174,6 +1149,7 @@
 
             document.getElementById("transportForm").addEventListener("input", updateTransportSummary);
             addPlan();
+            onDocTypeChange();
         }
 
         /* ── Toggles ────────────────────────────────────────────── */
@@ -1185,8 +1161,10 @@
             const ext = getDocType() === "external";
             const custCol = document.getElementById("customerCol");
             const vendorCol = document.getElementById("vendorCol");
-            document.getElementById("postingDateLabel").textContent = ext ? "Posting Date GRPO" : "Posting Date";
-            document.getElementById("deliveryDateLabel").textContent = ext ? "Delivery Date DO" : "Delivery Date";
+            document.getElementById("postingDateCol").style.display = ext ? "" : "none";
+            document.getElementById("postingDateLabel").textContent = "GRPO Date";
+            document.getElementById("deliveryDateLabel").textContent = "Delivery Date";
+            if (!ext) document.getElementById("fPostingDate").value = document.getElementById("fDeliveryDate").value;
             if (ext) {
                 custCol.className = "col-md-6";
                 vendorCol.style.display = "block";
@@ -1378,7 +1356,7 @@
             const p = plans.find(x => x.id === planId);
             const f = p && p.farmItems && p.farmItems.find(x => x.id === farmId);
             if (!f) return;
-            f[field] = value;
+            f[field] = field === "qty" ? (parseFloat(value) || 0) : value;
         }
 
         function setA(planId, afterId, f, v) {
@@ -1481,6 +1459,10 @@
                         <input class="ti" type="text" value="${escAttr(f.farmName)}" placeholder="Farm name"
                             onchange="setFarm('${plan.id}','${f.id}','farmName',this.value)">
                     </td>
+                    <td class="cf" style="text-align:center;">
+                        <input class="tn" type="number" value="${f.qty || ""}" min="0" placeholder="0"
+                            oninput="setFarm('${plan.id}','${f.id}','qty',this.value)">
+                    </td>
                     <td class="cf" style="width:60px;text-align:center;">
                         ${plan.farmItems.length > 1
                     ? `<button class="btn-da" onclick="removeFarmItem('${plan.id}','${f.id}')" title="Hapus"><i class="bi bi-x-lg"></i></button>`
@@ -1495,14 +1477,15 @@
                             <tr>
                                 <th class="hf" style="min-width:180px;">Farm Code</th>
                                 <th class="hf" style="min-width:260px;">Farm Name</th>
+                                <th class="hf" style="width:120px;">Qty</th>
                                 <th class="hf" style="width:60px;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             ${farmRows}
                             <tr class="tr-act">
-                                <td colspan="3">
-                                    <button class="btn-aa" onclick="addFarmItem('${plan.id}')"><i class="bi bi-plus-sm"></i> Farm</button>
+                                <td colspan="4">
+                                    <button class="btn-aa" onclick="addFarmItem('${plan.id}')"><i class="bi bi-plus-sm"></i> + Farm</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -1526,7 +1509,7 @@
                         <table class="lt">
                             <thead>
                                 <tr>
-                                    <th class="hb" colspan="${2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0)}" style="border-bottom:none; font-size:12px;">Info CTU (Pengirim)</th>
+                                    <th class="hb" colspan="${2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0)}" style="border-bottom:none; font-size:12px;">Info Pengirim</th>
                                     <th class="ha" colspan="3" style="border-bottom:none; padding:4px 10px;">
                                         <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
                                             <span style="font-size:12px;">Tujuan / Conversion</span>
@@ -1559,7 +1542,7 @@
                                     <td class="cb" rowspan="${rs}">
                                         <div class="inp-s">
                                             <input class="ti" type="text" value="${plan.itemBefore.replace(/"/g, "&quot;")}"
-                                                placeholder="Nama item CTU"
+                                                placeholder="Nama item"
                                                 onchange="setB('${plan.id}','itemBefore',this.value)">
                                             <button class="btn-s" onclick="openSearch('DOC',v=>fillIB('${plan.id}',v))" title="Cari"><i class="bi bi-search"></i></button>
                                         </div>
@@ -1584,7 +1567,7 @@
                                 ${extraAfterRows}
                                 <tr class="tr-act">
                                     <td colspan="${2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0) + 3 + 1}">
-                                        <button class="btn-aa" onclick="addAfterItem('${plan.id}')"><i class="bi bi-plus-sm"></i> Conversion Item</button>
+                                        <button class="btn-aa" onclick="addAfterItem('${plan.id}')"><i class="bi bi-plus-sm"></i> + Conversion Item</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -1656,17 +1639,20 @@
 
         /* ── Save ───────────────────────────────────────────────── */
         function saveDraft() {
-            const date = document.getElementById("fPostingDate").value;
             const docType = getDocType();
+            const ext = docType === "external";
+            const deliveryDate = document.getElementById("fDeliveryDate").value;
+            const date = ext ? document.getElementById("fPostingDate").value : deliveryDate;
             const custCode = document.getElementById("fCustomer").value;
             const whsePengirimGlobal = document.getElementById("fWhsePengirim").value;
 
-            if (!date) { alert("Tanggal wajib diisi."); return; }
+            if (!deliveryDate) { alert("Delivery Date wajib diisi."); return; }
+            if (ext && !date) { alert("GRPO Date wajib diisi untuk Trading."); return; }
             if (!custCode) { alert("Customer Tujuan wajib dipilih."); return; }
             if (!whsePengirimGlobal) { alert("Warehouse Pengirim di Informasi Header wajib dipilih."); return; }
             if (!plans.length) { alert("Minimal 1 Plan harus ditambahkan."); return; }
 
-            if (docType === "external") {
+            if (ext) {
                 if (!document.getElementById("fExtVendor").value ||
                     !document.getElementById("fNoSJ").value ||
                     !document.getElementById("fNoPol").value) {
@@ -1679,7 +1665,7 @@
                 if (!plan.brand || !plan.itemBefore) { alert(`Dokumen ${i + 1}: Brand dan Item Code wajib diisi.`); return; }
                 const totalAfter = plan.afterItems.reduce((s, a) => s + (a.qtyAfter || 0), 0);
                 if (totalAfter !== (plan.qtyBefore || 0)) {
-                    alert(`Dokumen ${i + 1}: Total Qty Tujuan (${totalAfter}) harus sama dengan Qty CTU Pengirim (${plan.qtyBefore || 0}).`);
+                    alert(`Dokumen ${i + 1}: Total Qty Tujuan (${totalAfter}) harus sama dengan Qty Pengirim (${plan.qtyBefore || 0}).`);
                     return;
                 }
                 for (const a of plan.afterItems) {
@@ -1699,7 +1685,7 @@
                     id: docDraftNextId(),
                     date, docType,
                     postingDate: date,
-                    deliveryDate: document.getElementById("fDeliveryDate").value,
+                    deliveryDate,
                     contactPerson: document.getElementById("fContactPerson").value,
                     customerPhone: document.getElementById("fCustomerPhone").value,
                     shipTo: document.getElementById("fShipTo").value,

@@ -134,24 +134,15 @@
                             <div class="field"><label>Vendor Code</label><div class="vm" id="vTransportVendorCode">—</div></div>
                             <div class="field"><label>Vendor Name</label><div class="val" id="vTransportVendorName">—</div></div>
                             <div class="field"><label>Driver</label><div class="val" id="vDriverName">—</div></div>
-                            <div class="field"><label>Bill of Lading</label><div class="vm" id="vBillOfLading">—</div></div>
                         </div>
                         <div class="ig4">
                             <div class="field"><label>License Number</label><div class="vm" id="vLicenseNumber">—</div></div>
-                            <div class="field"><label>Container Number</label><div class="vm" id="vContainerNumber">—</div></div>
-                            <div class="field"><label>Jam Berangkat</label><div class="vm" id="vDepartureTime">—</div></div>
-                            <div class="field"><label>Jam Kedatangan</label><div class="vm" id="vArrivalTime">—</div></div>
-                        </div>
-                        <div class="ig4">
+                            <div class="field"><label>Jam</label><div class="vm" id="vDepartureTime">—</div></div>
                             <div class="field"><label>Service Price / KG</label><div class="vm" id="vServicePriceKg">—</div></div>
                             <div class="field"><label>Total Service</label><div class="vm" id="vTotalService">—</div></div>
-                            <div class="field"><label>TA</label><div class="vm" id="vTransportTa">—</div></div>
-                            <div class="field"><label>Total Service Inv</label><div class="vm" id="vTotalServiceInv">—</div></div>
                         </div>
                         <div class="ig4">
-                            <div class="field"><label>Sudah Ditagih</label><div class="vm" id="vTransportIsBilled">—</div></div>
-                            <div class="field"><label>No Invoice OA</label><div class="vm" id="vNoInvoiceOa">—</div></div>
-                            <div class="field" style="grid-column:span 2;"><label>Remarks</label><div class="val" id="vTransportRemarks">—</div></div>
+                            <div class="field" style="grid-column:span 4;"><label>Remarks</label><div class="val" id="vTransportRemarks">—</div></div>
                         </div>
                     </div>
                 </div>
@@ -195,6 +186,7 @@
                                     <tr>
                                         <th class="hf" style="min-width:180px;">Farm Code</th>
                                         <th class="hf" style="min-width:260px;">Farm Name</th>
+                                        <th class="hf" style="width:120px;">Qty</th>
                                     </tr>
                                 </thead>
                                 <tbody id="farmBody"></tbody>
@@ -277,18 +269,11 @@
             document.getElementById("vTransportVendorCode").textContent = fmtVal(t.vendorCode);
             document.getElementById("vTransportVendorName").textContent = fmtVal(t.vendorName);
             document.getElementById("vDriverName").textContent = fmtVal(t.driverName);
-            document.getElementById("vBillOfLading").textContent = fmtVal(t.billOfLading);
             document.getElementById("vLicenseNumber").textContent = fmtVal(t.licenseNumber);
-            document.getElementById("vContainerNumber").textContent = fmtVal(t.containerNumber);
             document.getElementById("vDepartureTime").textContent = fmtVal(t.departureTime);
-            document.getElementById("vArrivalTime").textContent = fmtVal(t.arrivalTime);
             document.getElementById("vServicePriceKg").textContent = fmtNum(t.servicePriceKg);
             document.getElementById("vTotalService").textContent = fmtNum(t.totalService);
             document.getElementById("vTransportRemarks").textContent = fmtVal(t.remarks);
-            document.getElementById("vTransportIsBilled").textContent = t.isBilled ? "Ya" : "Tidak";
-            document.getElementById("vTransportTa").textContent = fmtNum(t.ta);
-            document.getElementById("vTotalServiceInv").textContent = fmtNum(t.totalServiceInv);
-            document.getElementById("vNoInvoiceOa").textContent = fmtVal(t.noInvoiceOa);
         }
 
         /* ── Helpers ────────────────────────────────────────────── */
@@ -366,17 +351,17 @@
             const ext         = d.docType === "external";
             const showPB      = showPrice && ext;
 
-            const colCTU   = 2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0);
+            const colSender = 2 + (showPB ? 1 : 0) + (showPrice ? 1 : 0);
             const colAfter = 3;
-            const totalCols = colCTU + colAfter;
+            const totalCols = colSender + colAfter;
 
             document.getElementById("lHead").innerHTML = `
                 <tr>
-                    <th class="hb" colspan="${colCTU}" style="border-bottom:none;font-size:12px;">Info CTU (Pengirim)</th>
+                    <th class="hb" colspan="${colSender}" style="border-bottom:none;font-size:12px;">Info Pengirim</th>
                     <th class="ha" colspan="${colAfter}" style="border-bottom:none;font-size:12px;">Tujuan / Conversion</th>
                 </tr>
                 <tr>
-                    <th class="hb" style="min-width:180px;">Item Code CTU</th>
+                    <th class="hb" style="min-width:180px;">Item Code</th>
                     <th class="hb" style="width:110px;">Qty</th>
                     ${showPB    ? `<th class="hp" style="width:130px;">Harga Beli</th>` : ""}
                     ${showPrice ? `<th class="hp" style="width:130px;">Harga Jual</th>` : ""}
@@ -402,7 +387,7 @@
                         <td class="cb" rowspan="${rs}" style="text-align:center;">
                             <div style="font-weight:700;">${fmtNum(line.qtyBefore)}</div>
                             <span class="${mm ? 'qmm' : 'qok'}">
-                                ${mm ? `⚠ Tujuan: ${fmtNum(tot)} ≠ CTU: ${fmtNum(line.qtyBefore)}`
+                                ${mm ? `⚠ Tujuan: ${fmtNum(tot)} ≠ Pengirim: ${fmtNum(line.qtyBefore)}`
                                      : `✓ Tujuan: ${fmtNum(tot)}`}
                             </span>
                         </td>`;
@@ -466,8 +451,9 @@
                     <tr>
                         <td class="cf"><strong>${fmtVal(f.farmCode)}</strong></td>
                         <td class="cf">${fmtVal(f.farmName)}</td>
+                        <td class="cf" style="text-align:right;font-weight:700;">${fmtNum(f.qty)}</td>
                     </tr>`).join("")
-                : `<tr><td colspan="2" style="text-align:center;color:#9ca3af;padding:18px;">Belum ada info farm</td></tr>`;
+                : `<tr><td colspan="3" style="text-align:center;color:#9ca3af;padding:18px;">Belum ada info farm</td></tr>`;
         }
 
         function syncPB(lineId, val) {
