@@ -138,16 +138,50 @@
 
         .transport-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
             gap: 14px;
         }
 
-        .transport-grid .wide {
-            grid-column: span 2;
+        .transport-panel {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px 14px;
+            align-content: start;
+        }
+
+        .transport-panel.billing {
+            grid-template-columns: 1fr;
+            padding-left: 14px;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .transport-panel .wide {
+            grid-column: 1 / -1;
         }
 
         .transport-grid .full {
             grid-column: 1 / -1;
+        }
+
+        .checkbox-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 38px;
+            cursor: pointer;
+            user-select: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .field .checkbox-field input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            padding: 0;
+            margin: 0;
+            flex: 0 0 auto;
+            accent-color: #1a237e;
         }
 
         #vendorCol {
@@ -237,11 +271,14 @@
             }
 
             .transport-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
             }
 
-            .transport-grid .wide {
-                grid-column: 1 / -1;
+            .transport-panel.billing {
+                padding-left: 0;
+                padding-top: 14px;
+                border-left: 0;
+                border-top: 1px solid #e5e7eb;
             }
         }
 
@@ -703,6 +740,10 @@
             .transport-grid {
                 grid-template-columns: 1fr;
             }
+
+            .transport-panel {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -871,61 +912,78 @@
                     <div class="collapse" id="transportBody">
                         <div class="card-body">
                             <div class="transport-grid" id="transportForm">
-                                <div class="field">
-                                    <label>Vendor Code</label>
-                                    <input type="text" id="fTransportVendorCode">
+                                <input type="hidden" id="fNoListTransport">
+                                <input type="hidden" id="fFromArea">
+                                <input type="hidden" id="fToArea">
+                                <input type="hidden" id="fMinimumFee">
+
+                                <div class="transport-panel">
+                                    <div class="field">
+                                        <label>Vendor Code</label>
+                                        <input type="text" id="fTransportVendorCode">
+                                    </div>
+                                    <div class="field">
+                                        <label>Vendor Name</label>
+                                        <input type="text" id="fTransportVendorName">
+                                    </div>
+                                    <div class="field">
+                                        <label>Driver</label>
+                                        <input type="text" id="fDriverName">
+                                    </div>
+                                    <div class="field">
+                                        <label>Bill of Lading</label>
+                                        <input type="text" id="fBillOfLading">
+                                    </div>
+                                    <div class="field">
+                                        <label>License Number</label>
+                                        <input type="text" id="fLicenseNumber" style="text-transform:uppercase">
+                                    </div>
+                                    <div class="field">
+                                        <label>Container Number</label>
+                                        <input type="text" id="fContainerNumber" style="text-transform:uppercase">
+                                    </div>
+                                    <div class="field">
+                                        <label>Jam Berangkat</label>
+                                        <input type="time" id="fDepartureTime">
+                                    </div>
+                                    <div class="field">
+                                        <label>Jam Kedatangan</label>
+                                        <input type="time" id="fArrivalTime">
+                                    </div>
+                                    <div class="field">
+                                        <label>Service Price / KG</label>
+                                        <input type="number" id="fServicePriceKg" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="field">
+                                        <label>Total Service</label>
+                                        <input type="number" id="fTotalService" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="field wide">
+                                        <label>Remarks</label>
+                                        <textarea id="fTransportRemarks" rows="3"></textarea>
+                                    </div>
                                 </div>
-                                <div class="field">
-                                    <label>Vendor Name</label>
-                                    <input type="text" id="fTransportVendorName">
-                                </div>
-                                <div class="field">
-                                    <label>Driver Name</label>
-                                    <input type="text" id="fDriverName">
-                                </div>
-                                <div class="field">
-                                    <label>No List Transport</label>
-                                    <input type="text" id="fNoListTransport">
-                                </div>
-                                <div class="field">
-                                    <label>Bill of Lading</label>
-                                    <input type="text" id="fBillOfLading">
-                                </div>
-                                <div class="field">
-                                    <label>License Number</label>
-                                    <input type="text" id="fLicenseNumber" style="text-transform:uppercase">
-                                </div>
-                                <div class="field">
-                                    <label>Container Number</label>
-                                    <input type="text" id="fContainerNumber" style="text-transform:uppercase">
-                                </div>
-                                <div class="field">
-                                    <label>From Area</label>
-                                    <input type="text" id="fFromArea">
-                                </div>
-                                <div class="field">
-                                    <label>To Area</label>
-                                    <input type="text" id="fToArea">
-                                </div>
-                                <div class="field">
-                                    <label>Jam Berangkat</label>
-                                    <input type="time" id="fDepartureTime">
-                                </div>
-                                <div class="field">
-                                    <label>Jam Kedatangan</label>
-                                    <input type="time" id="fArrivalTime">
-                                </div>
-                                <div class="field">
-                                    <label>Minimum Fee</label>
-                                    <input type="number" id="fMinimumFee" min="0" step="0.01" placeholder="0.00">
-                                </div>
-                                <div class="field">
-                                    <label>Service Price / KG</label>
-                                    <input type="number" id="fServicePriceKg" min="0" step="0.01" placeholder="0.00">
-                                </div>
-                                <div class="field">
-                                    <label>Total Service</label>
-                                    <input type="number" id="fTotalService" min="0" step="0.01" placeholder="0.00">
+
+                                <div class="transport-panel billing">
+                                    <div class="field">
+                                        <label>Sudah Ditagih</label>
+                                        <label class="checkbox-field">
+                                            <input type="checkbox" id="fTransportIsBilled">
+                                            <span>Yes</span>
+                                        </label>
+                                    </div>
+                                    <div class="field">
+                                        <label>TA</label>
+                                        <input type="number" id="fTransportTa" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="field">
+                                        <label>Total Service Inv</label>
+                                        <input type="number" id="fTotalServiceInv" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                    <div class="field">
+                                        <label>No Invoice OA</label>
+                                        <input type="text" id="fNoInvoiceOa">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -944,9 +1002,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                    <button class="btn-ap" onclick="addPlan()"><i class="bi bi-plus-lg me-1"></i> Tambah
-                        Dokumen</button>
+                <div class="d-flex justify-content-end align-items-center mb-4 flex-wrap gap-2">
                     <div class="d-flex gap-2">
                         <a href="hatchery_doc_draft_list.html" class="btn-sec">Batal</a>
                         <button class="btn-pri" onclick="saveDraft()"><i class="bi bi-save me-1"></i> Simpan Semua
@@ -1030,6 +1086,10 @@
             return document.getElementById(id)?.value.trim() || "";
         }
 
+        function transportChecked(id) {
+            return !!document.getElementById(id)?.checked;
+        }
+
         function collectTransportData() {
             return {
                 vendorCode: transportField("fTransportVendorCode"),
@@ -1045,7 +1105,12 @@
                 arrivalTime: transportField("fArrivalTime"),
                 minimumFee: transportField("fMinimumFee"),
                 servicePriceKg: transportField("fServicePriceKg"),
-                totalService: transportField("fTotalService")
+                totalService: transportField("fTotalService"),
+                remarks: transportField("fTransportRemarks"),
+                isBilled: transportChecked("fTransportIsBilled"),
+                ta: transportField("fTransportTa"),
+                totalServiceInv: transportField("fTotalServiceInv"),
+                noInvoiceOa: transportField("fNoInvoiceOa")
             };
         }
 

@@ -432,13 +432,10 @@
                                 <input type="text" id="transportVendorName" class="form-control">
                             </div>
                             <div>
-                                <label class="form-label">Driver Name</label>
+                                <label class="form-label">Driver</label>
                                 <input type="text" id="driverName" class="form-control">
                             </div>
-                            <div>
-                                <label class="form-label">No List Transport</label>
-                                <input type="text" id="noListTransport" class="form-control">
-                            </div>
+                            <input type="hidden" id="noListTransport">
                             <div>
                                 <label class="form-label">Bill of Lading</label>
                                 <input type="text" id="billOfLading" class="form-control">
@@ -451,14 +448,8 @@
                                 <label class="form-label">Container Number</label>
                                 <input type="text" id="containerNumber" class="form-control text-uppercase">
                             </div>
-                            <div>
-                                <label class="form-label">From Area</label>
-                                <input type="text" id="fromArea" class="form-control">
-                            </div>
-                            <div>
-                                <label class="form-label">To Area</label>
-                                <input type="text" id="toArea" class="form-control">
-                            </div>
+                            <input type="hidden" id="fromArea">
+                            <input type="hidden" id="toArea">
                             <div>
                                 <label class="form-label">Jam Berangkat</label>
                                 <input type="time" id="departureTime" class="form-control">
@@ -467,10 +458,7 @@
                                 <label class="form-label">Jam Kedatangan</label>
                                 <input type="time" id="arrivalTime" class="form-control">
                             </div>
-                            <div>
-                                <label class="form-label">Minimum Fee</label>
-                                <input type="number" id="minimumFee" class="form-control" min="0" step="0.01" placeholder="0.00">
-                            </div>
+                            <input type="hidden" id="minimumFee">
                             <div>
                                 <label class="form-label">Service Price / KG</label>
                                 <input type="number" id="servicePriceKg" class="form-control" min="0" step="0.01" placeholder="0.00">
@@ -478,6 +466,29 @@
                             <div>
                                 <label class="form-label">Total Service</label>
                                 <input type="number" id="totalService" class="form-control" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label class="form-label">Sudah Ditagih</label>
+                                <div class="form-control d-flex align-items-center gap-2">
+                                    <input type="checkbox" id="transportIsBilled">
+                                    <span>Ya</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="form-label">TA</label>
+                                <input type="number" id="transportTa" class="form-control" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label class="form-label">Total Service Inv</label>
+                                <input type="number" id="totalServiceInv" class="form-control" min="0" step="0.01" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label class="form-label">No Invoice OA</label>
+                                <input type="text" id="noInvoiceOa" class="form-control">
+                            </div>
+                            <div style="grid-column:1/-1;">
+                                <label class="form-label">Remarks</label>
+                                <textarea id="transportRemarks" class="form-control" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
@@ -590,6 +601,10 @@
             return document.getElementById(id)?.value.trim() || "";
         }
 
+        function fieldChecked(id) {
+            return !!document.getElementById(id)?.checked;
+        }
+
         function collectTransportData() {
             return {
                 vendorCode: fieldValue("transportVendorCode"),
@@ -605,7 +620,12 @@
                 arrivalTime: fieldValue("arrivalTime"),
                 minimumFee: fieldValue("minimumFee"),
                 servicePriceKg: fieldValue("servicePriceKg"),
-                totalService: fieldValue("totalService")
+                totalService: fieldValue("totalService"),
+                remarks: fieldValue("transportRemarks"),
+                isBilled: fieldChecked("transportIsBilled"),
+                ta: fieldValue("transportTa"),
+                totalServiceInv: fieldValue("totalServiceInv"),
+                noInvoiceOa: fieldValue("noInvoiceOa")
             };
         }
 

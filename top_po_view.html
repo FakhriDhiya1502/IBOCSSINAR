@@ -133,24 +133,25 @@
                         <div class="ig4">
                             <div class="field"><label>Vendor Code</label><div class="vm" id="vTransportVendorCode">—</div></div>
                             <div class="field"><label>Vendor Name</label><div class="val" id="vTransportVendorName">—</div></div>
-                            <div class="field"><label>Driver Name</label><div class="val" id="vDriverName">—</div></div>
-                            <div class="field"><label>No List Transport</label><div class="vm" id="vNoListTransport">—</div></div>
+                            <div class="field"><label>Driver</label><div class="val" id="vDriverName">—</div></div>
+                            <div class="field"><label>Bill of Lading</label><div class="vm" id="vBillOfLading">—</div></div>
                         </div>
                         <div class="ig4">
-                            <div class="field"><label>Bill of Lading</label><div class="vm" id="vBillOfLading">—</div></div>
                             <div class="field"><label>License Number</label><div class="vm" id="vLicenseNumber">—</div></div>
                             <div class="field"><label>Container Number</label><div class="vm" id="vContainerNumber">—</div></div>
-                            <div class="field"><label>From Area</label><div class="val" id="vFromArea">—</div></div>
-                        </div>
-                        <div class="ig4">
-                            <div class="field"><label>To Area</label><div class="val" id="vToArea">—</div></div>
                             <div class="field"><label>Jam Berangkat</label><div class="vm" id="vDepartureTime">—</div></div>
                             <div class="field"><label>Jam Kedatangan</label><div class="vm" id="vArrivalTime">—</div></div>
-                            <div class="field"><label>Minimum Fee</label><div class="vm" id="vMinimumFee">—</div></div>
                         </div>
                         <div class="ig4">
                             <div class="field"><label>Service Price / KG</label><div class="vm" id="vServicePriceKg">—</div></div>
                             <div class="field"><label>Total Service</label><div class="vm" id="vTotalService">—</div></div>
+                            <div class="field"><label>TA</label><div class="vm" id="vTransportTa">—</div></div>
+                            <div class="field"><label>Total Service Inv</label><div class="vm" id="vTotalServiceInv">—</div></div>
+                        </div>
+                        <div class="ig4">
+                            <div class="field"><label>Sudah Ditagih</label><div class="vm" id="vTransportIsBilled">—</div></div>
+                            <div class="field"><label>No Invoice OA</label><div class="vm" id="vNoInvoiceOa">—</div></div>
+                            <div class="field" style="grid-column:span 2;"><label>Remarks</label><div class="val" id="vTransportRemarks">—</div></div>
                         </div>
                     </div>
                 </div>
@@ -228,17 +229,18 @@
             document.getElementById("vTransportVendorCode").textContent = fmt(t.vendorCode);
             document.getElementById("vTransportVendorName").textContent = fmt(t.vendorName);
             document.getElementById("vDriverName").textContent = fmt(t.driverName);
-            document.getElementById("vNoListTransport").textContent = fmt(t.noListTransport);
             document.getElementById("vBillOfLading").textContent = fmt(t.billOfLading);
             document.getElementById("vLicenseNumber").textContent = fmt(t.licenseNumber);
             document.getElementById("vContainerNumber").textContent = fmt(t.containerNumber);
-            document.getElementById("vFromArea").textContent = fmt(t.fromArea);
-            document.getElementById("vToArea").textContent = fmt(t.toArea);
             document.getElementById("vDepartureTime").textContent = fmt(t.departureTime);
             document.getElementById("vArrivalTime").textContent = fmt(t.arrivalTime);
-            document.getElementById("vMinimumFee").textContent = fmtQty(t.minimumFee);
             document.getElementById("vServicePriceKg").textContent = fmtQty(t.servicePriceKg);
             document.getElementById("vTotalService").textContent = fmtQty(t.totalService);
+            document.getElementById("vTransportRemarks").textContent = fmt(t.remarks);
+            document.getElementById("vTransportIsBilled").textContent = t.isBilled ? "Ya" : "Tidak";
+            document.getElementById("vTransportTa").textContent = fmtQty(t.ta);
+            document.getElementById("vTotalServiceInv").textContent = fmtQty(t.totalServiceInv);
+            document.getElementById("vNoInvoiceOa").textContent = fmt(t.noInvoiceOa);
         }
 
         function init() {

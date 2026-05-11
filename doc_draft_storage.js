@@ -225,10 +225,17 @@ function docDraftMigrate(drafts) {
         if (d.status === "Confirmed") d.status = "Open";
         // Split old "PO Generated" into statusDO + statusPO
         if (d.status === "PO Generated") {
-            d.status   = "DO Generated";
+            if (d.doNumber) d.status = d.grpoNumber ? "DO & GRPO Generated" : "DO Generated";
+            else d.status = "Draft";
             d.statusPO = "PO Generated";
         }
         if (d.statusPO === undefined) d.statusPO = null;
+        if (d.status === "DO Generated" && !d.doNumber) d.status = "Draft";
+        if (d.status === "DO & GRPO Generated" && !d.doNumber) d.status = "Draft";
+        if (!d.doNumber || d.status === "Draft") {
+            d.statusPO = null;
+            d.poGenId = null;
+        }
         if (d.customerPhone === undefined) d.customerPhone = "";
         if (d.shipTo === undefined) d.shipTo = "";
         if (d.vendorPhone === undefined) d.vendorPhone = null;
@@ -249,11 +256,21 @@ function docDraftMigrate(drafts) {
                 arrivalTime: "",
                 minimumFee: "",
                 servicePriceKg: "",
-                totalService: ""
+                totalService: "",
+                remarks: "",
+                isBilled: false,
+                ta: "",
+                totalServiceInv: "",
+                noInvoiceOa: ""
             };
         } else {
             if (d.transport.departureTime === undefined) d.transport.departureTime = "";
             if (d.transport.arrivalTime === undefined) d.transport.arrivalTime = "";
+            if (d.transport.remarks === undefined) d.transport.remarks = "";
+            if (d.transport.isBilled === undefined) d.transport.isBilled = false;
+            if (d.transport.ta === undefined) d.transport.ta = "";
+            if (d.transport.totalServiceInv === undefined) d.transport.totalServiceInv = "";
+            if (d.transport.noInvoiceOa === undefined) d.transport.noInvoiceOa = "";
         }
         return d;
     });

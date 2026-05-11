@@ -504,18 +504,19 @@
                         <div class="row g-2">
                             <div class="col-md-3"><span class="po-label">Vendor Code</span><div class="po-value small" id="poTransportVendorCode">-</div></div>
                             <div class="col-md-3"><span class="po-label">Vendor Name</span><div class="po-value small" id="poTransportVendorName">-</div></div>
-                            <div class="col-md-3"><span class="po-label">Driver Name</span><div class="po-value small" id="poDriverName">-</div></div>
-                            <div class="col-md-3"><span class="po-label">No List Transport</span><div class="po-value small" id="poNoListTransport">-</div></div>
+                            <div class="col-md-3"><span class="po-label">Driver</span><div class="po-value small" id="poDriverName">-</div></div>
                             <div class="col-md-3"><span class="po-label">Bill of Lading</span><div class="po-value small" id="poBillOfLading">-</div></div>
                             <div class="col-md-3"><span class="po-label">License Number</span><div class="po-value small" id="poLicenseNumber">-</div></div>
                             <div class="col-md-3"><span class="po-label">Container Number</span><div class="po-value small" id="poContainerNumber">-</div></div>
-                            <div class="col-md-3"><span class="po-label">From Area</span><div class="po-value small" id="poFromArea">-</div></div>
-                            <div class="col-md-3"><span class="po-label">To Area</span><div class="po-value small" id="poToArea">-</div></div>
                             <div class="col-md-3"><span class="po-label">Jam Berangkat</span><div class="po-value small" id="poDepartureTime">-</div></div>
                             <div class="col-md-3"><span class="po-label">Jam Kedatangan</span><div class="po-value small" id="poArrivalTime">-</div></div>
-                            <div class="col-md-3"><span class="po-label">Minimum Fee</span><div class="po-value small" id="poMinimumFee">-</div></div>
                             <div class="col-md-3"><span class="po-label">Service Price / KG</span><div class="po-value small" id="poServicePriceKg">-</div></div>
                             <div class="col-md-3"><span class="po-label">Total Service</span><div class="po-value small" id="poTotalService">-</div></div>
+                            <div class="col-md-3"><span class="po-label">Sudah Ditagih</span><div class="po-value small" id="poTransportIsBilled">-</div></div>
+                            <div class="col-md-3"><span class="po-label">TA</span><div class="po-value small" id="poTransportTa">-</div></div>
+                            <div class="col-md-3"><span class="po-label">Total Service Inv</span><div class="po-value small" id="poTotalServiceInv">-</div></div>
+                            <div class="col-md-3"><span class="po-label">No Invoice OA</span><div class="po-value small" id="poNoInvoiceOa">-</div></div>
+                            <div class="col-md-6"><span class="po-label">Transport Remarks</span><div class="po-value small" id="poTransportRemarks">-</div></div>
                         </div>
                     </div>
 
@@ -1013,17 +1014,18 @@
             document.getElementById("poTransportVendorCode").textContent = transport.vendorCode || "-";
             document.getElementById("poTransportVendorName").textContent = transport.vendorName || "-";
             document.getElementById("poDriverName").textContent = transport.driverName || "-";
-            document.getElementById("poNoListTransport").textContent = transport.noListTransport || "-";
             document.getElementById("poBillOfLading").textContent = transport.billOfLading || "-";
             document.getElementById("poLicenseNumber").textContent = transport.licenseNumber || "-";
             document.getElementById("poContainerNumber").textContent = transport.containerNumber || "-";
-            document.getElementById("poFromArea").textContent = transport.fromArea || "-";
-            document.getElementById("poToArea").textContent = transport.toArea || "-";
             document.getElementById("poDepartureTime").textContent = transport.departureTime || "-";
             document.getElementById("poArrivalTime").textContent = transport.arrivalTime || "-";
-            document.getElementById("poMinimumFee").textContent = transport.minimumFee || "-";
             document.getElementById("poServicePriceKg").textContent = transport.servicePriceKg || "-";
             document.getElementById("poTotalService").textContent = transport.totalService || "-";
+            document.getElementById("poTransportIsBilled").textContent = transport.isBilled ? "Ya" : "Tidak";
+            document.getElementById("poTransportTa").textContent = transport.ta || "-";
+            document.getElementById("poTotalServiceInv").textContent = transport.totalServiceInv || "-";
+            document.getElementById("poNoInvoiceOa").textContent = transport.noInvoiceOa || "-";
+            document.getElementById("poTransportRemarks").textContent = transport.remarks || "-";
             document.getElementById("poRemarks").textContent = order.remarks || "Automatic Order Intake from Portal. Customer Reference available.";
 
             // Forecast info section

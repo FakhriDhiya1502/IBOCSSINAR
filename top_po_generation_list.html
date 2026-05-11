@@ -358,15 +358,19 @@
             setTimeout(() => t.remove(), 4000);
         }
 
+        function canGeneratePO(d) {
+            return d.statusPO !== "PO Generated" && !!d.doNumber && d.status !== "Draft";
+        }
+
         // ============================
         // SUMMARY
         // ============================
         function renderSummary(drafts) {
             const total   = drafts.length;
-            const belumPO = drafts.filter(d => d.status === "Draft").length;
+            const belumPO = drafts.filter(d => canGeneratePO(d)).length;
             const doGen   = drafts.filter(d => d.status === "DO Generated").length;
             const doGrpo  = drafts.filter(d => d.status === "DO & GRPO Generated").length;
-            const sudahPO = drafts.filter(d => d.status === "PO Generated").length;
+            const sudahPO = drafts.filter(d => d.statusPO === "PO Generated").length;
             document.getElementById("summaryGrid").innerHTML = `
                 <div class="summary-box"><div class="lbl">Total DO Draft</div><div class="val">${total}</div></div>
                 <div class="summary-box"><div class="lbl">Belum Generate PO</div><div class="val" style="color:#92400e">${belumPO}</div></div>
@@ -428,24 +432,39 @@
                 if (!editable) return `<div class="info-field"><div class="info-label">${label}</div><span class="info-val">${fmt(value)}</span></div>`;
                 return `<div class="info-field"><div class="info-label">${label}</div><input data-transport-field="${key}" type="${type}" value="${value}" style="width:100%;border:1px solid #dbe1ea;border-radius:7px;padding:7px 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;"></div>`;
             };
+            const textArea = (key, label) => {
+                const value = t[key] || "";
+                if (!editable) return `<div class="info-field" style="grid-column:1/-1;"><div class="info-label">${label}</div><span class="info-val">${fmt(value)}</span></div>`;
+                return `<div class="info-field" style="grid-column:1/-1;"><div class="info-label">${label}</div><textarea data-transport-field="${key}" rows="3" style="width:100%;border:1px solid #dbe1ea;border-radius:7px;padding:7px 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;">${value}</textarea></div>`;
+            };
+            const checkbox = (key, label) => {
+                if (!editable) return `<div class="info-field"><div class="info-label">${label}</div><span class="info-val">${t[key] ? "Ya" : "Tidak"}</span></div>`;
+                return `<div class="info-field"><div class="info-label">${label}</div><label style="display:flex;align-items:center;gap:8px;height:35px;border:1px solid #dbe1ea;border-radius:7px;padding:0 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;"><input data-transport-field="${key}" type="checkbox" ${t[key] ? "checked" : ""}> Ya</label></div>`;
+            };
+            const hidden = key => editable ? `<input data-transport-field="${key}" type="hidden" value="${t[key] || ""}">` : "";
             return `
                 <div class="info-card" style="margin-bottom:16px;">
                     <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;">Transport</div>
                     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                        ${hidden("noListTransport")}
+                        ${hidden("fromArea")}
+                        ${hidden("toArea")}
+                        ${hidden("minimumFee")}
                         ${field("vendorCode", "Vendor Code")}
                         ${field("vendorName", "Vendor Name")}
-                        ${field("driverName", "Driver Name")}
-                        ${field("noListTransport", "No List Transport")}
+                        ${field("driverName", "Driver")}
                         ${field("billOfLading", "Bill of Lading")}
                         ${field("licenseNumber", "License Number")}
                         ${field("containerNumber", "Container Number")}
-                        ${field("fromArea", "From Area")}
-                        ${field("toArea", "To Area")}
                         ${field("departureTime", "Jam Berangkat", "time")}
                         ${field("arrivalTime", "Jam Kedatangan", "time")}
-                        ${field("minimumFee", "Minimum Fee", "number")}
                         ${field("servicePriceKg", "Service Price / KG", "number")}
                         ${field("totalService", "Total Service", "number")}
+                        ${checkbox("isBilled", "Sudah Ditagih")}
+                        ${field("ta", "TA", "number")}
+                        ${field("totalServiceInv", "Total Service Inv", "number")}
+                        ${field("noInvoiceOa", "No Invoice OA")}
+                        ${textArea("remarks", "Remarks")}
                     </div>
                 </div>`;
         }
@@ -453,7 +472,7 @@
         function collectDetailTransportOverride() {
             const transport = {};
             document.querySelectorAll("#detailModalBody [data-transport-field]").forEach(input => {
-                transport[input.dataset.transportField] = input.value.trim();
+                transport[input.dataset.transportField] = input.type === "checkbox" ? input.checked : input.value.trim();
             });
             return transport;
         }
@@ -476,7 +495,7 @@
             if (!d) return;
             pendingSingleDraft = d;
 
-            const isDraft = d.status === "Draft";
+            const canGenerate = canGeneratePO(d);
             const typeTag = d.docType === "internal"
                 ? `<span class="tag tag-internal">Internal</span>`
                 : `<span class="tag tag-external">External</span>`;
@@ -521,17 +540,17 @@
                     </div>
                 </div>
                 ${extHtml}
-                ${renderTransportHtml(d, isDraft)}
+                ${renderTransportHtml(d, canGenerate)}
                 <div class="section-label"><i class="bi bi-list-ul"></i>Detail Lines (${d.lines.length} line)</div>
                 <div style="overflow-x:auto;">${renderLinesHtml(d)}</div>
                 ${renderRemarksHtml(d)}
-                ${!isDraft ? `<div style="margin-top:14px;padding:10px 14px;background:#dcfce7;border-radius:8px;font-size:13px;color:#166534;font-weight:600;">
+                ${!canGenerate ? `<div style="margin-top:14px;padding:10px 14px;background:#dcfce7;border-radius:8px;font-size:13px;color:#166534;font-weight:600;">
                     <i class="bi bi-check-circle-fill me-1"></i>DO Draft ini sudah di-generate menjadi PO.
                 </div>` : ""}
             `;
 
             const btnGen = document.getElementById("btnDetailGenerate");
-            if (isDraft) {
+            if (canGenerate) {
                 btnGen.style.display = "";
                 btnGen.onclick = () => {
                     pendingSingleDraft._poTransportOverride = collectDetailTransportOverride();
@@ -627,6 +646,7 @@
             const generated = [];
 
             drafts.forEach(draft => {
+                if (!canGeneratePO(draft)) return;
                 const poId = poGenNextId();
                 const po = {
                     id: poId,
@@ -663,7 +683,7 @@
                 poGenSave(po);
                 delete draft._poTransportOverride;
                 delete draft._poRemarksOverride;
-                draft.status  = "PO Generated";
+                draft.statusPO = "PO Generated";
                 draft.poGenId = poId;
                 docDraftSave(draft);
                 generated.push(poId);
@@ -683,7 +703,7 @@
             return drafts.map(d => {
                 rowCounter++;
                 const idx       = rowCounter;
-                const isDraft   = d.status === "Draft";
+                const canGenerate = canGeneratePO(d);
                 const expandId  = `exp-${idx}`;
 
                 const typeTag = d.docType === "internal"
@@ -694,7 +714,7 @@
                     ? `${d.planCode} <span style="font-size:11px;color:#6b7280">— ${d.planName || ""}</span>`
                     : (d.forecastRef ? `${d.forecastRef} <span style="font-size:11px;color:#6b7280">— ${d.forecastDesc || ""}</span>` : "-");
 
-                const checkbox = isDraft
+                const checkbox = canGenerate
                     ? `<input type="checkbox" class="row-check grp-${groupKey}" data-id="${d.id}" onchange="handleCheck()">`
                     : `<input type="checkbox" disabled style="opacity:.3;">`;
 
@@ -702,7 +722,7 @@
                     <button class="btn-xs btn-view" onclick="openDetailModal('${d.id}')">
                         <i class="bi bi-eye me-1"></i>Detail
                     </button>
-                    ${isDraft ? `<button class="btn-xs btn-generate" onclick="openDetailModal('${d.id}')">
+                    ${canGenerate ? `<button class="btn-xs btn-generate" onclick="openDetailModal('${d.id}')">
                         <i class="bi bi-file-earmark-plus me-1"></i>Generate PO
                     </button>` : ""}`;
 
@@ -737,7 +757,7 @@
                     <td>${typeTag}</td>
                     <td>${planInfo}</td>
                     <td style="text-align:center">${d.lines.length}</td>
-                    <td>${statusTag(d.status)}</td>
+                    <td>${d.statusPO === "PO Generated" ? statusTag("PO Generated") : statusTag(d.status)}</td>
                     <td>${actions}</td>
                 </tr>
                 <tr class="expand-row" id="${expandId}">
@@ -788,7 +808,7 @@
 
             container.innerHTML = Object.entries(groups).map(([key, grp]) => {
                 const safeKey   = key.replace(/[^a-zA-Z0-9]/g, "");
-                const draftCnt  = grp.drafts.filter(d => d.status === "Draft").length;
+                const draftCnt  = grp.drafts.filter(d => canGeneratePO(d)).length;
                 const totalCnt  = grp.drafts.length;
                 const rowsHtml  = buildRowsHtml(grp.drafts, safeKey);
 
@@ -917,7 +937,8 @@
             let f = allDrafts;
             if (type)     f = f.filter(d => d.docType === type);
             if (cust)     f = f.filter(d => d.customer === cust);
-            if (status)   f = f.filter(d => d.status === status);
+            if (status === "PO Generated") f = f.filter(d => d.statusPO === "PO Generated");
+            else if (status) f = f.filter(d => d.status === status);
             if (dateFrom) f = f.filter(d => d.date >= dateFrom);
             if (dateTo)   f = f.filter(d => d.date <= dateTo);
             renderTable(f);

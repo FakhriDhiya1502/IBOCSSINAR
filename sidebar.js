@@ -90,7 +90,7 @@ class SidebarSystem {
                 children: [
                     {
                         id: "forecast_feed",
-                        label: "Feed Forecast",
+                        label: "Forecast",
                         icon: "bi-graph-up-arrow",
                         url: "customer_ForecastList.html",
                         roles: ["customer", "super_admin"]
@@ -104,14 +104,14 @@ class SidebarSystem {
                     // },
                     {
                         id: "orders",
-                        label: "Purchase Order",
+                        label: "PO Generation",
                         icon: "bi-list-ul",
                         url: "customer_orders.html",
                         roles: ["customer", "super_admin"]
                     },
                     {
                         id: "incoming_po",
-                        label: "Sales Order",
+                        label: "SO Generation",
                         icon: "bi-check2-square",
                         url: "vendor_incoming_po_list.html",
                         roles: ["vendor", "super_admin"]
@@ -130,14 +130,14 @@ class SidebarSystem {
                 children: [
                     {
                         id: "ap_list",
-                        label: "Accounts Payable",
+                        label: "AP Generation",
                         icon: "bi-file-earmark-minus",
                         url: "customer_AP.html",
                         roles: ["customer", "super_admin"]
                     },
                     {
                         id: "ar_list",
-                        label: "Accounts Receivable",
+                        label: "AR Generation",
                         icon: "bi-file-earmark-plus",
                         url: "customer_AR.html",
                         roles: ["vendor", "super_admin"]

@@ -26,11 +26,21 @@ function poGenMigrate(list) {
                 arrivalTime: "",
                 minimumFee: "",
                 servicePriceKg: "",
-                totalService: ""
+                totalService: "",
+                remarks: "",
+                isBilled: false,
+                ta: "",
+                totalServiceInv: "",
+                noInvoiceOa: ""
             };
         } else {
             if (p.transport.departureTime === undefined) p.transport.departureTime = "";
             if (p.transport.arrivalTime === undefined) p.transport.arrivalTime = "";
+            if (p.transport.remarks === undefined) p.transport.remarks = "";
+            if (p.transport.isBilled === undefined) p.transport.isBilled = false;
+            if (p.transport.ta === undefined) p.transport.ta = "";
+            if (p.transport.totalServiceInv === undefined) p.transport.totalServiceInv = "";
+            if (p.transport.noInvoiceOa === undefined) p.transport.noInvoiceOa = "";
         }
         return p;
     });
