@@ -17,10 +17,24 @@
         .ig3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
         .ig4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
         .field label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-        .field .val  { font-size: 14px; color: #111827; font-weight: 500; }
-        .field .vm   { font-size: 14px; font-weight: 700; color: #1a237e; }
+        .field .val,
+        .field .vm,
+        .field .value-box {
+            min-height: 38px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 8px 11px;
+            border: 1px solid #d8dee9;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 14px;
+            line-height: 1.35;
+        }
+        .field .val  { color: #111827; font-weight: 500; }
+        .field .vm   { color: #1a237e; font-weight: 700; }
         .field.full { grid-column: 1 / -1; }
-        .field .remarks { min-height: 58px; padding: 9px 11px; border: 1px solid #eef0f4; border-radius: 8px; background: #f9fafb; white-space: pre-wrap; }
+        .field .remarks { min-height: 58px; align-items: flex-start; background: #f9fafb; white-space: pre-wrap; }
 
         /* Status banner */
         .s-banner { border-radius: 10px; padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 700; }
@@ -28,6 +42,18 @@
         .s-done   { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .s-pogen  { background: #ede9fe; color: #5b21b6; border: 1px solid #c4b5fd; }
         .s-notice { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #1d4ed8; margin-bottom: 18px; }
+        .status-area { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; margin-bottom: 18px; }
+        .status-area .s-banner { margin-bottom: 10px; }
+        .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+
+        .collapse-card-header { width: 100%; border: 0; background: transparent; padding: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+        .collapse-card-header:focus { outline: none; box-shadow: none; }
+        .collapse-card-header:focus-visible { outline: 2px solid #bfdbfe; outline-offset: 3px; border-radius: 6px; }
+        .collapse-card-header .bi-chevron-down { transition: transform .2s ease; }
+        .collapse-card-header[aria-expanded="true"] .bi-chevron-down { transform: rotate(180deg); }
+        .view-tabs { display: flex; gap: 8px; padding: 12px 16px 0; background: #fafbfe; border-bottom: 1px solid #eef0f4; }
+        .view-tab { border: 1px solid #c4b5fd; background: #fff; color: #5b21b6; border-radius: 8px 8px 0 0; padding: 8px 14px; font-size: 12px; font-weight: 800; }
+        .view-tab.active { background: #6d28d9; color: #fff; border-color: #6d28d9; }
 
         .tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
         .t-int { background: #dbeafe; color: #1d4ed8; }
@@ -64,7 +90,7 @@
         .btn-wrn { padding: 10px 20px; border-radius: 8px; border: 0; font-size: 13px; font-weight: 700; background: #f59e0b; color: #fff; cursor: pointer; text-decoration: none; display: inline-block; }
         .btn-sec { padding: 10px 20px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-weight: 700; background: #fff; color: #374151; cursor: pointer; text-decoration: none; display: inline-block; }
 
-        @media (max-width: 900px) { .ig3, .ig4 { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 900px) { .ig3, .ig4 { grid-template-columns: 1fr 1fr; } .status-area { grid-template-columns: 1fr; } .top-actions { justify-content: flex-start; } }
     </style>
 </head>
 <body>
@@ -98,37 +124,93 @@
                     <a href="hatchery_doc_draft_list.html" class="btn-sec"><i class="bi bi-arrow-left me-1"></i> Kembali</a>
                 </div>
 
-                <div id="statusBanner"></div>
+                <div class="status-area">
+                    <div id="statusBanner"></div>
+                    <div class="top-actions" id="actionTop"></div>
+                </div>
                 <div id="salesNotice"></div>
 
                 <!-- Header Info -->
                 <div class="card">
-                    <div class="card-header">Informasi Header</div>
+                    <div class="card-header">
+                        <button class="collapse-card-header" type="button" data-bs-toggle="collapse" data-bs-target="#headerInfoBody" aria-expanded="true">
+                            <span><i class="bi bi-file-earmark-text me-2"></i>Informasi Header</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse show" id="headerInfoBody">
                     <div class="card-body">
                         <div class="ig4">
                             <div class="field"><label>No. DO Draft</label><div class="vm" id="vId">—</div></div>
                             <div class="field"><label>Posting Date</label><div class="val" id="vPostingDate">—</div></div>
                             <div class="field"><label>Delivery Date</label><div class="val" id="vDeliveryDate">—</div></div>
-                            <div class="field"><label>DOC Type</label><div id="vDocType">—</div></div>
+                            <div class="field"><label>DOC Type</label><div class="value-box" id="vDocType">—</div></div>
                         </div>
                         <div class="ig4">
                             <div class="field"><label>Plan Tujuan</label><div class="vm" id="vPlanCode">—</div></div>
-                            <div class="field"><label>Customer Tujuan</label><div class="val" id="vCustomer">—</div></div>
+                            <div class="field"><label>Hatchery / Warehouse</label><div class="val" id="vWhsePengirim">—</div></div>
+                            <div class="field"><label>Dibuat Oleh</label><div class="val" id="vCreatedBy">—</div></div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <button class="collapse-card-header" type="button" data-bs-toggle="collapse" data-bs-target="#customerInfoBody" aria-expanded="true">
+                            <span><i class="bi bi-person-lines-fill me-2"></i>Customer Header</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse show" id="customerInfoBody">
+                    <div class="card-body">
+                        <div class="ig4">
+                            <div class="field"><label>Customer</label><div class="val" id="vCustomer">—</div></div>
+                            <div class="field"><label>Contact Person</label><div class="val" id="vContactPerson">—</div></div>
                             <div class="field"><label>Nomor Telepon</label><div class="val" id="vCustomerPhone">—</div></div>
-                            <div class="field"><label>Whse Pengirim</label><div class="val" id="vWhsePengirim">—</div></div>
+                            <div class="field"><label>Customer Ref. No.</label><div class="val" id="vCustomerRefNo">—</div></div>
                         </div>
                         <div class="ig4">
                             <div class="field full"><label>Ship To</label><div class="val remarks" id="vShipTo">—</div></div>
                         </div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Trading Info -->
+                <div class="card" id="extCard" style="display:none;">
+                    <div class="card-header">
+                        <button class="collapse-card-header" type="button" data-bs-toggle="collapse" data-bs-target="#vendorInfoBody" aria-expanded="true">
+                            <span><i class="bi bi-truck me-2"></i>Vendor Header</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse show" id="vendorInfoBody">
+                    <div class="card-body">
                         <div class="ig4">
-                            <div class="field"><label>Dibuat Oleh</label><div class="val" id="vCreatedBy">—</div></div>
+                            <div class="field"><label>Vendor Trading</label><div class="val" id="vExtVendor">—</div></div>
+                            <div class="field"><label>Nomor Telepon</label><div class="val" id="vVendorPhone">—</div></div>
+                            <div class="field"><label>No. Surat Jalan</label><div class="vm" id="vNoSJ">—</div></div>
+                            <div class="field"><label>Tanggal Surat Jalan</label><div class="val" id="vTglSJ">—</div></div>
+                            <div class="field"><label>No. Polisi</label><div class="vm" id="vNoPol">—</div></div>
                         </div>
+                        <div class="ig4">
+                            <div class="field"><label>No. GRPO</label><div class="vm" id="vGrpoNumber" style="color:#7c3aed;">—</div></div>
+                        </div>
+                    </div>
                     </div>
                 </div>
 
                 <!-- Transport Info -->
                 <div class="card">
-                    <div class="card-header"><i class="bi bi-truck-front-fill me-2"></i>Transport</div>
+                    <div class="card-header">
+                        <button class="collapse-card-header" type="button" data-bs-toggle="collapse" data-bs-target="#transportInfoBody" aria-expanded="false">
+                            <span><i class="bi bi-truck-front-fill me-2"></i>Transport</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse" id="transportInfoBody">
                     <div class="card-body">
                         <div class="ig4">
                             <div class="field"><label>Vendor Code</label><div class="vm" id="vTransportVendorCode">—</div></div>
@@ -142,55 +224,44 @@
                             <div class="field"><label>Total Service</label><div class="vm" id="vTotalService">—</div></div>
                         </div>
                         <div class="ig4">
-                            <div class="field" style="grid-column:span 4;"><label>Remarks</label><div class="val" id="vTransportRemarks">—</div></div>
+                            <div class="field" style="grid-column:span 4;"><label>Remarks</label><div class="val remarks" id="vTransportRemarks">—</div></div>
                         </div>
+                    </div>
                     </div>
                 </div>
 
-                <!-- Trading Info -->
-                <div class="card" id="extCard" style="display:none;">
-                    <div class="card-header"><i class="bi bi-truck me-2"></i>Informasi DOC Trading</div>
-                    <div class="card-body">
-                        <div class="ig4">
-                            <div class="field"><label>Vendor Trading</label><div class="val" id="vExtVendor">—</div></div>
-                            <div class="field"><label>Nomor Telepon</label><div class="val" id="vVendorPhone">—</div></div>
-                            <div class="field"><label>No. Surat Jalan</label><div class="vm" id="vNoSJ">—</div></div>
-                            <div class="field"><label>Tanggal Surat Jalan</label><div class="val" id="vTglSJ">—</div></div>
-                            <div class="field"><label>No. Polisi</label><div class="vm" id="vNoPol">—</div></div>
-                        </div>
-                        <div class="ig4">
-                            <div class="field"><label>No. GRPO</label><div class="vm" id="vGrpoNumber" style="color:#7c3aed;">—</div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Lines Table -->
+                <!-- Item & Farm Tabs -->
                 <div class="card">
-                    <div class="card-header">Item Lines — <span style="color:#3730a3">Before</span> / <span style="color:#166534">After</span></div>
-                    <div class="card-body p-0">
-                        <div class="lines-wrap">
-                            <table class="lt">
-                                <thead id="lHead"></thead>
-                                <tbody id="lBody"></tbody>
-                            </table>
-                        </div>
+                    <div class="view-tabs" role="tablist">
+                        <button class="view-tab active" type="button" data-bs-toggle="tab" data-bs-target="#tabItems">Item Kirim &amp; Tujuan</button>
+                        <button class="view-tab" type="button" data-bs-toggle="tab" data-bs-target="#tabFarm">Info Farm</button>
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">Info Farm</div>
-                    <div class="card-body p-0">
-                        <div class="lines-wrap">
-                            <table class="lt">
-                                <thead>
-                                    <tr>
-                                        <th class="hf" style="min-width:180px;">Farm Code</th>
-                                        <th class="hf" style="min-width:260px;">Farm Name</th>
-                                        <th class="hf" style="width:120px;">Qty</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="farmBody"></tbody>
-                            </table>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="tabItems">
+                            <div class="card-body p-0">
+                                <div class="lines-wrap">
+                                    <table class="lt">
+                                        <thead id="lHead"></thead>
+                                        <tbody id="lBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tabFarm">
+                            <div class="card-body p-0">
+                                <div class="lines-wrap">
+                                    <table class="lt">
+                                        <thead>
+                                            <tr>
+                                                <th class="hf" style="min-width:180px;">Farm Code</th>
+                                                <th class="hf" style="min-width:260px;">Farm Name</th>
+                                                <th class="hf" style="width:120px;">Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="farmBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -202,8 +273,6 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-end gap-2 mb-4" id="actionFooter"></div>
-
             </div>
         </div>
     </div>
@@ -213,13 +282,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header" style="background:#1a237e;color:#fff;">
-                    <h5 class="modal-title">Konfirmasi Generate DO</h5>
+                    <h5 class="modal-title" id="modalGenTitle">Konfirmasi Generate DO</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="modalBody"></div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button class="btn btn-success btn-sm fw-bold" onclick="confirmGen()">Ya, Generate DO</button>
+                    <button class="btn btn-success btn-sm fw-bold" id="btnConfirmGen" onclick="confirmGen()">Ya, Generate DO</button>
                 </div>
             </div>
         </div>
@@ -290,7 +359,7 @@
 
             const isDO     = d.status === "DO Generated";
             const isDOGRPO = d.status === "DO & GRPO Generated";
-            const isPOGen  = d.statusPO === "PO Generated";
+            const isPOGen  = d.statusPO === "PO Generated" && d.status !== "Draft" && !!d.doNumber;
             const isOpen   = d.status === "Open";
             const isDone   = isDO || isDOGRPO;
 
@@ -300,7 +369,7 @@
             } else if (isDO) {
                 bannerHtml = `<div class="s-banner s-done"><i class="bi bi-check-circle-fill"></i> Status DO: <strong>DO Generated</strong> — Nomor DO: <strong>${d.doNumber || "—"}</strong></div>`;
             } else if (isOpen) {
-                bannerHtml = `<div class="s-banner" style="background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;"><i class="bi bi-check-circle-fill"></i> Status DO: <strong>Open</strong> — Menunggu Generate DO oleh Admin Sales.</div>`;
+                bannerHtml = `<div class="s-banner" style="background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;"><i class="bi bi-check-circle-fill"></i> Status DO: <strong>Confirmed</strong> — Menunggu Generate DO oleh Admin Sales.</div>`;
             } else {
                 bannerHtml = `<div class="s-banner s-draft"><i class="bi bi-clock-history"></i> Status DO: <strong>Draft</strong> — Menunggu konfirmasi.</div>`;
             }
@@ -314,6 +383,8 @@
             if (showPrice && !isDone && !isPOGen) {
                 document.getElementById("salesNotice").innerHTML =
                     `<div class="s-notice"><i class="bi bi-info-circle-fill me-2"></i><strong>Admin Sales:</strong> Isi Harga Beli &amp; Harga Jual, lalu klik <strong>Generate DO</strong>.</div>`;
+            } else {
+                document.getElementById("salesNotice").innerHTML = "";
             }
 
             document.getElementById("vId").textContent            = d.id;
@@ -324,7 +395,9 @@
                 : `<span class="tag t-ext">Trading</span>`;
             document.getElementById("vPlanCode").textContent      = d.planCode ? (d.planCode + (d.planName ? " — " + d.planName : "")) : "—";
             document.getElementById("vCustomer").textContent      = d.customerName;
+            document.getElementById("vContactPerson").textContent = d.contactPerson || "—";
             document.getElementById("vCustomerPhone").textContent = d.customerPhone || "—";
+            document.getElementById("vCustomerRefNo").textContent = d.customerRefNo || "—";
             document.getElementById("vShipTo").textContent        = d.shipTo || "—";
             document.getElementById("vDocRemarks").textContent    = d.remarks || "—";
             document.getElementById("vWhsePengirim").textContent  = d.whsePengirimName || d.whsePengirim || d.warehouseName || "—";
@@ -469,16 +542,18 @@
         function renderActions(d) {
             const isDraft = d.status === "Draft";
             const isOpen  = d.status === "Open";
+            const ext     = d.docType === "external";
             const btns    = [];
 
             if (isDraft && isHatch) {
                 btns.push(`<a href="hatchery_doc_draft_add.html?id=${d.id}" class="btn-wrn"><i class="bi bi-pencil me-1"></i> Edit Draft</a>`);
                 btns.push(`<button class="btn-pri" onclick="confirmDraft()"><i class="bi bi-check2-circle me-1"></i> Confirm Draft</button>`);
             }
-            if ((isOpen || isDraft) && showPrice) {
-                btns.push(`<button class="btn-suc" onclick="openGen()"><i class="bi bi-lightning-charge-fill me-1"></i> Generate DO</button>`);
+            if (isOpen && showPrice) {
+                const label = ext ? "Generate DO & GRPO" : "Generate DO";
+                btns.push(`<button class="btn-suc" onclick="openGen()"><i class="bi bi-lightning-charge-fill me-1"></i> ${label}</button>`);
             }
-            document.getElementById("actionFooter").innerHTML = btns.join("");
+            document.getElementById("actionTop").innerHTML = btns.join("");
         }
 
         function confirmDraft() {
@@ -491,6 +566,9 @@
 
         function openGen() {
             const ext = draft.docType === "external";
+            const genLabel = ext ? "Generate DO & GRPO" : "Generate DO";
+            document.getElementById("modalGenTitle").textContent = "Konfirmasi " + genLabel;
+            document.getElementById("btnConfirmGen").textContent = "Ya, " + genLabel;
             document.getElementById("modalBody").innerHTML = `
                 <p>Generate DO dari <strong>${draft.id}</strong>:</p>
                 <ul style="font-size:13px;">
