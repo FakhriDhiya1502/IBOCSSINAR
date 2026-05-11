@@ -58,6 +58,42 @@
             color: #64748b;
         }
 
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .summary-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: .45px;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            line-height: 1;
+            font-weight: 800;
+            color: #1a237e;
+        }
+
+        .summary-value.warn {
+            color: #92400e;
+        }
+
         /* ── Filter Grid ───────────────────────────── */
         .filter-grid {
             display: flex;
@@ -399,6 +435,12 @@
         .customer-section table.rt {
             min-width: 960px;
         }
+
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -436,6 +478,18 @@
                     </div>
                 </div>
 
+                <!-- Summary -->
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-label">Plan Draft</div>
+                        <div class="summary-value warn" id="sumDraft">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-label">Plan Released yg belum ada PO</div>
+                        <div class="summary-value" id="sumReleasedNoPo">0</div>
+                    </div>
+                </div>
+
                 <!-- Filter -->
                 <div class="card">
                     <div class="card-header"><i class="bi bi-funnel-fill" style="color:#6366f1;"></i> Filter Pencarian
@@ -455,6 +509,10 @@
                                     <option value="Released">Released</option>
                                     <option value="Draft">Draft</option>
                                 </select>
+                            </div>
+                            <div class="field" style="flex:2 1 280px;">
+                                <label>Search</label>
+                                <input type="text" id="fSearch" placeholder="Cari plan / customer / item / warehouse...">
                             </div>
                             <div class="field" style="flex:0 0 auto;">
                                 <label>&nbsp;</label>
@@ -1013,6 +1071,10 @@
         window.onload = () => {
             new SidebarSystem(null, 'forecast_doc').render();
             initData();
+            document.getElementById("fSearch").addEventListener("input", renderReport);
+            document.getElementById("fSearch").addEventListener("keydown", (e) => {
+                if (e.key === "Enter") renderReport();
+            });
             renderReport();
         };
 
@@ -1040,6 +1102,7 @@
         function renderReport() {
             const fCust = document.getElementById("fCust").value;
             const fStatus = document.getElementById("fStatus").value;
+            const fSearch = document.getElementById("fSearch").value.trim().toLowerCase();
 
             const tableWrap = document.querySelector(".table-wrap");
             const tbody = document.getElementById("reportBody");
@@ -1051,16 +1114,49 @@
                 return `${d}.${m}.${y}`;
             };
 
-            // Filter plans
-            const list = allPlans.filter(p => {
+            const customerName = (p) => {
+                if (p.ownerType === "customer") {
+                    return M.getCustomer(p.owner) ? M.getCustomer(p.owner).name : p.owner;
+                }
+                return M.getExternalVendor && M.getExternalVendor(p.owner) ? M.getExternalVendor(p.owner).name : p.owner;
+            };
+
+            const matchesBaseFilter = (p) => {
                 if (p.poCreated) return false;
                 if (fCust && p.owner !== fCust) return false;
                 if (fStatus && p.status !== fStatus) return false;
                 return true;
+            };
+
+            const baseList = allPlans.filter(matchesBaseFilter);
+            document.getElementById("sumDraft").textContent = baseList.filter(p => p.status === "Draft").length;
+            document.getElementById("sumReleasedNoPo").textContent = baseList.filter(p => p.status === "Released" && !p.poCreated).length;
+
+            // Filter plans for table
+            const list = baseList.filter(p => {
+                if (!fSearch) return true;
+                const itemCode = p.itemCode || p.typeOfChicken || "";
+                const itemDesc = p.itemDescription || p.descOfChicken || "";
+                const haystack = [
+                    p.code,
+                    p.description,
+                    p.status,
+                    p.owner,
+                    customerName(p),
+                    p.warehouseCode,
+                    p.warehouseName,
+                    itemCode,
+                    itemDesc,
+                    p.documentDate,
+                    p.startDate,
+                    p.endDate,
+                    p.distRules
+                ].join(" ").toLowerCase();
+                return haystack.includes(fSearch);
             });
 
             if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-muted">Tidak ada data plan yang sesuai filter.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="13" class="text-center py-4 text-muted">Tidak ada data plan yang sesuai filter.</td></tr>`;
                 // Restore table header visibility
                 tableWrap.querySelector("table").style.display = "";
                 tableWrap.querySelectorAll(".customer-section").forEach(el => el.remove());
@@ -1072,10 +1168,7 @@
             list.forEach(p => {
                 const key = p.owner;
                 if (!groups[key]) {
-                    const custName = p.ownerType === "customer"
-                        ? (M.getCustomer(p.owner) ? M.getCustomer(p.owner).name : p.owner)
-                        : (M.getExternalVendor ? (M.getExternalVendor(p.owner) ? M.getExternalVendor(p.owner).name : p.owner) : p.owner);
-                    groups[key] = { code: key, name: custName, plans: [] };
+                    groups[key] = { code: key, name: customerName(p), plans: [] };
                 }
                 groups[key].plans.push(p);
             });
@@ -1157,6 +1250,7 @@
         function resetFilter() {
             document.getElementById("fCust").value = "";
             document.getElementById("fStatus").value = "";
+            document.getElementById("fSearch").value = "";
             renderReport();
         }
 
