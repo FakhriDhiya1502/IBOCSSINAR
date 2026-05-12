@@ -10,80 +10,66 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f7fb; color: #222; }
 
-        .card { background: #fff; border-radius: 14px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
-        .card-header { padding: 13px 16px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; }
+        .page-title { font-size: 18px; font-weight: 800; margin: 0; }
+        .page-subtitle { font-size: 13px; color: #6b7280; margin-top: 2px; }
+        .crumb { font-size: 12px; color: #6b7280; margin-top: 8px; }
+
+        .card { background: #fff; border: 1px solid #e8ebf1; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden; }
+        .card-header { padding: 12px 16px; font-weight: 800; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; }
         .card-body { padding: 16px; }
 
-        .summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
-        .summary-box { border: 1px solid #e8ebf1; border-radius: 10px; padding: 14px 16px; background: #fafbfe; }
-        .summary-box .lbl { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-        .summary-box .val { font-size: 24px; font-weight: 700; }
+        .summary-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fff; max-width: 360px; }
+        .summary-box .lbl { font-size: 12px; color: #6b7280; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; }
+        .summary-box .val { font-size: 30px; font-weight: 800; color: #92400e; line-height: 1.1; margin-top: 4px; }
+        .summary-box .hint { color: #6b7280; font-size: 12px; margin-top: 4px; }
 
-        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
-        .filter-row .f { flex: 1 1 150px; }
-        .filter-row label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; }
-        .filter-row select, .filter-row input { width: 100%; height: 36px; border: 1px solid #d5dae3; border-radius: 8px; padding: 0 10px; font-size: 13px; background: #fff; }
+        .filter-row { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(150px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) auto; gap: 10px; align-items: end; }
+        .filter-row label { display: block; font-size: 12px; font-weight: 800; color: #555; margin-bottom: 5px; }
+        .filter-row select, .filter-row input { width: 100%; height: 38px; border: 1px solid #d5dae3; border-radius: 7px; padding: 0 10px; font-size: 13px; background: #fff; }
+
+        .btn-xs { padding: 6px 10px; border-radius: 7px; border: 0; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-view { background: #dbeafe; color: #1d4ed8; }
+        .btn-generate { background: #dcfce7; color: #166534; }
+        .btn-neutral { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+        .btn-danger-soft { background: #fee2e2; color: #991b1b; }
 
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 960px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1080px; }
         th, td { padding: 10px 12px; border-bottom: 1px solid #edf0f5; font-size: 13px; text-align: left; vertical-align: middle; }
-        th { background: #f9fafc; font-size: 12px; color: #555; font-weight: 700; white-space: nowrap; }
+        th { background: #f9fafc; font-size: 12px; color: #555; font-weight: 800; white-space: nowrap; }
         tbody tr.main-row:hover { background: #fafcff; }
-
-        /* Expand button */
-        .expand-btn {
-            background: none; border: none; cursor: pointer;
-            color: #9ca3af; padding: 2px 4px;
-            transition: transform .2s ease, color .15s;
-            display: inline-flex; align-items: center;
-        }
-        .expand-btn:hover { color: #374151; }
-        .expand-btn.open { transform: rotate(180deg); color: #1d4ed8; }
-
-        /* Expand row */
-        .expand-row { display: none; background: #f8fafc; }
-        .expand-row.open { display: table-row; animation: fadeIn .18s ease; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-
-        .expand-content { padding: 14px 16px 18px 52px; border-left: 3px solid #3b82f6; }
-
-        /* Inner expand table */
-        .inner-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-top: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-        .inner-table th { background: #f1f5f9; padding: 6px 12px; font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; border: none; }
-        .inner-table td { padding: 8px 12px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; }
-        .inner-table tr:last-child td { border-bottom: none; }
-        .inner-table th.hb { background: #eef2ff; color: #3730a3; }
-        .inner-table th.ha { background: #f0fdf4; color: #166534; }
-
-        /* Tags */
-        .tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-        .tag-draft     { background: #fef9c3; color: #92400e; }
-        .tag-generated { background: #dcfce7; color: #166534; }
-        .tag-internal  { background: #dbeafe; color: #1d4ed8; }
-        .tag-external  { background: #f3e8ff; color: #7c3aed; }
-
-        /* Buttons */
-        .btn-xs { padding: 5px 10px; border-radius: 7px; border: 0; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; }
-        .btn-view     { background: #dbeafe; color: #1d4ed8; }
-        .btn-generate { background: #dcfce7; color: #166534; }
-
-        /* Bulk bar */
-        .bulk-bar {
-            display: none; align-items: center; gap: 10px;
-            padding: 10px 14px; background: #eff6ff;
-            border: 1px solid #bfdbfe; border-radius: 8px;
-            margin-bottom: 12px; font-size: 13px; font-weight: 600; color: #1d4ed8;
-        }
-        .bulk-bar.visible { display: flex; }
-        .btn-bulk-generate { padding: 6px 14px; background: #16a34a; color: #fff; border: 0; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-        .btn-bulk-generate:hover { background: #15803d; }
-        .btn-bulk-clear { padding: 6px 10px; background: #e5e7eb; color: #374151; border: 0; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+        .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 
         input[type="checkbox"] { width: 15px; height: 15px; cursor: pointer; accent-color: #1d4ed8; }
+        input[type="checkbox"]:disabled { cursor: not-allowed; opacity: .35; }
 
-        /* =====================
-           DETAIL MODAL
-           ===================== */
+        .tag { display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+        .tag-hatchery { background: #dbeafe; color: #1d4ed8; }
+        .tag-trading { background: #f3e8ff; color: #7c3aed; }
+        .tag-ready { background: #fef9c3; color: #92400e; }
+        .tag-done { background: #dcfce7; color: #166534; }
+        .tag-blocked { background: #f3f4f6; color: #6b7280; }
+
+        .expand-btn { background: none; border: none; cursor: pointer; color: #9ca3af; padding: 2px 4px; transition: transform .2s ease, color .15s; display: inline-flex; align-items: center; }
+        .expand-btn:hover { color: #374151; }
+        .expand-btn.open { transform: rotate(180deg); color: #1d4ed8; }
+        .expand-row { display: none; background: #f8fafc; }
+        .expand-row.open { display: table-row; }
+        .expand-content { padding: 14px 16px 18px 52px; border-left: 3px solid #3b82f6; }
+        .inner-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-top: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+        .inner-table th { background: #f1f5f9; padding: 7px 10px; font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; }
+        .inner-table td { padding: 8px 10px; font-size: 12px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+        .inner-table tfoot td { background: #f8fafc; font-weight: 800; border-top: 1px solid #e2e8f0; }
+
+        .bulk-bar {
+            display: none; align-items: center; gap: 10px; flex-wrap: wrap;
+            padding: 10px 14px; background: #eff6ff;
+            border: 1px solid #bfdbfe; border-radius: 8px;
+            margin-bottom: 12px; font-size: 13px; font-weight: 800; color: #1d4ed8;
+        }
+        .bulk-bar.visible { display: flex; }
+        .bulk-bar .spacer { flex: 1; }
+
         .modal-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(15,23,42,.5); backdrop-filter: blur(2px);
@@ -91,72 +77,52 @@
             padding: 32px 16px; overflow-y: auto;
         }
         .modal-overlay.open { display: flex; }
-
         .modal-box {
-            background: #fff; border-radius: 20px; width: 860px; max-width: 100%;
+            background: #fff; border-radius: 14px; width: 980px; max-width: 100%;
             box-shadow: 0 24px 80px rgba(15,23,42,.25); overflow: hidden;
             animation: mUp .2s cubic-bezier(.16,1,.3,1); margin: auto;
         }
-        @keyframes mUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-
-        .modal-head {
-            padding: 18px 24px;
-            background: linear-gradient(135deg,#1a237e 0%,#283593 100%);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-head h5 { margin: 0; font-size: 16px; font-weight: 700; color: #fff; }
+        @keyframes mUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-head { padding: 16px 22px; background: #1d4ed8; display: flex; justify-content: space-between; align-items: center; }
+        .modal-head h5 { margin: 0; font-size: 16px; font-weight: 800; color: #fff; }
         .modal-close { background: rgba(255,255,255,.15); border: none; font-size: 20px; cursor: pointer; color: #fff; padding: 2px 8px; border-radius: 6px; }
-        .modal-close:hover { background: rgba(255,255,255,.25); }
+        .modal-body { padding: 20px 22px; font-size: 13px; }
+        .modal-foot { padding: 14px 22px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px; background: #f9fafb; }
 
-        .modal-body { padding: 22px 24px; font-size: 13px; }
-        .modal-foot { padding: 14px 24px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px; background: #f9fafb; }
+        .review-block { border: 1px solid #dbe2ec; border-radius: 8px; padding: 14px; margin-bottom: 14px; background: #fff; }
+        .review-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+        .review-title strong { color: #1d4ed8; font-size: 14px; }
+        .review-section { border: 1px solid #dfe6ef; border-radius: 8px; overflow: hidden; margin-top: 12px; background: #fff; }
+        .review-section:first-of-type { margin-top: 0; }
+        .review-section-head { display: flex; align-items: center; gap: 7px; min-height: 34px; padding: 8px 12px; background: #eef3f9; border-bottom: 1px solid #dfe6ef; color: #334155; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+        .review-section-head.collapsible { cursor: pointer; user-select: none; }
+        .review-section-head .section-status { margin-left: auto; color: #64748b; font-size: 11px; font-weight: 700; text-transform: none; letter-spacing: 0; }
+        .review-section-head .collapse-icon { color: #64748b; transition: transform .18s ease; }
+        .review-section.collapsed .collapse-icon { transform: rotate(180deg); }
+        .review-section.collapsed .review-section-body { display: none; }
+        .review-section-body { padding: 12px; }
+        .info-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 0; }
+        .transport-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .info-field.full { grid-column: 1 / -1; }
+        .info-val.textarea { min-height: 72px; white-space: pre-wrap; }
+        .info-field label { display: block; color: #6b7280; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+        .info-val { display: block; min-height: 34px; border: 1px solid #d7dee8; border-radius: 7px; padding: 7px 9px; background: #f7f9fc; color: #111827; font-weight: 700; }
+        .info-val:empty::after { content: "-"; color: #9ca3af; }
+        .section-label { font-size: 11px; font-weight: 800; color: #374151; text-transform: uppercase; letter-spacing: .05em; margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; }
+        .note-box { margin-top: 14px; padding: 12px 14px; border-left: 4px solid #f59e0b; background: #fffbeb; color: #78350f; font-size: 13px; font-weight: 700; }
+        .access-box { border: 1px solid #fecaca; background: #fef2f2; color: #991b1b; border-radius: 8px; padding: 14px; font-weight: 800; }
 
-        /* Info grid in modal */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-        .info-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; }
-        .info-field { margin-bottom: 10px; }
-        .info-field:last-child { margin-bottom: 0; }
-        .info-label { font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
-        .info-val { font-size: 13px; font-weight: 600; color: #111827; background: #fff; border: 1px solid #e5e7eb; border-radius: 7px; padding: 5px 10px; display: block; }
-        .info-val.mono { font-family: ui-monospace,monospace; color: #1a237e; }
+        .toast-msg { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 800; box-shadow: 0 4px 20px rgba(0,0,0,.18); color: #fff; animation: fadeUp .2s ease; max-width: 520px; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section-label { font-size: 11px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-
-        .btn-cancel-modal { padding: 9px 20px; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; }
-        .btn-gen-modal { padding: 9px 22px; background: linear-gradient(135deg,#16a34a,#22c55e); color: #fff; border: 0; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 2px 8px rgba(22,163,74,.25); transition: all .15s; }
-        .btn-gen-modal:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,.35); }
-
-        /* Bulk review list */
-        .bulk-draft-item { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .bulk-draft-item:last-child { margin-bottom: 0; }
-
-        /* Buyer section header */
-        .buyer-section { }
-        .buyer-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 14px;
-            background: linear-gradient(90deg, #eef2ff 0%, #f8fafc 100%);
-            border: 1px solid #c7d2fe;
-            border-bottom: none;
-            border-radius: 10px 10px 0 0;
+        @media (max-width: 1100px) {
+            .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
-        .buyer-name {
-            font-size: 14px; font-weight: 700; color: #1a237e;
-        }
-        .btn-expand-all {
-            background: none; border: 1px solid #c7d2fe; border-radius: 6px;
-            font-size: 11px; font-weight: 600; color: #3730a3;
-            padding: 3px 8px; cursor: pointer;
-        }
-        .btn-expand-all:hover { background: #e0e7ff; }
-
-        /* Toast */
-        .toast-msg { position: fixed; bottom: 24px; right: 24px; z-index: 99999; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 20px rgba(0,0,0,.18); color: #fff; animation: fadeUp .2s ease; }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-
-        @media (max-width: 900px) {
-            .summary-grid { grid-template-columns: repeat(2,1fr); }
-            .info-grid { grid-template-columns: 1fr; }
+        @media (max-width: 640px) {
+            .filter-row, .info-grid { grid-template-columns: 1fr; }
+            .summary-box { max-width: none; }
+            .modal-foot { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -182,133 +148,104 @@
         <div class="row g-3">
             <div class="col-lg-2" id="sidebar-container"></div>
             <div class="col-lg-10">
-
-                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <div>
-                        <h5 class="fw-bold mb-0">PO Generation</h5>
-                        <div class="text-muted" style="font-size:13px;">Buat Purchase Order ke SIC berdasarkan DO Draft yang masuk</div>
-                    </div>
-                    <a href="top_po_list.html" class="btn btn-outline-primary btn-sm">
-                        <i class="bi bi-list-ul me-1"></i> Lihat PO yang Sudah Dibuat
-                    </a>
+                <div id="accessDenied" class="access-box" style="display:none;">
+                    <i class="bi bi-shield-lock me-1"></i> Anda tidak memiliki akses ke PO Generation.
                 </div>
 
-                <!-- Summary -->
-                <div class="summary-grid" id="summaryGrid"></div>
+                <div id="pageContent">
+                    <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                        <div>
+                            <h1 class="page-title">PO Generation</h1>
+                            <div class="page-subtitle">Buat Purchase Order DOC berdasarkan DO Draft DOC</div>
+                            <div class="crumb">Home &gt; DOC &gt; PO Generation</div>
+                        </div>
+                        <a href="top_po_list.html" class="btn btn-outline-primary btn-sm fw-bold">
+                            <i class="bi bi-list-ul me-1"></i> Lihat PO yang Sudah Dibuat
+                        </a>
+                    </div>
 
-                <!-- Filter -->
-                <div class="card">
-                    <div class="card-header"><i class="bi bi-funnel me-1"></i>Filter</div>
-                    <div class="card-body">
-                        <div class="filter-row">
-                            <div class="f">
-                                <label>DOC Type</label>
-                                <select id="fType">
-                                    <option value="">Semua</option>
-                                    <option value="internal">Internal</option>
-                                    <option value="external">External</option>
-                                </select>
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-clipboard-data me-1"></i>Summary</div>
+                        <div class="card-body">
+                            <div class="summary-box">
+                                <div class="lbl">Belum Generate PO</div>
+                                <div class="val" id="summaryPending">0</div>
+                                <div class="hint">DO Draft confirmed yang belum ada PO. Tidak terpengaruh filter.</div>
                             </div>
-                            <div class="f">
-                                <label>Customer</label>
-                                <select id="fCustomer"><option value="">Semua</option></select>
-                            </div>
-                            <div class="f">
-                                <label>Status</label>
-                                <select id="fStatus">
-                                    <option value="">Semua</option>
-                                    <option value="Draft">Draft</option>
-                                    <option value="DO Generated">DO Generated</option>
-                                    <option value="DO & GRPO Generated">DO &amp; GRPO Generated</option>
-                                    <option value="PO Generated">PO Generated</option>
-                                </select>
-                            </div>
-                            <div class="f">
-                                <label>Dari Tanggal</label>
-                                <input type="date" id="fDateFrom">
-                            </div>
-                            <div class="f">
-                                <label>Sampai</label>
-                                <input type="date" id="fDateTo">
-                            </div>
-                            <div>
-                                <label>&nbsp;</label>
-                                <div style="display:flex;gap:8px;">
-                                    <button class="btn-xs btn-view" onclick="applyFilter()" style="height:36px;padding:0 14px;">Filter</button>
-                                    <button class="btn-xs" style="background:#f3f4f6;color:#374151;height:36px;padding:0 14px;" onclick="resetFilter()">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-funnel me-1"></i>Filter</div>
+                        <div class="card-body">
+                            <div class="filter-row">
+                                <div>
+                                    <label>Search Box</label>
+                                    <input type="text" id="fSearch" placeholder="Search by No. DO Draft / Plan">
+                                </div>
+                                <div>
+                                    <label>DOC Type</label>
+                                    <select id="fType">
+                                        <option value="">Semua</option>
+                                        <option value="hatchery">Hatchery</option>
+                                        <option value="trading">Trading</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label>Dari Tanggal</label>
+                                    <input type="date" id="fDateFrom">
+                                </div>
+                                <div>
+                                    <label>Sampai</label>
+                                    <input type="date" id="fDateTo">
+                                </div>
+                                <div>
+                                    <label>&nbsp;</label>
+                                    <div style="display:flex;gap:8px;">
+                                        <button class="btn-xs btn-view" style="height:38px;padding:0 14px;" onclick="applyFilter()"><i class="bi bi-search"></i>Filter</button>
+                                        <button class="btn-xs btn-neutral" style="height:38px;padding:0 14px;" onclick="resetFilter()"><i class="bi bi-arrow-counterclockwise"></i>Reset</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Bulk Bar -->
-                <div class="bulk-bar" id="bulkBar">
-                    <i class="bi bi-check2-square"></i>
-                    <span id="bulkCount">0 DO Draft dipilih</span>
-                    <button class="btn-bulk-generate" onclick="openBulkReview()">
-                        <i class="bi bi-eye me-1"></i>Review &amp; Generate PO
-                    </button>
-                    <button class="btn-bulk-clear" onclick="clearSelection()">Clear</button>
-                </div>
+                    <div class="bulk-bar" id="bulkBar">
+                        <i class="bi bi-check2-square"></i>
+                        <span id="bulkCount">0 DO Draft dipilih</span>
+                        <span class="spacer"></span>
+                        <button class="btn-xs btn-view" onclick="openBulkReview()"><i class="bi bi-eye"></i>Review &amp; Generate PO</button>
+                        <button class="btn-xs btn-neutral" onclick="clearSelection()"><i class="bi bi-x-lg"></i>Clear</button>
+                    </div>
 
-                <!-- Table -->
-                <div class="card">
-                    <div class="card-header"><i class="bi bi-table me-1"></i>Daftar DO Draft — Centang untuk Generate PO</div>
-                    <div class="card-body">
-                        <div id="tableContainer"></div>
-                        <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
-                            <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
-                            Tidak ada DO Draft ditemukan
+                    <div class="card">
+                        <div class="card-header"><i class="bi bi-table me-1"></i>Daftar DO Draft</div>
+                        <div class="card-body">
+                            <div id="tableContainer"></div>
+                            <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
+                                <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
+                                Tidak ada DO Draft ditemukan
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- ============================
-         DETAIL + GENERATE MODAL (single)
-         ============================ -->
-    <div class="modal-overlay" id="detailModal">
+    <div class="modal-overlay" id="reviewModal">
         <div class="modal-box">
             <div class="modal-head">
-                <h5><i class="bi bi-file-earmark-text me-2"></i>Detail DO Draft</h5>
-                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                <h5 id="reviewModalTitle"><i class="bi bi-file-earmark-plus me-2"></i>Review &amp; Generate PO</h5>
+                <button class="modal-close" onclick="closeReviewModal()">&times;</button>
             </div>
-            <div class="modal-body" id="detailModalBody">
-                <!-- populated by JS -->
-            </div>
+            <div class="modal-body" id="reviewModalBody"></div>
             <div class="modal-foot">
-                <button class="btn-cancel-modal" onclick="closeDetailModal()">
-                    <i class="bi bi-x me-1"></i>Tutup
+                <button class="btn-xs btn-neutral" style="padding:9px 18px;" onclick="closeReviewModal()">
+                    <i class="bi bi-x-lg"></i>Batal
                 </button>
-                <button class="btn-gen-modal" id="btnDetailGenerate">
-                    <i class="bi bi-file-earmark-plus me-1"></i>Generate PO
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================
-         BULK REVIEW MODAL
-         ============================ -->
-    <div class="modal-overlay" id="bulkModal">
-        <div class="modal-box">
-            <div class="modal-head">
-                <h5><i class="bi bi-file-earmark-plus me-2"></i>Review &amp; Generate PO</h5>
-                <button class="modal-close" onclick="closeBulkModal()">&times;</button>
-            </div>
-            <div class="modal-body" id="bulkModalBody">
-                <!-- populated by JS -->
-            </div>
-            <div class="modal-foot">
-                <button class="btn-cancel-modal" onclick="closeBulkModal()">
-                    <i class="bi bi-x me-1"></i>Batal
-                </button>
-                <button class="btn-gen-modal" id="btnBulkGenerate">
-                    <i class="bi bi-check-all me-1"></i>Generate Semua PO
+                <button class="btn-xs btn-generate" style="padding:9px 18px;" id="btnModalGenerate">
+                    <i class="bi bi-check-all"></i>Generate Semua PO
                 </button>
             </div>
         </div>
@@ -325,529 +262,326 @@
 
         const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
         document.getElementById("userInfo").textContent = userData.name || userData.role || "-";
-        document.getElementById("userBtn").textContent  = userData.name || "User";
+        document.getElementById("userBtn").textContent = userData.name || "User";
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("IBOCS_user");
             location.href = "login.html";
         });
 
-        let allDrafts   = [];
+        const role = userData.role || "";
+        const noAccessRoles = ["admin_feedmill", "feedmill"];
+        const viewOnlyRoles = ["admin_hatchery"];
+        const fullAccessRoles = ["admin_top", "super_admin"];
+        const hasNoAccess = noAccessRoles.includes(role);
+        const isViewOnly = viewOnlyRoles.includes(role);
+        const hasGenerateAccess = fullAccessRoles.includes(role) || (!role && true);
+
+        let allDrafts = [];
         let selectedIds = [];
+        let pendingReviewDrafts = [];
 
-        // ============================
-        // HELPERS
-        // ============================
-        function fmtQty(n)   { return n != null ? Number(n).toLocaleString("id-ID") : "—"; }
-        function fmtPrice(n) { return n != null ? "Rp " + Number(n).toLocaleString("id-ID") : "—"; }
-        function fmt(v)      { return v || "—"; }
-
-        function statusTag(status) {
-            if (status === "Draft")               return `<span class="tag tag-draft">Draft</span>`;
-            if (status === "DO Generated")        return `<span class="tag tag-generated">DO Generated</span>`;
-            if (status === "DO & GRPO Generated") return `<span class="tag" style="background:#ccfbf1;color:#0f766e;">DO &amp; GRPO Generated</span>`;
-            if (status === "PO Generated")        return `<span class="tag" style="background:#ede9fe;color:#5b21b6;">PO Generated</span>`;
-            return `<span class="tag" style="background:#e0e7ff;color:#3730a3;">${status}</span>`;
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+            }[c]));
         }
 
-        function showToast(msg, type = "success") {
-            const t = document.createElement("div");
-            t.className = "toast-msg";
-            t.style.background = type === "success" ? "#166534" : "#991b1b";
-            t.textContent = (type === "success" ? "✓ " : "✗ ") + msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 4000);
+        function fmt(v) { return v || "-"; }
+        function fmtQty(n) { return n != null && n !== "" ? Number(n).toLocaleString("id-ID") : "-"; }
+        function fmtPrice(n) { return n != null && n !== "" ? "Rp " + Number(n).toLocaleString("id-ID") : "-"; }
+        function fmtAmount(n) { return "Rp " + Number(n || 0).toLocaleString("id-ID"); }
+
+        function docTypeKey(d) {
+            return d.docType === "external" ? "trading" : "hatchery";
+        }
+
+        function docTypeLabel(d) {
+            return docTypeKey(d) === "trading" ? "Trading" : "Hatchery";
+        }
+
+        function docTypeTag(d) {
+            const key = docTypeKey(d);
+            return `<span class="tag ${key === "trading" ? "tag-trading" : "tag-hatchery"}">${docTypeLabel(d)}</span>`;
         }
 
         function canGeneratePO(d) {
             return d.statusPO !== "PO Generated" && !!d.doNumber && d.status !== "Draft";
         }
 
-        // ============================
-        // SUMMARY
-        // ============================
-        function renderSummary(drafts) {
-            const total   = drafts.length;
-            const belumPO = drafts.filter(d => canGeneratePO(d)).length;
-            const doGen   = drafts.filter(d => d.status === "DO Generated").length;
-            const doGrpo  = drafts.filter(d => d.status === "DO & GRPO Generated").length;
-            const sudahPO = drafts.filter(d => d.statusPO === "PO Generated").length;
-            document.getElementById("summaryGrid").innerHTML = `
-                <div class="summary-box"><div class="lbl">Total DO Draft</div><div class="val">${total}</div></div>
-                <div class="summary-box"><div class="lbl">Belum Generate PO</div><div class="val" style="color:#92400e">${belumPO}</div></div>
-                <div class="summary-box"><div class="lbl">DO Generated</div><div class="val" style="color:#166534">${doGen}</div></div>
-                <div class="summary-box"><div class="lbl">DO &amp; GRPO Generated</div><div class="val" style="color:#0f766e">${doGrpo}</div></div>
-                <div class="summary-box"><div class="lbl">PO Generated</div><div class="val" style="color:#5b21b6">${sudahPO}</div></div>`;
+        function rowStatusTag(d) {
+            if (d.statusPO === "PO Generated") return `<span class="tag tag-done">PO Generated</span>`;
+            if (canGeneratePO(d)) return `<span class="tag tag-ready">Belum Generate PO</span>`;
+            return `<span class="tag tag-blocked">Belum Confirmed</span>`;
         }
 
-        // ============================
-        // RENDER LINES TABLE (used in modals)
-        // ============================
-        function renderLinesHtml(draft) {
-            if (!draft.lines || !draft.lines.length) return `<div class="text-muted" style="font-size:12px;">Tidak ada lines.</div>`;
-
-            const rows = draft.lines.map(line => {
-                const afters = line.afterItems || [];
-                return afters.map((a, i) => {
-                    const isFirst = i === 0;
-                    const beforeCells = isFirst
-                        ? `<td class="cb" rowspan="${afters.length}" style="font-weight:700;">${line.brandName || line.brand}</td>
-                           <td class="cb" rowspan="${afters.length}">${line.itemBefore}</td>
-                           <td class="cb" rowspan="${afters.length}">${line.uomBefore || "Ekor"}</td>
-                           <td class="cb" rowspan="${afters.length}" style="text-align:right;font-weight:700;">${fmtQty(line.qtyBefore)}</td>
-                           <td class="cb" rowspan="${afters.length}" style="text-align:right;">${fmtPrice(line.priceBefore)}</td>`
-                        : "";
-                    return `<tr>
-                        ${beforeCells}
-                        <td class="ca">${a.itemAfter}</td>
-                        <td class="ca">${a.uomAfter || "Ekor"}</td>
-                        <td class="ca" style="text-align:right;font-weight:700;color:#166534;">${fmtQty(a.qtyAfter)}</td>
-                        <td class="ca" style="text-align:right;">${fmtPrice(a.priceAfter)}</td>
-                    </tr>`;
-                }).join("");
-            }).join("");
-
-            return `
-            <table class="inner-table" style="min-width:600px;">
-                <thead>
-                    <tr>
-                        <th class="hb">Brand</th>
-                        <th class="hb">Item DOC (dari SIC)</th>
-                        <th class="hb">UoM</th>
-                        <th class="hb" style="text-align:right">Qty Dipesan</th>
-                        <th class="hb" style="text-align:right">Harga Beli</th>
-                        <th class="ha">Item Diterima</th>
-                        <th class="ha">UoM</th>
-                        <th class="ha" style="text-align:right">Qty Diterima</th>
-                        <th class="ha" style="text-align:right">Harga Satuan</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>`;
+        function lineUnitPrice(line, afterItem) {
+            return Number(afterItem.priceAfter ?? line.priceBefore ?? line.priceJual ?? 0) || 0;
         }
 
-        function renderTransportHtml(source, editable = false) {
-            const t = source.transport || {};
-            const field = (key, label, type = "text") => {
-                const value = t[key] || "";
-                if (!editable) return `<div class="info-field"><div class="info-label">${label}</div><span class="info-val">${fmt(value)}</span></div>`;
-                return `<div class="info-field"><div class="info-label">${label}</div><input data-transport-field="${key}" type="${type}" value="${value}" style="width:100%;border:1px solid #dbe1ea;border-radius:7px;padding:7px 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;"></div>`;
-            };
-            const textArea = (key, label) => {
-                const value = t[key] || "";
-                if (!editable) return `<div class="info-field" style="grid-column:1/-1;"><div class="info-label">${label}</div><span class="info-val">${fmt(value)}</span></div>`;
-                return `<div class="info-field" style="grid-column:1/-1;"><div class="info-label">${label}</div><textarea data-transport-field="${key}" rows="3" style="width:100%;border:1px solid #dbe1ea;border-radius:7px;padding:7px 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;">${value}</textarea></div>`;
-            };
-            const checkbox = (key, label) => {
-                if (!editable) return `<div class="info-field"><div class="info-label">${label}</div><span class="info-val">${t[key] ? "Ya" : "Tidak"}</span></div>`;
-                return `<div class="info-field"><div class="info-label">${label}</div><label style="display:flex;align-items:center;gap:8px;height:35px;border:1px solid #dbe1ea;border-radius:7px;padding:0 10px;font-size:13px;font-weight:600;color:#111827;background:#fff;"><input data-transport-field="${key}" type="checkbox" ${t[key] ? "checked" : ""}> Ya</label></div>`;
-            };
-            const hidden = key => editable ? `<input data-transport-field="${key}" type="hidden" value="${t[key] || ""}">` : "";
-            return `
-                <div class="info-card" style="margin-bottom:16px;">
-                    <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;">Transport</div>
-                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-                        ${hidden("noListTransport")}
-                        ${hidden("fromArea")}
-                        ${hidden("toArea")}
-                        ${hidden("minimumFee")}
-                        ${field("vendorCode", "Vendor Code")}
-                        ${field("vendorName", "Vendor Name")}
-                        ${field("driverName", "Driver")}
-                        ${field("licenseNumber", "License Number")}
-                        ${field("departureTime", "Jam", "time")}
-                        ${field("servicePriceKg", "Service Price / KG", "number")}
-                        ${field("totalService", "Total Service", "number")}
-                        ${textArea("remarks", "Remarks")}
-                    </div>
-                </div>`;
-        }
-
-        function collectDetailTransportOverride() {
-            const transport = {};
-            document.querySelectorAll("#detailModalBody [data-transport-field]").forEach(input => {
-                transport[input.dataset.transportField] = input.type === "checkbox" ? input.checked : input.value.trim();
+        function getDraftTotals(draft) {
+            let qty = 0;
+            let amount = 0;
+            (draft.lines || []).forEach(line => {
+                (line.afterItems || []).forEach(a => {
+                    const lineQty = Number(a.qtyAfter || 0);
+                    const price = lineUnitPrice(line, a);
+                    qty += lineQty;
+                    amount += lineQty * price;
+                });
             });
-            return transport;
+            return { qty, amount };
         }
 
-        function renderRemarksHtml(source) {
-            return `
-                <div class="info-card" style="margin-top:16px;">
-                    <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;">Remarks</div>
-                    <div class="info-val" style="white-space:pre-wrap;min-height:38px;">${fmt(source.remarks)}</div>
-                </div>`;
+        function getPlanText(d) {
+            if (d.planCode) return `${d.planCode}${d.planName ? " - " + d.planName : ""}`;
+            if (d.forecastRef) return `${d.forecastRef}${d.forecastDesc ? " - " + d.forecastDesc : ""}`;
+            return "-";
         }
 
-        // ============================
-        // SINGLE DETAIL MODAL
-        // ============================
-        let pendingSingleDraft = null;
-
-        function openDetailModal(draftId) {
-            const d = docDraftGet(draftId);
-            if (!d) return;
-            pendingSingleDraft = d;
-
-            const canGenerate = canGeneratePO(d);
-            const typeTag = d.docType === "internal"
-                ? `<span class="tag tag-internal">Internal</span>`
-                : `<span class="tag tag-external">External</span>`;
-
-            let extHtml = "";
-            if (d.docType === "external") {
-                extHtml = `
-                <div class="info-card" style="margin-bottom:16px;border-color:#d8b4fe;">
-                    <div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:10px;text-transform:uppercase;">Info DOC External</div>
-                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
-                        <div class="info-field"><div class="info-label">Vendor External</div><span class="info-val">${fmt(d.externalVendorName || d.externalVendor)}</span></div>
-                        <div class="info-field"><div class="info-label">No. Surat Jalan</div><span class="info-val">${fmt(d.noSuratJalan)}</span></div>
-                        <div class="info-field"><div class="info-label">Tgl Surat Jalan</div><span class="info-val">${fmt(d.tglSuratJalan)}</span></div>
-                        <div class="info-field"><div class="info-label">No. Polisi</div><span class="info-val">${fmt(d.noPol)}</span></div>
-                    </div>
-                </div>`;
-            }
-
-            const planInfo = d.planCode
-                ? `${d.planCode}${d.planName ? " — " + d.planName : ""}`
-                : (d.forecastRef ? `${d.forecastRef}${d.forecastDesc ? " — " + d.forecastDesc : ""}` : "—");
-
-            document.getElementById("detailModalBody").innerHTML = `
-                <div class="info-grid">
-                    <div class="info-card">
-                        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;">Informasi Dokumen</div>
-                        <div class="info-field"><div class="info-label">No. DO Draft</div><span class="info-val mono">${d.id}</span></div>
-                        <div class="info-field"><div class="info-label">Tanggal</div><span class="info-val">${fmt(d.date)}</span></div>
-                        <div class="info-field"><div class="info-label">DOC Type</div><div style="margin-top:4px;">${typeTag}</div></div>
-                        <div class="info-field"><div class="info-label">Status</div><div style="margin-top:4px;">${statusTag(d.status)}</div></div>
-                        <div class="info-field"><div class="info-label">Plan / Forecast</div><span class="info-val">${planInfo}</span></div>
-                        <div class="info-field"><div class="info-label">Dibuat Oleh</div><span class="info-val">${fmt(d.createdBy)}</span></div>
-                    </div>
-                    <div class="info-card">
-                        <div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:10px;text-transform:uppercase;">Informasi Pembelian</div>
-                        <div class="info-field"><div class="info-label">Pembeli / Penerima</div><span class="info-val">${fmt(d.customerName)}</span></div>
-                        <div class="info-field"><div class="info-label">Contact Person</div><span class="info-val">${fmt(d.contactPerson)}</span></div>
-                        <div class="info-field"><div class="info-label">No. Referensi</div><span class="info-val">${fmt(d.customerRefNo)}</span></div>
-                        <div class="info-field"><div class="info-label">Gudang Pengirim (SIC)</div><span class="info-val">${fmt(d.whsePengirimName || d.whsePengirim || d.warehouseName || d.warehouse)}</span></div>
-                        <div class="info-field"><div class="info-label">Tanggal Terima</div><span class="info-val">${fmt(d.deliveryDate)}</span></div>
-                        <div class="info-field"><div class="info-label">Vendor / Pemasok</div><span class="info-val" style="color:#166534;font-weight:700;">SIC</span></div>
-                    </div>
-                </div>
-                ${extHtml}
-                ${renderTransportHtml(d, canGenerate)}
-                <div class="section-label"><i class="bi bi-list-ul"></i>Detail Lines (${d.lines.length} line)</div>
-                <div style="overflow-x:auto;">${renderLinesHtml(d)}</div>
-                ${renderRemarksHtml(d)}
-                ${!canGenerate ? `<div style="margin-top:14px;padding:10px 14px;background:#dcfce7;border-radius:8px;font-size:13px;color:#166534;font-weight:600;">
-                    <i class="bi bi-check-circle-fill me-1"></i>DO Draft ini sudah di-generate menjadi PO.
-                </div>` : ""}
-            `;
-
-            const btnGen = document.getElementById("btnDetailGenerate");
-            if (canGenerate) {
-                btnGen.style.display = "";
-                btnGen.onclick = () => {
-                    pendingSingleDraft._poTransportOverride = collectDetailTransportOverride();
-                    closeDetailModal();
-                    doGeneratePOs([pendingSingleDraft]);
-                };
-            } else {
-                btnGen.style.display = "none";
-            }
-
-            document.getElementById("detailModal").classList.add("open");
+        function getVendorText(d) {
+            return d.vendorName || d.vendorCode || "CTU";
         }
 
-        function closeDetailModal() {
-            document.getElementById("detailModal").classList.remove("open");
-            pendingSingleDraft = null;
+        function getDriverText(d) {
+            return (d.transport && d.transport.driverName) || "-";
         }
 
-        // ============================
-        // BULK REVIEW MODAL
-        // ============================
-        function openBulkReview() {
-            if (!selectedIds.length) return;
-            const drafts = selectedIds.map(id => docDraftGet(id)).filter(Boolean);
-
-            // Build accordion-style list
-            const items = drafts.map((d, idx) => {
-                const planInfo = d.planCode
-                    ? `${d.planCode}${d.planName ? " — " + d.planName : ""}`
-                    : (d.forecastRef ? `${d.forecastRef}${d.forecastDesc ? " — " + d.forecastDesc : ""}` : "—");
-
-                return `
-                <div style="border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;overflow:hidden;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#f8fafc;cursor:pointer;"
-                         onclick="toggleBulkItem('bli-${idx}','blibtn-${idx}')">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <strong style="font-size:13px;color:#1a237e;">${d.id}</strong>
-                            <span style="font-size:12px;color:#6b7280;">${d.customerName}</span>
-                            <span class="tag tag-${d.docType === "internal" ? "internal" : "external"}" style="font-size:10px;">${d.docType}</span>
-                        </div>
-                        <button id="blibtn-${idx}" style="background:none;border:none;cursor:pointer;color:#9ca3af;transition:transform .2s;" onclick="event.stopPropagation();toggleBulkItem('bli-${idx}','blibtn-${idx}')">
-                            <i class="bi bi-chevron-down" style="font-size:13px;"></i>
-                        </button>
-                    </div>
-                    <div id="bli-${idx}" style="display:none;padding:14px;overflow-x:auto;border-top:1px solid #e2e8f0;">
-                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
-                            <div><div class="info-label">Tanggal</div><span class="info-val">${fmt(d.date)}</span></div>
-                            <div><div class="info-label">Gudang Pengirim (SIC)</div><span class="info-val">${fmt(d.whsePengirimName || d.whsePengirim || d.warehouseName || d.warehouse)}</span></div>
-                            <div><div class="info-label">Plan / Forecast</div><span class="info-val">${planInfo}</span></div>
-                            <div><div class="info-label">Lines</div><span class="info-val">${d.lines.length}</span></div>
-                        </div>
-                        ${renderTransportHtml(d)}
-                        ${renderLinesHtml(d)}
-                        ${renderRemarksHtml(d)}
-                    </div>
-                </div>`;
-            }).join("");
-
-            document.getElementById("bulkModalBody").innerHTML = `
-                <div style="margin-bottom:14px;padding:10px 14px;background:#eff6ff;border-radius:8px;font-size:13px;color:#1d4ed8;font-weight:600;">
-                    <i class="bi bi-info-circle me-1"></i>
-                    ${drafts.length} DO Draft akan di-generate. Setiap DO Draft menjadi <strong>1 PO tersendiri</strong> ke SIC.
-                </div>
-                ${items}
-            `;
-
-            document.getElementById("btnBulkGenerate").onclick = () => {
-                closeBulkModal();
-                doGeneratePOs(drafts);
-            };
-
-            document.getElementById("bulkModal").classList.add("open");
+        function getPoliceText(d) {
+            return d.noPol || (d.transport && d.transport.licenseNumber) || "-";
         }
 
-        function closeBulkModal() {
-            document.getElementById("bulkModal").classList.remove("open");
+        function showToast(msg, type = "success") {
+            const t = document.createElement("div");
+            t.className = "toast-msg";
+            t.style.background = type === "success" ? "#166534" : "#991b1b";
+            t.textContent = (type === "success" ? "OK: " : "Error: ") + msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 4500);
         }
 
-        function toggleBulkItem(contentId, btnId) {
-            const el  = document.getElementById(contentId);
-            const btn = document.getElementById(btnId);
-            const isOpen = el.style.display !== "none";
-            el.style.display = isOpen ? "none" : "block";
-            btn.style.transform = isOpen ? "" : "rotate(180deg)";
-            btn.style.color = isOpen ? "#9ca3af" : "#1d4ed8";
+        function renderSummary() {
+            const pending = allDrafts.filter(d => canGeneratePO(d)).length;
+            document.getElementById("summaryPending").textContent = pending;
         }
 
-        // ============================
-        // GENERATE POs
-        // ============================
-        function doGeneratePOs(drafts) {
-            const now = new Date().toISOString().slice(0, 10);
-            const generated = [];
+        function renderItemLinesTable(draft, compact = false) {
+            const rows = [];
+            let totalQty = 0;
+            let totalAmount = 0;
 
-            drafts.forEach(draft => {
-                if (!canGeneratePO(draft)) return;
-                const poId = poGenNextId();
-                const po = {
-                    id: poId,
-                    doDraftId:          draft.id,
-                    date:               now,
-                    postingDate:        draft.postingDate || draft.date,
-                    deliveryDate:       draft.deliveryDate,
-                    vendorCode:         "VND-SIC",
-                    vendorName:         "SIC",
-                    customerCode:       draft.customer,
-                    customerName:       draft.customerName,
-                    contactPerson:      draft.contactPerson,
-                    customerRefNo:      draft.customerRefNo,
-                    whsePengirim:       draft.whsePengirim || draft.warehouse,
-                    whsePengirimName:   draft.whsePengirimName || draft.warehouseName,
-                    docType:            draft.docType,
-                    planCode:           draft.planCode,
-                    planName:           draft.planName,
-                    forecastRef:        draft.forecastRef,
-                    forecastDesc:       draft.forecastDesc,
-                    externalVendor:     draft.externalVendor,
-                    externalVendorName: draft.externalVendorName,
-                    noSuratJalan:       draft.noSuratJalan,
-                    tglSuratJalan:      draft.tglSuratJalan,
-                    noPol:              draft.noPol,
-                    transport:          draft._poTransportOverride ? { ...draft._poTransportOverride } : (draft.transport ? { ...draft.transport } : {}),
-                    remarks:            draft.remarks || "",
-                    lines:              draft.lines.map(l => ({ ...l, afterItems: l.afterItems.map(a => ({ ...a })) })),
-                    status:             "Final",
-                    createdBy:          userData.name || userData.role || "admin_top",
-                    createdAt:          now
-                };
-
-                poGenSave(po);
-                delete draft._poTransportOverride;
-                delete draft._poRemarksOverride;
-                draft.statusPO = "PO Generated";
-                draft.poGenId = poId;
-                docDraftSave(draft);
-                generated.push(poId);
+            (draft.lines || []).forEach(line => {
+                (line.afterItems || []).forEach(a => {
+                    const qty = Number(a.qtyAfter || 0);
+                    const price = lineUnitPrice(line, a);
+                    const subtotal = qty * price;
+                    totalQty += qty;
+                    totalAmount += subtotal;
+                    rows.push(`
+                        <tr>
+                            <td>${escapeHtml(a.itemAfter || line.itemBefore || "-")}</td>
+                            <td style="text-align:right;">${fmtQty(qty)}</td>
+                            ${compact ? "" : `<td>${escapeHtml(a.uomAfter || line.uomBefore || "Ekor")}</td>`}
+                            <td style="text-align:right;">${fmtPrice(price)}</td>
+                            <td style="text-align:right;font-weight:800;">${fmtAmount(subtotal)}</td>
+                            ${compact ? "" : `<td>${escapeHtml(a.whseTujuan || draft.whsePengirimName || draft.whsePengirim || "-")}</td>`}
+                        </tr>
+                    `);
+                });
             });
 
-            clearSelection();
-            showToast(`${generated.length} PO berhasil dibuat: ${generated.join(", ")}`);
-            init();
-        }
-
-        // ============================
-        // TABLE RENDER — grouped by Pembeli
-        // ============================
-        let rowCounter = 0;
-
-        function buildRowsHtml(drafts, groupKey) {
-            return drafts.map(d => {
-                rowCounter++;
-                const idx       = rowCounter;
-                const canGenerate = canGeneratePO(d);
-                const expandId  = `exp-${idx}`;
-
-                const typeTag = d.docType === "internal"
-                    ? `<span class="tag tag-internal">Internal</span>`
-                    : `<span class="tag tag-external">External</span>`;
-
-                const planInfo = d.planCode
-                    ? `${d.planCode} <span style="font-size:11px;color:#6b7280">— ${d.planName || ""}</span>`
-                    : (d.forecastRef ? `${d.forecastRef} <span style="font-size:11px;color:#6b7280">— ${d.forecastDesc || ""}</span>` : "-");
-
-                const checkbox = canGenerate
-                    ? `<input type="checkbox" class="row-check grp-${groupKey}" data-id="${d.id}" onchange="handleCheck()">`
-                    : `<input type="checkbox" disabled style="opacity:.3;">`;
-
-                const actions = `
-                    <button class="btn-xs btn-view" onclick="openDetailModal('${d.id}')">
-                        <i class="bi bi-eye me-1"></i>Detail
-                    </button>
-                    ${canGenerate ? `<button class="btn-xs btn-generate" onclick="openDetailModal('${d.id}')">
-                        <i class="bi bi-file-earmark-plus me-1"></i>Generate PO
-                    </button>` : ""}`;
-
-                const linesPreview = (d.lines || []).map(line => {
-                    const afters = line.afterItems || [];
-                    return afters.map((a, i) => {
-                        const isFirst = i === 0;
-                        const bc = isFirst
-                            ? `<td rowspan="${afters.length}" style="font-weight:700;">${line.brandName || line.brand}</td>
-                               <td rowspan="${afters.length}">${line.itemBefore}</td>
-                               <td rowspan="${afters.length}" style="text-align:right;font-weight:700;">${fmtQty(line.qtyBefore)}</td>
-                               <td rowspan="${afters.length}" style="text-align:right;">${fmtPrice(line.priceBefore)}</td>`
-                            : "";
-                        return `<tr>${bc}
-                            <td>${a.itemAfter}</td>
-                            <td style="text-align:right;font-weight:700;color:#166534;">${fmtQty(a.qtyAfter)}</td>
-                            <td style="text-align:right;">${fmtPrice(a.priceAfter)}</td>
-                        </tr>`;
-                    }).join("");
-                }).join("");
-
-                return `
-                <tr class="main-row">
-                    <td onclick="event.stopPropagation()">${checkbox}</td>
-                    <td>
-                        <button class="expand-btn" id="expbtn-${idx}" onclick="toggleExpand('${expandId}','expbtn-${idx}')">
-                            <i class="bi bi-chevron-down"></i>
-                        </button>
-                    </td>
-                    <td><strong>${d.id}</strong></td>
-                    <td>${d.date}</td>
-                    <td>${typeTag}</td>
-                    <td>${planInfo}</td>
-                    <td style="text-align:center">${d.lines.length}</td>
-                    <td>${d.statusPO === "PO Generated" ? statusTag("PO Generated") : statusTag(d.status)}</td>
-                    <td>${actions}</td>
-                </tr>
-                <tr class="expand-row" id="${expandId}">
-                    <td colspan="9" style="padding:0;">
-                        <div class="expand-content">
-                            <div style="font-size:11px;font-weight:700;color:#475569;text-transform:uppercase;margin-bottom:8px;">
-                                <i class="bi bi-box-seam me-1"></i>Lines — ${d.id}
-                            </div>
-                            <div style="overflow-x:auto;">
-                                <table class="inner-table" style="min-width:560px;">
-                                    <thead><tr>
-                                        <th class="hb">Brand</th>
-                                        <th class="hb">Item DOC (dari SIC)</th>
-                                        <th class="hb" style="text-align:right">Qty Dipesan</th>
-                                        <th class="hb" style="text-align:right">Harga Beli</th>
-                                        <th class="ha">Item Diterima</th>
-                                        <th class="ha" style="text-align:right">Qty Diterima</th>
-                                        <th class="ha" style="text-align:right">Harga Satuan</th>
-                                    </tr></thead>
-                                    <tbody>${linesPreview}</tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </td>
+            const totalRow = compact
+                ? `<tr>
+                    <td style="text-align:right;">Total Qty</td>
+                    <td style="text-align:right;">${fmtQty(totalQty)}</td>
+                    <td style="text-align:right;">Total Amount</td>
+                    <td style="text-align:right;">${fmtAmount(totalAmount)}</td>
+                </tr>`
+                : `<tr>
+                    <td style="text-align:right;">Total Qty</td>
+                    <td style="text-align:right;">${fmtQty(totalQty)}</td>
+                    <td></td>
+                    <td style="text-align:right;">Total Amount</td>
+                    <td style="text-align:right;">${fmtAmount(totalAmount)}</td>
+                    <td></td>
                 </tr>`;
-            }).join("");
+
+            return `
+                <table class="inner-table">
+                    <thead>
+                        <tr>
+                            <th>Item Diterima</th>
+                            <th style="text-align:right;">Qty Diterima</th>
+                            ${compact ? "" : "<th>UOM</th>"}
+                            <th style="text-align:right;">Harga Satuan</th>
+                            <th style="text-align:right;">Subtotal</th>
+                            ${compact ? "" : "<th>Whse</th>"}
+                        </tr>
+                    </thead>
+                    <tbody>${rows.join("") || `<tr><td colspan="${compact ? 4 : 6}" class="text-muted">Tidak ada item lines.</td></tr>`}</tbody>
+                    <tfoot>${totalRow}</tfoot>
+                </table>
+            `;
+        }
+
+        function renderTransportHtml(draft) {
+            const t = draft.transport || {};
+            const sectionId = `transport-${String(draft.id || "").replace(/[^a-zA-Z0-9_-]/g, "")}`;
+            const hasTransport = [
+                t.vendorCode, t.vendorName, t.driverName, t.licenseNumber,
+                t.departureTime, t.servicePriceKg, t.totalService, t.remarks
+            ].some(v => v !== undefined && v !== null && String(v).trim() !== "");
+            return `
+                <div class="review-section" id="${sectionId}">
+                    <div class="review-section-head collapsible" onclick="toggleReviewSection('${sectionId}')">
+                        <i class="bi bi-truck"></i>Transport
+                        <span class="section-status">${hasTransport ? "Transport terisi" : "Transport belum diisi"}</span>
+                        <i class="bi bi-chevron-up collapse-icon"></i>
+                    </div>
+                    <div class="review-section-body">
+                        <div class="info-grid transport-grid">
+                            ${infoField("Vendor Code", t.vendorCode)}
+                            ${infoField("Vendor Name", t.vendorName)}
+                            ${infoField("Driver", t.driverName)}
+                            ${infoField("License Number", t.licenseNumber || draft.noPol)}
+                            ${infoField("Jam", t.departureTime)}
+                            ${infoField("Service Price / KG", t.servicePriceKg ? fmtPrice(t.servicePriceKg) : "-")}
+                            ${infoField("Total Service", t.totalService ? fmtPrice(t.totalService) : "-")}
+                            ${infoField("Remarks", t.remarks, "full textarea")}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleReviewSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            section.classList.toggle("collapsed");
+        }
+
+        function infoField(label, value, extraClass = "") {
+            return `
+                <div class="info-field ${extraClass.includes("full") ? "full" : ""}">
+                    <label>${escapeHtml(label)}</label>
+                    <span class="info-val ${extraClass.includes("textarea") ? "textarea" : ""}">${escapeHtml(fmt(value))}</span>
+                </div>
+            `;
+        }
+
+        function renderDraftReview(draft) {
+            const totals = getDraftTotals(draft);
+            return `
+                <div class="review-block">
+                    <div class="review-title">
+                        <strong class="mono">${escapeHtml(draft.id)}</strong>
+                        ${docTypeTag(draft)}
+                    </div>
+                    <div class="review-section">
+                        <div class="review-section-head"><i class="bi bi-file-text"></i>Info Header DO Draft</div>
+                        <div class="review-section-body">
+                            <div class="info-grid">
+                                ${infoField("No. DO Draft", draft.id)}
+                                ${infoField("Delivery Date", draft.deliveryDate || draft.date)}
+                                ${infoField("Vendor Code & Name", getVendorText(draft))}
+                                ${infoField("Plan No. & Description", getPlanText(draft))}
+                                ${infoField("Driver", getDriverText(draft))}
+                                ${infoField("License Number", getPoliceText(draft))}
+                                ${infoField("Remarks", draft.remarks)}
+                            </div>
+                        </div>
+                    </div>
+                    ${renderTransportHtml(draft)}
+                    <div class="review-section">
+                        <div class="review-section-head"><i class="bi bi-list-ul"></i>Item Lines</div>
+                        <div class="review-section-body">
+                            <div class="table-wrap">${renderItemLinesTable(draft)}</div>
+                            <div style="display:flex;justify-content:flex-end;gap:18px;margin-top:10px;font-weight:800;">
+                                <span>Total Qty: ${fmtQty(totals.qty)}</span>
+                                <span>Total Amount: ${fmtAmount(totals.amount)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         function renderTable(drafts) {
             const container = document.getElementById("tableContainer");
-            const empty     = document.getElementById("emptyState");
+            const empty = document.getElementById("emptyState");
 
             if (!drafts.length) {
                 container.innerHTML = "";
                 empty.style.display = "block";
                 return;
             }
+
             empty.style.display = "none";
-            rowCounter = 0;
-
-            // Group by customer
-            const groups = {};
-            drafts.forEach(d => {
-                const key = d.customer || "unknown";
-                if (!groups[key]) groups[key] = { name: d.customerName, drafts: [] };
-                groups[key].drafts.push(d);
-            });
-
-            container.innerHTML = Object.entries(groups).map(([key, grp]) => {
-                const safeKey   = key.replace(/[^a-zA-Z0-9]/g, "");
-                const draftCnt  = grp.drafts.filter(d => canGeneratePO(d)).length;
-                const totalCnt  = grp.drafts.length;
-                const rowsHtml  = buildRowsHtml(grp.drafts, safeKey);
-
+            const rows = drafts.map((d, idx) => {
+                const canGenerate = canGeneratePO(d);
+                const canSelect = canGenerate && hasGenerateAccess && !isViewOnly;
+                const expandId = `exp-${idx}`;
+                const btnId = `expbtn-${idx}`;
+                const actions = `
+                    <button class="btn-xs btn-view" onclick="openSingleReview('${escapeHtml(d.id)}')"><i class="bi bi-eye"></i>Review</button>
+                    ${canGenerate && hasGenerateAccess && !isViewOnly ? `<button class="btn-xs btn-generate" onclick="doGeneratePOsByIds(['${escapeHtml(d.id)}'])"><i class="bi bi-file-earmark-plus"></i>Generate PO</button>` : ""}
+                `;
                 return `
-                <div class="buyer-section mb-4">
-                    <div class="buyer-header">
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            <i class="bi bi-building" style="font-size:17px;color:#1a237e;"></i>
-                            <span class="buyer-name">${grp.name}</span>
-                            <span style="font-size:12px;color:#6b7280;">${totalCnt} DO Draft · ${draftCnt} belum di-generate</span>
-                            <button class="btn-expand-all" onclick="toggleExpandGroup('${safeKey}', this)">
-                                <i class="bi bi-arrows-expand" style="font-size:10px;"></i> Expand All
+                    <tr class="main-row">
+                        <td onclick="event.stopPropagation()">
+                            <input type="checkbox" class="row-check" data-id="${escapeHtml(d.id)}" ${canSelect ? "" : "disabled"} onchange="handleCheck()">
+                        </td>
+                        <td>
+                            <button class="expand-btn" id="${btnId}" onclick="toggleExpand('${expandId}','${btnId}')">
+                                <i class="bi bi-chevron-down"></i>
                             </button>
-                        </div>
-                    </div>
-                    <div class="table-wrap" style="border:1px solid #e2e8f0;border-radius:0 0 10px 10px;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width:36px;"></th>
-                                    <th style="width:36px;"></th>
-                                    <th>No. DO Draft</th>
-                                    <th>Tanggal</th>
-                                    <th>DOC Type</th>
-                                    <th>Plan / Forecast</th>
-                                    <th style="text-align:center">Lines</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rowsHtml}</tbody>
-                        </table>
-                    </div>
-                </div>`;
+                        </td>
+                        <td><strong class="mono">${escapeHtml(d.id)}</strong><div style="margin-top:3px;">${rowStatusTag(d)}</div></td>
+                        <td>${escapeHtml(d.deliveryDate || d.date || "-")}</td>
+                        <td>${docTypeTag(d)}</td>
+                        <td>${escapeHtml(getPlanText(d))}</td>
+                        <td>${escapeHtml(getVendorText(d))}</td>
+                        <td>${escapeHtml(getDriverText(d))}</td>
+                        <td>${escapeHtml(getPoliceText(d))}</td>
+                        <td><div style="display:flex;gap:6px;flex-wrap:wrap;">${actions}</div></td>
+                    </tr>
+                    <tr class="expand-row" id="${expandId}">
+                        <td colspan="10" style="padding:0;">
+                            <div class="expand-content">
+                                <div class="section-label"><i class="bi bi-box"></i>Item Lines - ${escapeHtml(d.id)}</div>
+                                <div class="table-wrap">${renderItemLinesTable(d, true)}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
             }).join("");
 
-            // Restore checked state
+            container.innerHTML = `
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:36px;"></th>
+                                <th style="width:36px;"></th>
+                                <th>No. DO Draft</th>
+                                <th>Tanggal</th>
+                                <th>DOC Type</th>
+                                <th>Plan</th>
+                                <th>Vendor</th>
+                                <th>Driver</th>
+                                <th>No. Polisi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>
+            `;
+
             document.querySelectorAll(".row-check").forEach(cb => {
                 if (selectedIds.includes(cb.dataset.id)) cb.checked = true;
             });
-            syncGroupHeaders();
         }
 
-        // ============================
-        // EXPAND / COLLAPSE
-        // ============================
         function toggleExpand(rowId, btnId) {
             const row = document.getElementById(rowId);
             const btn = document.getElementById(btnId);
@@ -856,41 +590,10 @@
             btn.classList.toggle("open", !isOpen);
         }
 
-        function toggleExpandGroup(grpKey, btnEl) {
-            const rows = document.querySelectorAll(`[id^="exp-"]`);
-            // find rows belonging to this group via their sibling checkbox
-            const grpCheckboxes = document.querySelectorAll(`.grp-${grpKey}`);
-            const relatedExpandIds = [];
-            grpCheckboxes.forEach(cb => {
-                const tr  = cb.closest("tr");
-                const nxt = tr ? tr.nextElementSibling : null;
-                if (nxt && nxt.classList.contains("expand-row")) relatedExpandIds.push(nxt.id);
-            });
-
-            const isExpanding = btnEl.textContent.includes("Expand");
-            relatedExpandIds.forEach(id => {
-                const row = document.getElementById(id);
-                const rowIdx = id.replace("exp-", "");
-                const btn   = document.getElementById("expbtn-" + rowIdx);
-                if (row) { row.classList.toggle("open", isExpanding); }
-                if (btn)  { btn.classList.toggle("open", isExpanding); }
-            });
-
-            btnEl.innerHTML = isExpanding
-                ? `<i class="bi bi-arrows-collapse" style="font-size:10px;"></i> Collapse All`
-                : `<i class="bi bi-arrows-expand" style="font-size:10px;"></i> Expand All`;
-        }
-
-        // ============================
-        // CHECKBOX
-        // ============================
         function handleCheck() {
             selectedIds = [...document.querySelectorAll(".row-check:checked")].map(c => c.dataset.id);
-            syncGroupHeaders();
             updateBulkBar();
         }
-
-        function syncGroupHeaders() {}
 
         function updateBulkBar() {
             const n = selectedIds.length;
@@ -904,63 +607,179 @@
             updateBulkBar();
         }
 
-        // ============================
-        // FILTER
-        // ============================
-        function populateCustomerFilter(drafts) {
-            const sel = document.getElementById("fCustomer");
-            sel.innerHTML = '<option value="">Semua</option>';
-            const seen = new Set();
-            drafts.forEach(d => {
-                if (!seen.has(d.customer)) {
-                    seen.add(d.customer);
-                    const opt = document.createElement("option");
-                    opt.value = d.customer; opt.textContent = d.customerName;
-                    sel.appendChild(opt);
+        function openSingleReview(draftId) {
+            const draft = docDraftGet(draftId);
+            if (!draft) return;
+            openReviewModal([draft], false);
+        }
+
+        function openBulkReview() {
+            const drafts = selectedIds.map(id => docDraftGet(id)).filter(Boolean);
+            if (!drafts.length) return;
+            openReviewModal(drafts, true);
+        }
+
+        function openReviewModal(drafts, isBulk) {
+            pendingReviewDrafts = drafts.filter(Boolean);
+            document.getElementById("reviewModalTitle").innerHTML = isBulk
+                ? `<i class="bi bi-file-earmark-plus me-2"></i>Review &amp; Generate PO`
+                : `<i class="bi bi-eye me-2"></i>Review PO`;
+
+            document.getElementById("reviewModalBody").innerHTML = `
+                ${pendingReviewDrafts.map(renderDraftReview).join("")}
+                <div class="note-box">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Belum termasuk pajak. Tax &amp; Payment Term mengikuti default BP di SAP. Dist Rule mengikuti Plan.
+                </div>
+            `;
+
+            const canGenerate = pendingReviewDrafts.some(canGeneratePO) && hasGenerateAccess && !isViewOnly;
+            const btn = document.getElementById("btnModalGenerate");
+            btn.style.display = canGenerate ? "" : "none";
+            btn.innerHTML = pendingReviewDrafts.length > 1
+                ? `<i class="bi bi-check-all"></i>Generate Semua PO`
+                : `<i class="bi bi-file-earmark-plus"></i>Generate PO`;
+            btn.onclick = () => {
+                closeReviewModal();
+                doGeneratePOs(pendingReviewDrafts);
+            };
+
+            document.getElementById("reviewModal").classList.add("open");
+        }
+
+        function closeReviewModal() {
+            document.getElementById("reviewModal").classList.remove("open");
+            pendingReviewDrafts = [];
+        }
+
+        function doGeneratePOsByIds(ids) {
+            const drafts = ids.map(id => docDraftGet(id)).filter(Boolean);
+            doGeneratePOs(drafts);
+        }
+
+        function doGeneratePOs(drafts) {
+            if (!hasGenerateAccess || isViewOnly) {
+                showToast("Role ini hanya bisa review, tidak bisa generate PO.", "error");
+                return;
+            }
+
+            const now = new Date().toISOString().slice(0, 10);
+            const generated = [];
+            const errors = [];
+
+            drafts.forEach(draft => {
+                try {
+                    if (!canGeneratePO(draft)) {
+                        errors.push(`${draft.id}: belum confirmed, sudah PO, atau belum ada nomor DO`);
+                        return;
+                    }
+
+                    const poId = poGenNextId();
+                    const po = {
+                        id: poId,
+                        doDraftId: draft.id,
+                        date: now,
+                        postingDate: now,
+                        deliveryDate: draft.deliveryDate,
+                        vendorCode: draft.vendorCode || "VND-CTU",
+                        vendorName: draft.vendorName || "CTU",
+                        customerCode: draft.customer,
+                        customerName: draft.customerName,
+                        contactPerson: draft.contactPerson,
+                        customerRefNo: draft.customerRefNo,
+                        whsePengirim: draft.whsePengirim || draft.warehouse,
+                        whsePengirimName: draft.whsePengirimName || draft.warehouseName,
+                        docType: draft.docType,
+                        docTypeLabel: docTypeLabel(draft),
+                        planCode: draft.planCode,
+                        planName: draft.planName,
+                        forecastRef: draft.forecastRef,
+                        forecastDesc: draft.forecastDesc,
+                        externalVendor: draft.externalVendor,
+                        externalVendorName: draft.externalVendorName,
+                        noSuratJalan: draft.noSuratJalan,
+                        tglSuratJalan: draft.tglSuratJalan,
+                        noPol: draft.noPol,
+                        transport: draft.transport ? { ...draft.transport } : {},
+                        taxPaymentTermSource: "Default BP SAP",
+                        distRuleSource: "Plan",
+                        remarks: draft.remarks || "",
+                        lines: (draft.lines || []).map(l => ({ ...l, afterItems: (l.afterItems || []).map(a => ({ ...a })) })),
+                        status: "Open",
+                        createdBy: userData.name || userData.role || "admin_top",
+                        createdAt: now
+                    };
+
+                    poGenSave(po);
+                    draft.statusPO = "PO Generated";
+                    draft.poGenId = poId;
+                    docDraftSave(draft);
+                    generated.push(`${draft.id} -> ${poId}`);
+                } catch (err) {
+                    errors.push(`${draft.id}: ${err.message || err}`);
                 }
+            });
+
+            clearSelection();
+            init();
+
+            if (generated.length) showToast(`${generated.length} PO berhasil dibuat: ${generated.join(", ")}`);
+            if (errors.length) {
+                alert(`Sebagian gagal generate PO:\n\n${errors.join("\n")}`);
+                if (!generated.length) showToast("Tidak ada PO yang berhasil dibuat.", "error");
+            }
+        }
+
+        function getFilteredDrafts() {
+            const search = document.getElementById("fSearch").value.trim().toLowerCase();
+            const type = document.getElementById("fType").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo = document.getElementById("fDateTo").value;
+
+            return allDrafts.filter(d => {
+                const deliveryDate = d.deliveryDate || d.date || "";
+                const searchText = [
+                    d.id, d.planCode, d.planName, d.forecastRef, d.forecastDesc
+                ].join(" ").toLowerCase();
+
+                if (search && !searchText.includes(search)) return false;
+                if (type && docTypeKey(d) !== type) return false;
+                if (dateFrom && deliveryDate < dateFrom) return false;
+                if (dateTo && deliveryDate > dateTo) return false;
+                return true;
             });
         }
 
         function applyFilter() {
-            const type     = document.getElementById("fType").value;
-            const cust     = document.getElementById("fCustomer").value;
-            const status   = document.getElementById("fStatus").value;
-            const dateFrom = document.getElementById("fDateFrom").value;
-            const dateTo   = document.getElementById("fDateTo").value;
-            let f = allDrafts;
-            if (type)     f = f.filter(d => d.docType === type);
-            if (cust)     f = f.filter(d => d.customer === cust);
-            if (status === "PO Generated") f = f.filter(d => d.statusPO === "PO Generated");
-            else if (status) f = f.filter(d => d.status === status);
-            if (dateFrom) f = f.filter(d => d.date >= dateFrom);
-            if (dateTo)   f = f.filter(d => d.date <= dateTo);
-            renderTable(f);
+            selectedIds = selectedIds.filter(id => getFilteredDrafts().some(d => d.id === id));
+            renderTable(getFilteredDrafts());
+            updateBulkBar();
         }
 
         function resetFilter() {
-            ["fType","fCustomer","fStatus","fDateFrom","fDateTo"].forEach(id => document.getElementById(id).value = "");
+            ["fSearch", "fType", "fDateFrom", "fDateTo"].forEach(id => document.getElementById(id).value = "");
+            selectedIds = [];
             renderTable(allDrafts);
+            updateBulkBar();
         }
 
-        // ============================
-        // BACKDROP CLOSE
-        // ============================
-        document.getElementById("detailModal").addEventListener("click", e => { if (e.target === e.currentTarget) closeDetailModal(); });
-        document.getElementById("bulkModal").addEventListener("click",  e => { if (e.target === e.currentTarget) closeBulkModal(); });
-        document.addEventListener("keydown", e => {
-            if (e.key !== "Escape") return;
-            if (document.getElementById("bulkModal").classList.contains("open"))   closeBulkModal();
-            else if (document.getElementById("detailModal").classList.contains("open")) closeDetailModal();
-        });
+        document.getElementById("fSearch").addEventListener("input", applyFilter);
+        document.getElementById("fType").addEventListener("change", applyFilter);
+        document.getElementById("fDateFrom").addEventListener("change", applyFilter);
+        document.getElementById("fDateTo").addEventListener("change", applyFilter);
+        document.getElementById("reviewModal").addEventListener("click", e => { if (e.target === e.currentTarget) closeReviewModal(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") closeReviewModal(); });
 
-        // ============================
-        // INIT
-        // ============================
         function init() {
-            allDrafts = docDraftLoadAll().sort((a, b) => b.date.localeCompare(a.date));
-            renderSummary(allDrafts);
-            populateCustomerFilter(allDrafts);
-            renderTable(allDrafts);
+            if (hasNoAccess) {
+                document.getElementById("pageContent").style.display = "none";
+                document.getElementById("accessDenied").style.display = "";
+                return;
+            }
+
+            allDrafts = docDraftLoadAll().sort((a, b) => (b.deliveryDate || b.date || "").localeCompare(a.deliveryDate || a.date || ""));
+            renderSummary();
+            renderTable(getFilteredDrafts());
             updateBulkBar();
         }
 

@@ -77,7 +77,7 @@
                 <div class="po-header" id="poHeader">
                     <div class="po-id" id="hPoId">—</div>
                     <div class="po-sub" id="hPoSub">—</div>
-                    <div class="po-badge">Final</div>
+                    <div class="po-badge" id="hPoStatus">Open</div>
                 </div>
 
                 <!-- DO Draft reference -->
@@ -105,7 +105,7 @@
                             <div class="field"><label>Cust Ref No</label><div class="val" id="vCustRef">—</div></div>
                         </div>
                         <div class="ig4">
-                            <div class="field"><label>Gudang Pengirim (SIC)</label><div class="val" id="vWhse">—</div></div>
+                            <div class="field"><label>Gudang Pengirim (CTU)</label><div class="val" id="vWhse">—</div></div>
                             <div class="field"><label>Plan / Forecast</label><div class="val" id="vPlan">—</div></div>
                             <div class="field"><label>Dibuat Oleh</label><div class="val" id="vCreatedBy">—</div></div>
                             <div class="field"><label>Tanggal Dibuat</label><div class="val" id="vCreatedAt">—</div></div>
@@ -159,7 +159,7 @@
                                 <thead>
                                     <tr>
                                         <th class="hb">Brand</th>
-                                        <th class="hb">Item DOC (dari SIC)</th>
+                                        <th class="hb">Item DOC (dari CTU)</th>
                                         <th class="hb">UoM</th>
                                         <th class="hb">Qty Dipesan</th>
                                         <th class="hb">Harga Beli</th>
@@ -237,6 +237,7 @@
 
             document.getElementById("hPoId").textContent  = po.id;
             document.getElementById("hPoSub").textContent = `${po.vendorName} → ${po.customerName} · ${po.date}`;
+            document.getElementById("hPoStatus").textContent = po.status === "Closed" ? "Closed" : "Open";
 
             document.getElementById("refDoDraftId").textContent  = po.doDraftId;
             document.getElementById("linkDoDraft").href = `top_po_generation_view.html?id=${po.doDraftId}`;

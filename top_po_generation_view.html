@@ -103,7 +103,7 @@
                             <div class="field"><label>Pembeli / Penerima</label><div class="val" id="vCustomer">—</div></div>
                             <div class="field"><label>Contact Person</label><div class="val" id="vContact">—</div></div>
                             <div class="field"><label>No. Referensi</label><div class="val" id="vCustRef">—</div></div>
-                            <div class="field"><label>Gudang Pengirim (SIC)</label><div class="val" id="vWhse">—</div></div>
+                            <div class="field"><label>Gudang Pengirim (CTU)</label><div class="val" id="vWhse">—</div></div>
                         </div>
                         <div class="ig4">
                             <div class="field"><label>Plan</label><div class="val" id="vPlan">—</div></div>
@@ -157,7 +157,7 @@
                                 <thead>
                                     <tr>
                                         <th class="hb">Brand</th>
-                                        <th class="hb">Item DOC (dari SIC)</th>
+                                        <th class="hb">Item DOC (dari CTU)</th>
                                         <th class="hb">UoM</th>
                                         <th class="hb">Qty Dipesan</th>
                                         <th class="hb">Harga Beli</th>
@@ -199,7 +199,7 @@
                 <div class="modal-body" style="font-size:14px;">
                     <p>Anda akan meng-generate <strong>Purchase Order</strong> dari DO Draft ini.</p>
                     <ul style="font-size:13px;color:#374151;">
-                        <li>PO akan ditujukan ke <strong>SIC</strong></li>
+                        <li>PO akan ditujukan ke <strong>CTU</strong></li>
                         <li>Status PO akan berubah menjadi <strong>PO Generated</strong></li>
                         <li>PO tidak dapat diedit setelah dibuat</li>
                     </ul>
@@ -378,8 +378,8 @@
                 date:           now,
                 postingDate:    draft.postingDate || draft.date,
                 deliveryDate:   draft.deliveryDate,
-                vendorCode:     "VND-SIC",
-                vendorName:     "SIC",
+                vendorCode:     draft.vendorCode || "VND-CTU",
+                vendorName:     draft.vendorName || "CTU",
                 customerCode:   draft.customer,
                 customerName:   draft.customerName,
                 contactPerson:  draft.contactPerson,
@@ -399,7 +399,7 @@
                 transport:      draft.transport ? { ...draft.transport } : {},
                 remarks:        draft.remarks || "",
                 lines:          draft.lines.map(l => ({ ...l, afterItems: l.afterItems.map(a => ({ ...a })) })),
-                status:         "Final",
+                status:         "Open",
                 createdBy:      userData.name || userData.role || "admin_top",
                 createdAt:      now
             };

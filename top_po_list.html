@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,33 +8,215 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f5f7fb; color: #222; }
-        .card { background: #fff; border-radius: 14px; margin-bottom: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
-        .card-header { padding: 13px 16px; font-weight: 700; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; }
-        .card-body { padding: 16px; }
-        .summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
-        .summary-box { border: 1px solid #e8ebf1; border-radius: 10px; padding: 14px 16px; background: #fafbfe; }
-        .summary-box .lbl { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-        .summary-box .val { font-size: 24px; font-weight: 700; }
-        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 14px; }
-        .filter-row .f { flex: 1 1 150px; }
-        .filter-row label { display: block; font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; }
-        .filter-row select, .filter-row input { width: 100%; height: 36px; border: 1px solid #d5dae3; border-radius: 8px; padding: 0 10px; font-size: 13px; background: #fff; }
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 860px; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid #edf0f5; font-size: 13px; text-align: left; vertical-align: middle; }
-        th { background: #f9fafc; font-size: 12px; color: #555; font-weight: 700; white-space: nowrap; }
-        tbody tr:hover { background: #fafcff; cursor: pointer; }
-        .tag { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-        .tag-final    { background: #dcfce7; color: #166534; }
-        .tag-internal { background: #dbeafe; color: #1d4ed8; }
-        .tag-external { background: #f3e8ff; color: #7c3aed; }
-        .btn-xs { padding: 5px 10px; border-radius: 7px; border: 0; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; text-decoration: none; display: inline-block; }
-        .btn-view { background: #dbeafe; color: #1d4ed8; }
-        @media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2,1fr); } }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e8ebf1;
+        }
+
+        .card-header {
+            padding: 13px 16px;
+            font-weight: 800;
+            font-size: 13px;
+            border-bottom: 1px solid #eef0f4;
+            background: #fafbfe;
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .summary-box {
+            border: 1px solid #e8ebf1;
+            border-radius: 8px;
+            padding: 14px 16px;
+            background: #fff;
+        }
+
+        .summary-box .lbl {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .summary-box .val {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) minmax(145px, .8fr) minmax(145px, .8fr) minmax(145px, .8fr) minmax(220px, 1.4fr) auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 14px;
+        }
+
+        .filter-row label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .filter-row select,
+        .filter-row input {
+            width: 100%;
+            height: 36px;
+            border: 1px solid #d5dae3;
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 13px;
+            background: #fff;
+        }
+
+        .table-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+
+        .column-menu {
+            min-width: 220px;
+            padding: 8px;
+            z-index: 1080;
+        }
+
+        .column-menu .dropdown-item {
+            display: flex;
+            align-items: center;
+            border-radius: 6px;
+            padding: 7px 8px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 860px;
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #edf0f5;
+            font-size: 13px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f9fafc;
+            font-size: 12px;
+            color: #555;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #fafcff;
+            cursor: pointer;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .tag-open {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        .tag-closed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .btn-xs {
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 0;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-view {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .btn-neutral {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .muted-empty {
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1100px) {
+            .filter-row {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+
+            .summary-grid,
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid px-3">
@@ -41,10 +224,13 @@
             <span class="navbar-text text-white-50 small d-none d-md-inline">TOP Portal</span>
             <div class="ms-auto d-flex align-items-center gap-2">
                 <div class="dropdown">
-                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="userBtn">User</button>
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+                        id="userBtn">User</button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><span class="dropdown-item-text small text-muted" id="userInfo">-</span></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><button class="dropdown-item text-danger" id="btnLogout">Logout</button></li>
                     </ul>
                 </div>
@@ -56,11 +242,11 @@
         <div class="row g-3">
             <div class="col-lg-2" id="sidebar-container"></div>
             <div class="col-lg-10">
-
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                         <h5 class="fw-bold mb-0">Daftar Purchase Order</h5>
-                        <div class="text-muted" style="font-size:13px;">PO yang telah di-generate dari DO Draft SIC</div>
+                        <div class="text-muted" style="font-size:13px;">PO DOC yang telah di-generate dari DO Draft DOC
+                        </div>
                     </div>
                     <a href="top_po_generation_list.html" class="btn btn-success btn-sm fw-bold">
                         <i class="bi bi-file-earmark-plus me-1"></i> PO Generation
@@ -73,52 +259,68 @@
                     <div class="card-header">Daftar PO</div>
                     <div class="card-body">
                         <div class="filter-row">
-                            <div class="f">
+                            <div>
                                 <label>Customer</label>
-                                <select id="fCustomer"><option value="">Semua</option></select>
+                                <select id="fCustomer">
+                                    <option value="">Semua</option>
+                                </select>
                             </div>
-                            <div class="f">
+                            <div>
+                                <label>Status</label>
+                                <select id="fStatus">
+                                    <option value="">Semua</option>
+                                    <option value="Open">Open</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </div>
+                            <div>
                                 <label>Dari Tanggal</label>
                                 <input type="date" id="fDateFrom">
                             </div>
-                            <div class="f">
+                            <div>
                                 <label>Sampai</label>
                                 <input type="date" id="fDateTo">
                             </div>
                             <div>
+                                <label>Search Box</label>
+                                <input type="search" id="fSearch" placeholder="Cari PO / DO Draft / GRPO / AP">
+                            </div>
+                            <div>
                                 <label>&nbsp;</label>
                                 <div style="display:flex;gap:8px;">
-                                    <button class="btn-xs btn-view" onclick="applyFilter()" style="height:36px;padding:0 14px;">Filter</button>
-                                    <button class="btn-xs" style="background:#f3f4f6;color:#374151;height:36px;padding:0 14px;" onclick="resetFilter()">Reset</button>
+                                    <button class="btn-xs btn-view" onclick="applyFilter()"
+                                        style="height:36px;padding:0 14px;"><i class="bi bi-search"></i>Filter</button>
+                                    <button class="btn-xs btn-neutral" onclick="resetFilter()"
+                                        style="height:36px;padding:0 14px;"><i
+                                            class="bi bi-arrow-counterclockwise"></i>Reset</button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="table-toolbar">
+                            <div class="dropdown">
+                                <button class="btn-xs btn-view dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <i class="bi bi-layout-three-columns"></i>Pilih Kolom
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end column-menu" id="columnMenu"></div>
                             </div>
                         </div>
 
                         <div class="table-wrap">
                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>No. PO</th>
-                                        <th>Tanggal</th>
-                                        <th>DO Draft Ref</th>
-                                        <th>DOC Type</th>
-                                        <th>Vendor / Pemasok</th>
-                                        <th>Pembeli / Penerima</th>
-                                        <th style="text-align:center">Lines</th>
-                                        <th>Status</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </thead>
+                                <thead id="tableHead"></thead>
                                 <tbody id="tableBody"></tbody>
                             </table>
                         </div>
                         <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
-                            <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
-                            Belum ada PO yang dibuat. <a href="top_po_generation_list.html" style="color:#1d4ed8;">Generate PO sekarang →</a>
+                            <i class="bi bi-inbox"
+                                style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
+                            Belum ada PO yang dibuat. <a href="top_po_generation_list.html"
+                                style="color:#1d4ed8;">Generate PO sekarang &rarr;</a>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -133,36 +335,95 @@
 
         const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
         document.getElementById("userInfo").textContent = userData.name || userData.role || "-";
-        document.getElementById("userBtn").textContent  = userData.name || "User";
+        document.getElementById("userBtn").textContent = userData.name || "User";
         document.getElementById("btnLogout").addEventListener("click", () => {
             localStorage.removeItem("IBOCS_user");
             location.href = "login.html";
         });
 
         let allPOs = [];
+        let currentPOs = [];
+        const columnConfig = [
+            { key: "id", label: "No. PO", visible: true },
+            { key: "date", label: "Tgl PO", visible: true },
+            { key: "doDraftId", label: "DO Draft Ref", visible: true },
+            { key: "vendor", label: "Vendor", visible: true },
+            { key: "customer", label: "Customer", visible: true },
+            { key: "status", label: "Status", visible: true },
+            { key: "grpoNo", label: "No. GRPO", visible: false },
+            { key: "grpoDate", label: "Tgl GRPO", visible: false },
+            { key: "apNo", label: "No. AP", visible: false },
+            { key: "apDate", label: "Tgl AP", visible: false },
+            { key: "actions", label: "Aksi", visible: true, locked: true }
+        ];
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+            }[c]));
+        }
+
+        function emptyText() {
+            return `<span class="muted-empty">-</span>`;
+        }
+
+        function normalizeStatus(status) {
+            return status === "Closed" ? "Closed" : "Open";
+        }
+
+        function statusTag(status) {
+            const s = normalizeStatus(status);
+            return s === "Closed"
+                ? `<span class="tag tag-closed">Closed</span>`
+                : `<span class="tag tag-open">Open</span>`;
+        }
 
         function renderSummary(list) {
             const total = list.length;
-            const today = new Date().toISOString().slice(0, 10);
-            const bulan = list.filter(p => p.date && p.date.slice(0, 7) === today.slice(0, 7)).length;
+            const open = list.filter(p => normalizeStatus(p.status) === "Open").length;
+            const closed = list.filter(p => normalizeStatus(p.status) === "Closed").length;
             document.getElementById("summaryGrid").innerHTML = `
                 <div class="summary-box">
                     <div class="lbl">Total PO</div>
                     <div class="val">${total}</div>
                 </div>
                 <div class="summary-box">
-                    <div class="lbl">Bulan Ini</div>
-                    <div class="val" style="color:#1d4ed8">${bulan}</div>
+                    <div class="lbl">Open</div>
+                    <div class="val" style="color:#92400e">${open}</div>
                 </div>
                 <div class="summary-box">
-                    <div class="lbl">Status</div>
-                    <div class="val" style="color:#166534;font-size:14px;margin-top:4px;">Semua Final</div>
+                    <div class="lbl">Closed</div>
+                    <div class="val" style="color:#166534">${closed}</div>
                 </div>`;
         }
 
+        function renderColumnMenu() {
+            document.getElementById("columnMenu").innerHTML = columnConfig.map(col => `
+                <label class="dropdown-item" onclick="event.stopPropagation()">
+                    <input class="form-check-input me-2 column-toggle" type="checkbox" value="${col.key}" ${col.visible ? "checked" : ""} ${col.locked ? "disabled" : ""}>
+                    ${col.label}
+                </label>
+            `).join("");
+
+            document.querySelectorAll(".column-toggle").forEach(input => {
+                input.addEventListener("change", e => {
+                    const column = columnConfig.find(col => col.key === e.target.value);
+                    if (!column || column.locked) return;
+                    column.visible = e.target.checked;
+                    renderTable(currentPOs);
+                });
+            });
+        }
+
         function renderTable(list) {
+            currentPOs = list;
             const tbody = document.getElementById("tableBody");
+            const thead = document.getElementById("tableHead");
             const empty = document.getElementById("emptyState");
+            const visibleColumns = columnConfig.filter(col => col.visible);
+
+            thead.innerHTML = `<tr>${visibleColumns.map(col => `<th>${col.label}</th>`).join("")}</tr>`;
+
             if (!list.length) {
                 tbody.innerHTML = "";
                 empty.style.display = "block";
@@ -171,66 +432,98 @@
             empty.style.display = "none";
 
             tbody.innerHTML = list.map(p => {
-                const typeTag = p.docType === "internal"
-                    ? `<span class="tag tag-internal">Internal</span>`
-                    : `<span class="tag tag-external">External</span>`;
+                const cellMap = {
+                    id: `<strong>${escapeHtml(p.id)}</strong>`,
+                    date: escapeHtml(p.date || "-"),
+                    doDraftId: p.doDraftId
+                        ? `<a href="top_po_generation_view.html?id=${encodeURIComponent(p.doDraftId)}" onclick="event.stopPropagation()" style="color:#1d4ed8;font-weight:700;">${escapeHtml(p.doDraftId)}</a>`
+                        : emptyText(),
+                    vendor: escapeHtml(p.vendorName || p.vendorCode || "-"),
+                    customer: escapeHtml(p.customerName || p.customerCode || "-"),
+                    status: statusTag(p.status),
+                    grpoNo: p.grpoNo ? escapeHtml(p.grpoNo) : emptyText(),
+                    grpoDate: p.grpoDate ? escapeHtml(p.grpoDate) : emptyText(),
+                    apNo: p.apNo ? escapeHtml(p.apNo) : emptyText(),
+                    apDate: p.apDate ? escapeHtml(p.apDate) : emptyText(),
+                    actions: `<a href="top_po_view.html?id=${encodeURIComponent(p.id)}" class="btn-xs btn-view"><i class="bi bi-eye"></i>View</a>`
+                };
 
-                return `<tr onclick="location.href='top_po_view.html?id=${p.id}'">
-                    <td><strong>${p.id}</strong></td>
-                    <td>${p.date}</td>
-                    <td><a href="top_po_generation_view.html?id=${p.doDraftId}" onclick="event.stopPropagation()" style="color:#1d4ed8;">${p.doDraftId}</a></td>
-                    <td>${typeTag}</td>
-                    <td>${p.vendorName}</td>
-                    <td>${p.customerName}</td>
-                    <td style="text-align:center">${p.lines.length}</td>
-                    <td><span class="tag tag-final">Final</span></td>
-                    <td onclick="event.stopPropagation()">
-                        <a href="top_po_view.html?id=${p.id}" class="btn-xs btn-view">View</a>
-                    </td>
+                return `<tr onclick="location.href='top_po_view.html?id=${encodeURIComponent(p.id)}'">
+                    ${visibleColumns.map(col => {
+                    const stopClick = col.key === "actions" ? ` onclick="event.stopPropagation()"` : "";
+                    return `<td${stopClick}>${cellMap[col.key]}</td>`;
+                }).join("")}
                 </tr>`;
             }).join("");
         }
 
         function populateCustomerFilter(list) {
             const sel = document.getElementById("fCustomer");
+            sel.innerHTML = '<option value="">Semua</option>';
             const seen = new Set();
             list.forEach(p => {
-                if (!seen.has(p.customerCode)) {
-                    seen.add(p.customerCode);
-                    const opt = document.createElement("option");
-                    opt.value = p.customerCode;
-                    opt.textContent = p.customerName;
-                    sel.appendChild(opt);
-                }
+                if (!p.customerCode || seen.has(p.customerCode)) return;
+                seen.add(p.customerCode);
+                const opt = document.createElement("option");
+                opt.value = p.customerCode;
+                opt.textContent = p.customerName || p.customerCode;
+                sel.appendChild(opt);
+            });
+        }
+
+        function getFilteredPOs() {
+            const cust = document.getElementById("fCustomer").value;
+            const status = document.getElementById("fStatus").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo = document.getElementById("fDateTo").value;
+            const search = document.getElementById("fSearch").value.trim().toLowerCase();
+
+            return allPOs.filter(p => {
+                const poDate = p.date || "";
+                const haystack = [
+                    p.id, p.date, p.doDraftId, p.vendorCode, p.vendorName,
+                    p.customerCode, p.customerName, p.status, p.grpoNo, p.grpoDate,
+                    p.apNo, p.apDate
+                ].join(" ").toLowerCase();
+
+                if (cust && p.customerCode !== cust) return false;
+                if (status && normalizeStatus(p.status) !== status) return false;
+                if (dateFrom && poDate < dateFrom) return false;
+                if (dateTo && poDate > dateTo) return false;
+                if (search && !haystack.includes(search)) return false;
+                return true;
             });
         }
 
         function applyFilter() {
-            const cust     = document.getElementById("fCustomer").value;
-            const dateFrom = document.getElementById("fDateFrom").value;
-            const dateTo   = document.getElementById("fDateTo").value;
-            let filtered = allPOs;
-            if (cust)     filtered = filtered.filter(p => p.customerCode === cust);
-            if (dateFrom) filtered = filtered.filter(p => p.date >= dateFrom);
-            if (dateTo)   filtered = filtered.filter(p => p.date <= dateTo);
+            const filtered = getFilteredPOs();
+            renderSummary(filtered);
             renderTable(filtered);
         }
 
         function resetFilter() {
-            document.getElementById("fCustomer").value = "";
-            document.getElementById("fDateFrom").value = "";
-            document.getElementById("fDateTo").value   = "";
+            ["fCustomer", "fStatus", "fDateFrom", "fDateTo", "fSearch"].forEach(id => {
+                document.getElementById(id).value = "";
+            });
+            renderSummary(allPOs);
             renderTable(allPOs);
         }
 
         function init() {
-            allPOs = poGenLoadAll().sort((a, b) => b.date.localeCompare(a.date));
-            renderSummary(allPOs);
+            allPOs = poGenLoadAll().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
             populateCustomerFilter(allPOs);
+            renderColumnMenu();
+            renderSummary(allPOs);
             renderTable(allPOs);
+
+            document.querySelectorAll("#fCustomer,#fStatus,#fDateFrom,#fDateTo").forEach(el => {
+                el.addEventListener("change", applyFilter);
+            });
+            document.getElementById("fSearch").addEventListener("input", applyFilter);
         }
 
         init();
     </script>
 </body>
+
 </html>

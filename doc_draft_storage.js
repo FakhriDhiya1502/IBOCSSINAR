@@ -14,6 +14,7 @@ const DOC_DRAFT_DEMO = [
         docType: "internal",
         planCode: "100001111", planName: "TOP-BROILER COBB PERIODE-01",
         customer: "CUST-001", customerName: "PT TOP Distribusi",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "",
         whsePengirim: "WH-KDG01", whsePengirimName: "Gudang Kandang 01",
         externalVendor: null, externalVendorName: null,
@@ -37,6 +38,7 @@ const DOC_DRAFT_DEMO = [
         docType: "external",
         planCode: "100001112", planName: "TOP-BROILER ROSS PERIODE-02",
         customer: "CUST-001", customerName: "PT TOP Distribusi",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "REF-2026-042",
         whsePengirim: "WH-KDG02", whsePengirimName: "Gudang Kandang 02",
         externalVendor: "EV-001", externalVendorName: "PT Sumber Bibit Nusantara",
@@ -60,6 +62,7 @@ const DOC_DRAFT_DEMO = [
         docType: "internal",
         planCode: "100001111", planName: "TOP-BROILER COBB PERIODE-01",
         customer: "CUST-001", customerName: "PT TOP Distribusi",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "",
         whsePengirim: "WH-KDG01", whsePengirimName: "Gudang Kandang 01",
         externalVendor: null, externalVendorName: null,
@@ -83,6 +86,7 @@ const DOC_DRAFT_DEMO = [
         docType: "internal",
         planCode: "100001131", planName: "BMAX-BROILER HUBBARD BATCH-01",
         customer: "CUST-003", customerName: "PT BMAX",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "",
         whsePengirim: "WH-KDG02", whsePengirimName: "Gudang Kandang 02",
         externalVendor: null, externalVendorName: null,
@@ -107,6 +111,7 @@ const DOC_DRAFT_DEMO = [
         docType: "internal",
         planCode: "100001119", planName: "AYM-BROILER COBB BATCH-03",
         customer: "CUST-002", customerName: "PT AYM (Ayam Yummy Makmur)",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "",
         whsePengirim: "WH-KDG03", whsePengirimName: "Gudang Kandang 03",
         externalVendor: null, externalVendorName: null,
@@ -130,6 +135,7 @@ const DOC_DRAFT_DEMO = [
         docType: "internal",
         planCode: "100001120", planName: "AYM-LAYER LOHMANN BATCH-01",
         customer: "CUST-002", customerName: "PT AYM (Ayam Yummy Makmur)",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "REF-AYM-019",
         whsePengirim: "WH-KDG03", whsePengirimName: "Gudang Kandang 03",
         externalVendor: null, externalVendorName: null,
@@ -153,6 +159,7 @@ const DOC_DRAFT_DEMO = [
         docType: "external",
         planCode: "100001119", planName: "AYM-BROILER COBB BATCH-03",
         customer: "CUST-002", customerName: "PT AYM (Ayam Yummy Makmur)",
+        vendorCode: "VND-CTU", vendorName: "CTU",
         contactPerson: "", customerRefNo: "",
         whsePengirim: "WH-KDG03", whsePengirimName: "Gudang Kandang 03",
         externalVendor: "EV-002", externalVendorName: "CV Hatchery Mandiri",
@@ -238,6 +245,8 @@ function docDraftMigrate(drafts) {
         }
         if (d.customerPhone === undefined) d.customerPhone = "";
         if (d.shipTo === undefined) d.shipTo = "";
+        if (d.vendorCode === undefined || d.vendorCode === "VND-SIC") d.vendorCode = "VND-CTU";
+        if (d.vendorName === undefined || d.vendorName === "SIC") d.vendorName = "CTU";
         if (d.vendorPhone === undefined) d.vendorPhone = null;
         if (d.remarks === undefined) d.remarks = "";
         if (d.farmItems === undefined) d.farmItems = [];
