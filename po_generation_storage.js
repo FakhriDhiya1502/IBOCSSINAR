@@ -157,8 +157,159 @@ const PO_GEN_DEMO = [
         }],
         createdBy: "admin_top",
         createdAt: "2026-04-25"
+    },
+    {
+        id: "PO-DOC-2604-006",
+        doDraftId: "DOD-008",
+        date: "2026-04-26",
+        postingDate: "2026-04-26",
+        deliveryDate: "2026-04-27",
+        vendorCode: "VND-CTU",
+        vendorName: "CTU",
+        customerCode: "CUST-001",
+        customerName: "PT TOP Distribusi",
+        docType: "internal",
+        planCode: "100001111",
+        planName: "TOP-BROILER COBB PERIODE-01",
+        status: "Open",
+        grpoNo: "",
+        grpoDate: "",
+        apNo: "",
+        apDate: "",
+        remarks: "Tambahan PO DOC TOP menunggu penerimaan.",
+        lines: [{
+            id: "L1",
+            itemBefore: "DOC Broiler Cobb 500 (M)",
+            uomBefore: "Ekor",
+            priceBefore: 7500,
+            afterItems: [{ id: "A1", itemAfter: "DOC Broiler Cobb 500 (M)", uomAfter: "Ekor", qtyAfter: 12000, whseTujuan: "WH-KDG01" }]
+        }],
+        createdBy: "admin_top",
+        createdAt: "2026-04-26"
+    },
+    {
+        id: "PO-DOC-2604-007",
+        doDraftId: "DOD-009",
+        date: "2026-04-27",
+        postingDate: "2026-04-27",
+        deliveryDate: "2026-04-28",
+        vendorCode: "VND-CTU",
+        vendorName: "CTU",
+        customerCode: "CUST-003",
+        customerName: "PT BMAX",
+        docType: "external",
+        planCode: "100001132",
+        planName: "BMAX-BROILER COBB BATCH-02",
+        status: "Closed",
+        grpoNo: "GRPO-DOC-BMAX-001",
+        grpoDate: "2026-04-28",
+        apNo: "AP-DOC-BMAX-001",
+        apDate: "2026-04-29",
+        remarks: "PO DOC BMAX trading sudah closed.",
+        lines: [{
+            id: "L1",
+            itemBefore: "DOC Broiler Cobb 500 (F)",
+            uomBefore: "Ekor",
+            priceBefore: 7000,
+            afterItems: [{ id: "A1", itemAfter: "DOC Broiler Cobb 500 (F)", uomAfter: "Ekor", qtyAfter: 7500, whseTujuan: "WH-KDG02" }]
+        }],
+        createdBy: "admin_top",
+        createdAt: "2026-04-27"
+    },
+    {
+        id: "PO-DOC-2604-008",
+        doDraftId: "DOD-010",
+        date: "2026-04-28",
+        postingDate: "2026-04-28",
+        deliveryDate: "2026-04-29",
+        vendorCode: "VND-CTU",
+        vendorName: "CTU",
+        customerCode: "CUST-002",
+        customerName: "PT AYM (Ayam Yummy Makmur)",
+        docType: "internal",
+        planCode: "100001119",
+        planName: "AYM-BROILER COBB BATCH-03",
+        status: "Open",
+        grpoNo: "GRPO-DOC-AYM-002",
+        grpoDate: "2026-04-29",
+        apNo: "",
+        apDate: "",
+        remarks: "PO AYM sudah GRPO, belum AP.",
+        lines: [{
+            id: "L1",
+            itemBefore: "DOC Broiler Cobb 500 (M)",
+            uomBefore: "Ekor",
+            priceBefore: 7500,
+            afterItems: [{ id: "A1", itemAfter: "DOC Broiler Cobb 500 (M)", uomAfter: "Ekor", qtyAfter: 9000, whseTujuan: "WH-KDG03" }]
+        }],
+        createdBy: "admin_top",
+        createdAt: "2026-04-28"
+    },
+    {
+        id: "PO-DOC-2604-009",
+        doDraftId: "DOD-011",
+        date: "2026-04-29",
+        postingDate: "2026-04-29",
+        deliveryDate: "2026-04-30",
+        vendorCode: "VND-CTU",
+        vendorName: "CTU",
+        customerCode: "CUST-001",
+        customerName: "PT TOP Distribusi",
+        docType: "external",
+        planCode: "100001112",
+        planName: "TOP-BROILER ROSS PERIODE-02",
+        status: "Closed",
+        grpoNo: "GRPO-DOC-TOP-002",
+        grpoDate: "2026-04-30",
+        apNo: "AP-DOC-TOP-002",
+        apDate: "2026-05-01",
+        remarks: "PO DOC TOP trading closed.",
+        lines: [{
+            id: "L1",
+            itemBefore: "DOC Broiler Ross 308 (F)",
+            uomBefore: "Ekor",
+            priceBefore: 7500,
+            afterItems: [{ id: "A1", itemAfter: "DOC Broiler Ross 308 (F)", uomAfter: "Ekor", qtyAfter: 6500, whseTujuan: "WH-KDG02" }]
+        }],
+        createdBy: "admin_top",
+        createdAt: "2026-04-29"
+    },
+    {
+        id: "PO-DOC-2605-001",
+        doDraftId: "DOD-012",
+        date: "2026-05-02",
+        postingDate: "2026-05-02",
+        deliveryDate: "2026-05-03",
+        vendorCode: "VND-CTU",
+        vendorName: "CTU",
+        customerCode: "CUST-003",
+        customerName: "PT BMAX",
+        docType: "internal",
+        planCode: "100001131",
+        planName: "BMAX-BROILER HUBBARD BATCH-01",
+        status: "Open",
+        grpoNo: "",
+        grpoDate: "",
+        apNo: "",
+        apDate: "",
+        remarks: "PO DOC BMAX periode Mei.",
+        lines: [{
+            id: "L1",
+            itemBefore: "DOC Hubbard (M)",
+            uomBefore: "Ekor",
+            priceBefore: 9000,
+            afterItems: [{ id: "A1", itemAfter: "DOC Hubbard (M)", uomAfter: "Ekor", qtyAfter: 11000, whseTujuan: "WH-KDG02" }]
+        }],
+        createdBy: "admin_top",
+        createdAt: "2026-05-02"
     }
 ];
+
+function poGenMergeDemo(list) {
+    const existingIds = new Set(list.map(p => p.id));
+    const missingDemo = PO_GEN_DEMO.filter(p => !existingIds.has(p.id)).map(p => ({ ...p }));
+    return [...list, ...missingDemo];
+}
 
 function poGenMigrate(list) {
     return list.map(p => {
@@ -211,7 +362,11 @@ function poGenLoadAll() {
         const raw = localStorage.getItem(PO_GEN_KEY);
         if (raw) {
             const parsed = JSON.parse(raw);
-            if (Array.isArray(parsed) && parsed.length) return poGenMigrate(parsed);
+            if (Array.isArray(parsed) && parsed.length) {
+                const merged = poGenMigrate(poGenMergeDemo(parsed));
+                localStorage.setItem(PO_GEN_KEY, JSON.stringify(merged));
+                return merged;
+            }
         }
     } catch(e) {}
     localStorage.setItem(PO_GEN_KEY, JSON.stringify(PO_GEN_DEMO));
