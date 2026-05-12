@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBOCS | DO Sudah di-AR</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="sidebar.js"></script>
+    <style>
+        body { background:#f4f6fb; font-family:'Segoe UI', sans-serif; }
+        .card { border:none; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:18px; }
+        .card-header-custom { background:#fff; border-bottom:1.5px solid #e8ecf4; padding:16px 20px; border-radius:14px 14px 0 0; display:flex; align-items:center; justify-content:space-between; }
+        .section-label { font-weight:700; font-size:.95rem; color:#1a237e; display:flex; align-items:center; gap:8px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .summary-card { border:1px solid #e8ecf4; border-radius:10px; padding:14px 16px; background:#fff; }
+        .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+        .summary-value { margin-top:5px; font-size:24px; font-weight:800; color:#1a237e; }
+        .filter-row { display:grid; grid-template-columns:minmax(180px,1fr) minmax(140px,.7fr) minmax(140px,.7fr) minmax(220px,1.4fr) auto; gap:10px; align-items:end; padding:16px 20px; border-bottom:1px solid #eef2f7; }
+        .filter-row label { display:block; font-size:12px; color:#4b5563; font-weight:700; margin-bottom:5px; }
+        table { font-size:13.5px; }
+        th { background:#f8faff; color:#374151; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1.5px solid #e0e7ef !important; }
+        td { vertical-align:middle; }
+        .status-badge { padding:3px 10px; border-radius:20px; font-size:11.5px; font-weight:700; }
+        .s-open { background:#eff6ff; color:#1d4ed8; }
+        .s-posted { background:#f0fdf4; color:#166534; }
+        .btn-view { background:#dbeafe; color:#1d4ed8; border:0; border-radius:7px; padding:5px 10px; font-size:12px; font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+        .empty-state { padding:48px; text-align:center; color:#9ca3af; }
+        .empty-state i { font-size:2.5rem; display:block; margin-bottom:12px; }
+        @media (max-width: 1000px) { .filter-row { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width: 700px) { .summary-grid, .filter-row { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background:#1a237e; padding:10px 24px;">
+        <a class="navbar-brand fw-bold" href="customer_dashboard.html">IBOCS</a>
+        <div class="ms-auto d-flex align-items-center gap-2"><span class="text-white-50 small" id="navUser"></span></div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10 py-4 px-4">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-check me-2" style="color:#1a237e;"></i>DO yang Sudah di-AR</h4>
+                        <p class="text-muted small mb-0">Daftar Delivery Order yang sudah dibuatkan dokumen AR.</p>
+                    </div>
+                    <a href="customer_AR.html" class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-plus-circle me-1"></i>AR Generation</a>
+                </div>
+                <div class="card">
+                    <div class="card-header-custom"><span class="section-label"><i class="bi bi-clipboard-data"></i> Summary</span></div>
+                    <div class="card-body"><div class="summary-grid" id="summaryGrid"></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header-custom"><span class="section-label"><i class="bi bi-table"></i> Daftar DO Sudah di-AR</span></div>
+                    <div class="filter-row">
+                        <div><label>Status</label><select id="fStatus" class="form-select form-select-sm"><option value="">Semua</option><option value="Open">Open</option><option value="Closed">Closed</option></select></div>
+                        <div><label>Dari Tanggal</label><input type="date" id="fDateFrom" class="form-control form-control-sm"></div>
+                        <div><label>Sampai</label><input type="date" id="fDateTo" class="form-control form-control-sm"></div>
+                        <div><label>Search</label><input type="search" id="fSearch" class="form-control form-control-sm" placeholder="Cari AR / DO / Order / Company"></div>
+                        <div><label>&nbsp;</label><div class="d-flex gap-2"><button class="btn btn-primary btn-sm px-3" onclick="applyFilter()">Filter</button><button class="btn btn-outline-secondary btn-sm px-3" onclick="resetFilter()">Reset</button></div></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead><tr><th>AR No</th><th>Tanggal AR</th><th>DO Ref</th><th>Order Ref</th><th>Company</th><th>Customer</th><th class="text-end">Total Qty</th><th>Status</th><th>Aksi</th></tr></thead>
+                            <tbody id="arBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const sess = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        if (!sess || !sess.role) window.location.href = "login.html";
+        document.getElementById("navUser").textContent = sess.name || sess.username || "";
+        new SidebarSystem(null, "ar_list").render();
+        let allAR = [];
+        function getArList() { return JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]"); }
+        function statusText(status) { return (!status || status === "Draft") ? "Open" : status; }
+        function statusBadge(status) {
+            const text = statusText(status);
+            return `<span class="status-badge ${text === "Open" ? "s-open" : "s-posted"}">${text}</span>`;
+        }
+        function renderSummary(list) {
+            const total = list.length;
+            const open = list.filter(a => statusText(a.status) === "Open").length;
+            const closed = list.filter(a => statusText(a.status) === "Closed").length;
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-card"><div class="summary-label">Total AR</div><div class="summary-value">${total}</div></div>
+                <div class="summary-card"><div class="summary-label">Open</div><div class="summary-value" style="color:#1d4ed8;">${open}</div></div>
+                <div class="summary-card"><div class="summary-label">Closed</div><div class="summary-value" style="color:#166534;">${closed}</div></div>`;
+        }
+        function renderTable(list) {
+            const tbody = document.getElementById("arBody");
+            if (!list.length) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state"><i class="bi bi-file-earmark-x"></i>Belum ada DO yang sudah di-AR.</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = list.map(a => `
+                <tr>
+                    <td class="fw-semibold text-primary">${a.arNo || "-"}</td>
+                    <td>${a.arDate || "-"}</td>
+                    <td>${a.doRef || "-"}</td>
+                    <td>${a.orderRef || "-"}</td>
+                    <td>${a.company || "-"}</td>
+                    <td>${a.customer || "-"}</td>
+                    <td class="text-end">${(a.totalQty || 0).toLocaleString()}</td>
+                    <td>${statusBadge(a.status)}</td>
+                    <td><a class="btn-view" href="customer_ar_view.html?no=${encodeURIComponent(a.arNo || "")}"><i class="bi bi-eye"></i>View</a></td>
+                </tr>`).join("");
+        }
+        function getFilteredList() {
+            const status = document.getElementById("fStatus").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo = document.getElementById("fDateTo").value;
+            const search = document.getElementById("fSearch").value.trim().toLowerCase();
+            return allAR.filter(a => {
+                const arDate = a.arDate || "";
+                const haystack = [a.arNo, a.arDate, a.doRef, a.orderRef, a.company, a.customer, a.status].join(" ").toLowerCase();
+                if (status && statusText(a.status) !== status) return false;
+                if (dateFrom && arDate < dateFrom) return false;
+                if (dateTo && arDate > dateTo) return false;
+                if (search && !haystack.includes(search)) return false;
+                return true;
+            });
+        }
+        function applyFilter() { const list = getFilteredList(); renderSummary(list); renderTable(list); }
+        function resetFilter() { ["fStatus","fDateFrom","fDateTo","fSearch"].forEach(id => document.getElementById(id).value = ""); renderSummary(allAR); renderTable(allAR); }
+        function init() {
+            allAR = getArList().sort((a,b) => (b.arDate || "").localeCompare(a.arDate || ""));
+            renderSummary(allAR); renderTable(allAR);
+            document.querySelectorAll("#fStatus,#fDateFrom,#fDateTo").forEach(el => el.addEventListener("change", applyFilter));
+            document.getElementById("fSearch").addEventListener("input", applyFilter);
+        }
+        init();
+    </script>
+</body>
+</html>

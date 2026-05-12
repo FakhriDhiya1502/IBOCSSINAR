@@ -16,14 +16,15 @@
 
         .card { background: #fff; border: 1px solid #e8ebf1; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); overflow: hidden; }
         .card-header { padding: 12px 16px; font-weight: 800; font-size: 13px; border-bottom: 1px solid #eef0f4; background: #fafbfe; }
-        .card-body { padding: 16px; }
+        .card-body { padding: 18px; }
 
-        .summary-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fff; max-width: 360px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+        .summary-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fff; }
         .summary-box .lbl { font-size: 12px; color: #6b7280; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; }
         .summary-box .val { font-size: 30px; font-weight: 800; color: #92400e; line-height: 1.1; margin-top: 4px; }
         .summary-box .hint { color: #6b7280; font-size: 12px; margin-top: 4px; }
 
-        .filter-row { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(150px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) auto; gap: 10px; align-items: end; }
+        .filter-row { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(150px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) auto; gap: 14px; align-items: end; margin-bottom: 16px; }
         .filter-row label { display: block; font-size: 12px; font-weight: 800; color: #555; margin-bottom: 5px; }
         .filter-row select, .filter-row input { width: 100%; height: 38px; border: 1px solid #d5dae3; border-radius: 7px; padding: 0 10px; font-size: 13px; background: #fff; }
 
@@ -33,9 +34,51 @@
         .btn-neutral { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
         .btn-danger-soft { background: #fee2e2; color: #991b1b; }
 
+        .action-cell { display:flex; justify-content:center; gap:6px; }
+        .action-btn {
+            width:30px;
+            min-width:30px;
+            height:28px;
+            border:1px solid #c7d2fe;
+            border-radius:7px;
+            background:#fff;
+            color:#4338ca;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-size:12px;
+            font-weight:700;
+            cursor:pointer;
+            position:relative;
+            transition:background .18s ease;
+        }
+        .action-btn:hover { background:#eef2ff; }
+        .action-btn .action-text {
+            position:absolute;
+            right:50%;
+            bottom:calc(100% + 6px);
+            transform:translateX(50%);
+            background:#111827;
+            color:#fff;
+            border-radius:5px;
+            padding:4px 7px;
+            font-size:11px;
+            line-height:1;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            box-shadow:0 4px 12px rgba(0,0,0,.16);
+            transition:opacity .14s ease;
+            z-index:20;
+        }
+        .action-btn:hover .action-text { opacity:1; }
+        .action-btn-generate { color:#047857; border-color:#a7f3d0; }
+        .action-btn-generate:hover { background:#ecfdf5; }
+
         .table-wrap { overflow-x: auto; }
+        .po-generation-table { margin-top: 8px; }
         table { width: 100%; border-collapse: collapse; min-width: 1080px; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid #edf0f5; font-size: 13px; text-align: left; vertical-align: middle; }
+        th, td { padding: 13px 14px; border-bottom: 1px solid #edf0f5; font-size: 13px; text-align: left; vertical-align: middle; }
         th { background: #f9fafc; font-size: 12px; color: #555; font-weight: 800; white-space: nowrap; }
         tbody tr.main-row:hover { background: #fafcff; }
         .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -65,7 +108,7 @@
             display: none; align-items: center; gap: 10px; flex-wrap: wrap;
             padding: 10px 14px; background: #eff6ff;
             border: 1px solid #bfdbfe; border-radius: 8px;
-            margin-bottom: 12px; font-size: 13px; font-weight: 800; color: #1d4ed8;
+            margin: 4px 0 18px; font-size: 13px; font-weight: 800; color: #1d4ed8;
         }
         .bulk-bar.visible { display: flex; }
         .bulk-bar .spacer { flex: 1; }
@@ -118,10 +161,10 @@
         @media (max-width: 1100px) {
             .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 640px) {
-            .filter-row, .info-grid { grid-template-columns: 1fr; }
-            .summary-box { max-width: none; }
+            .filter-row, .info-grid, .summary-grid { grid-template-columns: 1fr; }
             .modal-foot { flex-wrap: wrap; }
         }
     </style>
@@ -167,16 +210,28 @@
                     <div class="card">
                         <div class="card-header"><i class="bi bi-clipboard-data me-1"></i>Summary</div>
                         <div class="card-body">
-                            <div class="summary-box">
-                                <div class="lbl">Belum Generate PO</div>
-                                <div class="val" id="summaryPending">0</div>
-                                <div class="hint">DO Draft confirmed yang belum ada PO. Tidak terpengaruh filter.</div>
+                            <div class="summary-grid">
+                                <div class="summary-box">
+                                    <div class="lbl">Belum Generate PO</div>
+                                    <div class="val" id="summaryPending">0</div>
+                                    <div class="hint">DO Draft confirmed yang belum ada PO. Tidak terpengaruh filter.</div>
+                                </div>
+                                <div class="summary-box">
+                                    <div class="lbl">Hatchery</div>
+                                    <div class="val" id="summaryHatchery" style="color:#1d4ed8;">0</div>
+                                    <div class="hint">Pending generate PO dari DOC Hatchery.</div>
+                                </div>
+                                <div class="summary-box">
+                                    <div class="lbl">Trading</div>
+                                    <div class="val" id="summaryTrading" style="color:#7c3aed;">0</div>
+                                    <div class="hint">Pending generate PO dari DOC Trading.</div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card">
-                        <div class="card-header"><i class="bi bi-funnel me-1"></i>Filter</div>
+                        <div class="card-header"><i class="bi bi-table me-1"></i>Daftar DO Draft</div>
                         <div class="card-body">
                             <div class="filter-row">
                                 <div>
@@ -207,20 +262,15 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <div class="bulk-bar" id="bulkBar">
-                        <i class="bi bi-check2-square"></i>
-                        <span id="bulkCount">0 DO Draft dipilih</span>
-                        <span class="spacer"></span>
-                        <button class="btn-xs btn-view" onclick="openBulkReview()"><i class="bi bi-eye"></i>Review &amp; Generate PO</button>
-                        <button class="btn-xs btn-neutral" onclick="clearSelection()"><i class="bi bi-x-lg"></i>Clear</button>
-                    </div>
+                            <div class="bulk-bar" id="bulkBar">
+                                <i class="bi bi-check2-square"></i>
+                                <span id="bulkCount">0 DO Draft dipilih</span>
+                                <span class="spacer"></span>
+                                <button class="btn-xs btn-view" onclick="openBulkReview()"><i class="bi bi-eye"></i>Review &amp; Generate PO</button>
+                                <button class="btn-xs btn-neutral" onclick="clearSelection()"><i class="bi bi-x-lg"></i>Clear</button>
+                            </div>
 
-                    <div class="card">
-                        <div class="card-header"><i class="bi bi-table me-1"></i>Daftar DO Draft</div>
-                        <div class="card-body">
                             <div id="tableContainer"></div>
                             <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
                                 <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
@@ -360,8 +410,13 @@
         }
 
         function renderSummary() {
-            const pending = allDrafts.filter(d => canGeneratePO(d)).length;
+            const pendingDrafts = allDrafts.filter(d => canGeneratePO(d));
+            const pending = pendingDrafts.length;
+            const hatchery = pendingDrafts.filter(d => docTypeKey(d) === "hatchery").length;
+            const trading = pendingDrafts.filter(d => docTypeKey(d) === "trading").length;
             document.getElementById("summaryPending").textContent = pending;
+            document.getElementById("summaryHatchery").textContent = hatchery;
+            document.getElementById("summaryTrading").textContent = trading;
         }
 
         function renderItemLinesTable(draft, compact = false) {
@@ -522,8 +577,8 @@
                 const expandId = `exp-${idx}`;
                 const btnId = `expbtn-${idx}`;
                 const actions = `
-                    <button class="btn-xs btn-view" onclick="openSingleReview('${escapeHtml(d.id)}')"><i class="bi bi-eye"></i>Review</button>
-                    ${canGenerate && hasGenerateAccess && !isViewOnly ? `<button class="btn-xs btn-generate" onclick="doGeneratePOsByIds(['${escapeHtml(d.id)}'])"><i class="bi bi-file-earmark-plus"></i>Generate PO</button>` : ""}
+                    <button class="action-btn" title="Review" onclick="openSingleReview('${escapeHtml(d.id)}')"><i class="bi bi-eye"></i><span class="action-text">Review</span></button>
+                    ${canGenerate && hasGenerateAccess && !isViewOnly ? `<button class="action-btn action-btn-generate" title="Generate PO" onclick="doGeneratePOsByIds(['${escapeHtml(d.id)}'])"><i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate PO</span></button>` : ""}
                 `;
                 return `
                     <tr class="main-row">
@@ -542,7 +597,7 @@
                         <td>${escapeHtml(getVendorText(d))}</td>
                         <td>${escapeHtml(getDriverText(d))}</td>
                         <td>${escapeHtml(getPoliceText(d))}</td>
-                        <td><div style="display:flex;gap:6px;flex-wrap:wrap;">${actions}</div></td>
+                        <td><div class="action-cell">${actions}</div></td>
                     </tr>
                     <tr class="expand-row" id="${expandId}">
                         <td colspan="10" style="padding:0;">
@@ -556,7 +611,7 @@
             }).join("");
 
             container.innerHTML = `
-                <div class="table-wrap">
+                <div class="table-wrap po-generation-table">
                     <table>
                         <thead>
                             <tr>
@@ -608,15 +663,23 @@
         }
 
         function openSingleReview(draftId) {
-            const draft = docDraftGet(draftId);
-            if (!draft) return;
-            openReviewModal([draft], false);
+            openReviewScreen([draftId]);
         }
 
         function openBulkReview() {
-            const drafts = selectedIds.map(id => docDraftGet(id)).filter(Boolean);
-            if (!drafts.length) return;
-            openReviewModal(drafts, true);
+            if (!selectedIds.length) return;
+            openReviewScreen(selectedIds);
+        }
+
+        function openReviewScreen(ids) {
+            const cleanIds = [...new Set((ids || []).filter(Boolean))];
+            if (!cleanIds.length) return;
+            localStorage.setItem("IBOCS_po_generation_review_batch", JSON.stringify({
+                batchId: "POREV-" + Date.now(),
+                createdAt: new Date().toISOString(),
+                draftIds: cleanIds
+            }));
+            window.location.href = "top_po_generation_review.html";
         }
 
         function openReviewModal(drafts, isBulk) {
@@ -653,8 +716,7 @@
         }
 
         function doGeneratePOsByIds(ids) {
-            const drafts = ids.map(id => docDraftGet(id)).filter(Boolean);
-            doGeneratePOs(drafts);
+            openReviewScreen(ids);
         }
 
         function doGeneratePOs(drafts) {

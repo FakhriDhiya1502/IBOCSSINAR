@@ -19,6 +19,7 @@
             border: none;
             border-radius: 14px;
             box-shadow: 0 2px 12px rgba(0, 0, 0, .07);
+            margin-bottom: 18px;
         }
 
         .card-header-custom {
@@ -163,21 +164,10 @@
             }
         }
 
-        .tab-btn {
-            border: none;
-            background: transparent;
-            padding: 10px 20px;
-            font-weight: 600;
-            font-size: .9rem;
-            color: #6b7280;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            color: #1a237e;
-            border-bottom-color: #1a237e;
-        }
+        .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .summary-card { border:1px solid #e8ecf4; border-radius:10px; padding:14px 16px; background:#fff; }
+        .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+        .summary-value { margin-top:5px; font-size:24px; font-weight:800; color:#1a237e; }
 
         .empty-state {
             padding: 48px;
@@ -235,19 +225,52 @@
             border-bottom: none;
         }
 
-        .btn-detail {
-            background: none;
-            border: 1px solid #c7d2fe;
-            border-radius: 6px;
-            padding: 2px 8px;
-            color: #4338ca;
-            font-size: 11.5px;
-            cursor: pointer;
-            white-space: nowrap;
+        .action-cell { display:flex; justify-content:center; gap:6px; }
+        .action-btn {
+            width:30px;
+            min-width:30px;
+            height:28px;
+            border:1px solid #c7d2fe;
+            border-radius:7px;
+            background:#fff;
+            color:#4338ca;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:5px;
+            font-size:12px;
+            font-weight:700;
+            cursor:pointer;
+            overflow:hidden;
+            white-space:nowrap;
+            position:relative;
+            transition:background .18s ease;
         }
+        .action-btn:hover { background:#eef2ff; }
+        .action-btn .action-text {
+            position:absolute;
+            right:50%;
+            bottom:calc(100% + 6px);
+            transform:translateX(50%);
+            background:#111827;
+            color:#fff;
+            border-radius:5px;
+            padding:4px 7px;
+            font-size:11px;
+            line-height:1;
+            opacity:0;
+            pointer-events:none;
+            white-space:nowrap;
+            box-shadow:0 4px 12px rgba(0,0,0,.16);
+            transition:opacity .14s ease;
+            z-index:20;
+        }
+        .action-btn:hover .action-text { opacity:1; }
+        .action-btn-generate { color:#047857; border-color:#a7f3d0; }
+        .action-btn-generate:hover { background:#ecfdf5; }
 
-        .btn-detail:hover {
-            background: #eef2ff;
+        @media (max-width: 900px) {
+            .summary-grid { grid-template-columns:1fr; }
         }
 
         /* Progress modal */
@@ -322,80 +345,65 @@
             <div class="col-lg-2" id="sidebar-container"></div>
             <div class="col-lg-10 py-4 px-4">
 
-                <div class="mb-4">
-                    <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-plus me-2"
-                            style="color:#1a237e;"></i>Accounts Receivable</h4>
-                    <p class="text-muted small mb-0">Generate AR dokumen dari Delivery Order (DO) yang sudah terkirim. 1
-                        DO = 1 AR.</p>
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-plus me-2"
+                                style="color:#1a237e;"></i>Accounts Receivable</h4>
+                        <p class="text-muted small mb-0">Generate AR dokumen dari Delivery Order (DO) yang sudah terkirim. 1 DO = 1 AR.</p>
+                    </div>
+                    <a href="customer_ar_list.html" class="btn btn-outline-primary btn-sm fw-bold">
+                        <i class="bi bi-list-ul me-1"></i>Lihat DO yang Sudah di-AR
+                    </a>
                 </div>
 
-                <!-- Tabs -->
-                <div style="border-bottom:2px solid #e0e7ef; margin-bottom:20px;">
-                    <button class="tab-btn active" id="tabDo" onclick="switchTab('do')">
-                        <i class="bi bi-truck me-1"></i>DO Belum di-AR
-                    </button>
-                    <button class="tab-btn" id="tabAr" onclick="switchTab('ar')">
-                        <i class="bi bi-file-earmark-check me-1"></i>Dokumen AR
-                    </button>
-                </div>
-
-                <!-- DO Tab -->
-                <div id="panelDo">
-                    <div class="card">
-                        <div class="card-header-custom">
-                            <span class="section-label"><i class="bi bi-truck"></i> Delivery Order Tersedia</span>
-                            <input type="text" id="fDoSearch" class="form-control form-control-sm"
-                                placeholder="Cari DO No / Order No..." oninput="renderDoTable()"
-                                style="width:220px; border-radius:8px;">
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th style="width:40px;"></th>
-                                        <th style="width:36px;"></th>
-                                        <th>DO No</th>
-                                        <th>Order / PO Ref</th>
-                                        <th>Customer</th>
-                                        <th>ETA</th>
-                                        <th class="text-end">Total Qty</th>
-                                        <th class="text-end">Open Qty</th>
-                                        <th>Status AR</th>
-                                        <th>Keterangan</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="doBody"></tbody>
-                            </table>
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-clipboard-data"></i> Summary</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <div class="summary-label">DO Belum di-AR</div>
+                                <div class="summary-value" id="sumPendingDo">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-label">DO Dipilih</div>
+                                <div class="summary-value" id="sumSelectedDo" style="color:#92400e;">0</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="summary-label">Estimasi AR Dibuat</div>
+                                <div class="summary-value" id="sumEstimatedAr" style="color:#166534;">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- AR Tab -->
-                <div id="panelAr" style="display:none;">
-                    <div class="card">
-                        <div class="card-header-custom">
-                            <span class="section-label"><i class="bi bi-file-earmark-check"></i> Dokumen AR</span>
-                            <input type="text" id="fArSearch" class="form-control form-control-sm"
-                                placeholder="Cari AR No / DO..." oninput="renderArTable()"
-                                style="width:220px; border-radius:8px;">
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th style="width:36px;"></th>
-                                        <th>AR No</th>
-                                        <th>Tanggal</th>
-                                        <th>DO Ref</th>
-                                        <th>Order Ref</th>
-                                        <th class="text-end">Total Qty</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="arBody"></tbody>
-                            </table>
-                        </div>
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-truck"></i> Daftar Delivery Order Tersedia</span>
+                        <input type="text" id="fDoSearch" class="form-control form-control-sm"
+                            placeholder="Cari DO No / Order No..." oninput="renderDoTable()"
+                            style="width:260px; border-radius:8px;">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;"></th>
+                                    <th style="width:36px;"></th>
+                                    <th>DO No</th>
+                                    <th>Order / PO Ref</th>
+                                    <th>Customer</th>
+                                    <th>ETA</th>
+                                    <th class="text-end">Total Qty</th>
+                                    <th class="text-end">Open Qty</th>
+                                    <th>Status AR</th>
+                                    <th>Keterangan</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="doBody"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -524,13 +532,13 @@
         }
 
         // ── Tabs ──────────────────────────────────────────────────────────────────
-        function switchTab(tab) {
-            document.getElementById("tabDo").classList.toggle("active", tab === "do");
-            document.getElementById("tabAr").classList.toggle("active", tab === "ar");
-            document.getElementById("panelDo").style.display = tab === "do" ? "" : "none";
-            document.getElementById("panelAr").style.display = tab === "ar" ? "" : "none";
-            if (tab === "ar") renderArTable();
-            clearSelection();
+        function renderSummary() {
+            const done = generatedDoNos();
+            const pending = getDoList().filter(d => !done.has(d.doNo)).length;
+            const selected = document.querySelectorAll(".row-check:checked").length;
+            document.getElementById("sumPendingDo").textContent = pending;
+            document.getElementById("sumSelectedDo").textContent = selected;
+            document.getElementById("sumEstimatedAr").textContent = selected;
         }
 
         function deliveryBadge(status) {
@@ -558,6 +566,7 @@
             const tbody = document.getElementById("doBody");
             if (!rows.length) {
                 tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-truck"></i>Tidak ada DO tersedia.</td></tr>`;
+                renderSummary();
                 return;
             }
 
@@ -638,7 +647,12 @@
                         <td class="text-end text-primary fw-semibold">${totalOpenQty.toLocaleString()}</td>
                         <td>${arStatus}</td>
                         <td>${note}</td>
-                        <td><button class="btn-detail" onclick="viewDetail('${d.doNo}')"><i class="bi bi-eye me-1"></i>Detail</button></td>
+                        <td>
+                            <div class="action-cell">
+                                <button class="action-btn" title="Detail" onclick="viewDetail('${d.doNo}')"><i class="bi bi-eye"></i><span class="action-text">Detail</span></button>
+                                ${isDone ? "" : `<button class="action-btn action-btn-generate" title="Generate AR" onclick="generateSingleAR('${d.doNo}')"><i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate AR</span></button>`}
+                            </div>
+                        </td>
                     </tr>`;
 
                     html += mainRow + expandRow;
@@ -647,6 +661,7 @@
             });
 
             tbody.innerHTML = html;
+            renderSummary();
         }
 
         function toggleExpand(expandId) {
@@ -660,6 +675,15 @@
 
         function viewDetail(doNo) {
             window.location.href = `customer_bulk_ar_process.html?do=${encodeURIComponent(doNo)}`;
+        }
+
+        function generateSingleAR(doNo) {
+            document.querySelectorAll(".row-check").forEach(c => c.checked = false);
+            const cb = [...document.querySelectorAll(".row-check")].find(c => c.dataset.do === doNo);
+            if (!cb) return;
+            cb.checked = true;
+            updateBulkBar();
+            generateAR();
         }
 
         // ── AR Table ──────────────────────────────────────────────────────────────
@@ -749,12 +773,14 @@
             const checked = document.querySelectorAll(".row-check:checked");
             const n = checked.length;
             document.getElementById("bulkBar").classList.toggle("visible", n > 0);
+            renderSummary();
             document.getElementById("bulkBarLabel").textContent = `${n} DO dipilih — akan dibuat ${n} AR`;
         }
 
         function clearSelection() {
             document.querySelectorAll(".row-check").forEach(c => c.checked = false);
             document.getElementById("bulkBar").classList.remove("visible");
+            renderSummary();
         }
 
         // ── Generate AR (inline, with progress modal) ─────────────────────────────

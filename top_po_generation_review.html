@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBOCS | Review PO Generation DOC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background:#f4f6fb; font-family:'Segoe UI', Arial, sans-serif; color:#111827; font-size:13px; }
+        .card { border:1px solid #e5eaf3; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.05); margin-bottom:16px; }
+        .card-header-custom { background:#fff; border-bottom:1px solid #e8ecf4; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+        .section-label { font-weight:800; color:#1a237e; display:flex; align-items:center; gap:8px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; }
+        .summary-card { background:#fff; border:1px solid #e5eaf3; border-radius:8px; padding:12px 14px; }
+        .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; }
+        .summary-value { margin-top:4px; font-size:22px; font-weight:800; color:#1a237e; }
+        .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+        th { background:#f8faff; color:#374151; font-size:11px; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
+        td { vertical-align:middle; }
+        .group-row td { background:#eef2ff; color:#1a237e; font-weight:800; border-top:2px solid #c7d2fe; }
+        .tag { display:inline-block; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:800; }
+        .tag-ready { background:#ecfdf5; color:#047857; }
+        .tag-warning { background:#fffbeb; color:#92400e; }
+        .tag-error { background:#fef2f2; color:#b91c1c; }
+        .tag-hatchery { background:#dbeafe; color:#1d4ed8; }
+        .tag-trading { background:#f3e8ff; color:#7c3aed; }
+        .source-chip { display:inline-flex; align-items:center; gap:5px; border:1px solid #dbe3f0; border-radius:999px; padding:3px 8px; background:#fff; font-weight:800; color:#334155; }
+        .detail-panel { background:#fff; border:1px solid #dbe3f0; border-left:4px solid #1a237e; border-radius:8px; padding:12px; }
+        .mini-title { font-size:11px; font-weight:900; color:#1a237e; text-transform:uppercase; margin-bottom:7px; }
+        .info-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:12px; }
+        .info-cell { background:#f8faff; border:1px solid #e5eaf3; border-radius:7px; padding:8px 10px; }
+        .info-label { font-size:10px; color:#64748b; font-weight:900; text-transform:uppercase; margin-bottom:3px; }
+        .info-value { font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .empty-state { padding:48px; text-align:center; color:#94a3b8; }
+        .btn-review { border:0; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:5px; }
+        .btn-primary-soft { background:#e0e7ff; color:#1a237e; }
+        .bottom-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #dbe3f0; padding:12px 18px; display:flex; gap:12px; align-items:center; justify-content:flex-end; box-shadow:0 -3px 12px rgba(0,0,0,.07); z-index:50; }
+        .btn-confirm { background:#1a237e; color:#fff; border:0; border-radius:7px; padding:8px 14px; font-weight:800; }
+        .btn-confirm:disabled { background:#94a3b8; }
+        @media (max-width: 1100px) { .summary-grid, .info-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width: 640px) { .summary-grid, .info-strip { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">TOP Portal</span>
+            <span class="navbar-text text-white-50 small ms-auto" id="userInfo"></span>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-file-earmark-plus me-2" style="color:#1a237e;"></i>Review PO Generation DOC</h4>
+                        <div class="text-muted small">Cek source DO Draft, line DOC, transport, dan estimasi nilai sebelum PO dibuat.</div>
+                    </div>
+                    <a href="top_po_generation_list.html" class="btn btn-outline-secondary btn-sm fw-bold"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-clipboard-data"></i> Batch Summary</span>
+                        <span class="text-muted small" id="batchMeta"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-grid" id="summaryGrid"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-table"></i> Draft PO by Vendor</span>
+                        <div class="toolbar">
+                            <select id="fStatus" class="form-select form-select-sm" onchange="render()" style="width:160px;">
+                                <option value="">Semua Status</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Warning">Warning</option>
+                                <option value="Error">Error</option>
+                            </select>
+                            <input id="fSearch" class="form-control form-control-sm" placeholder="Cari DO Draft / vendor / plan" oninput="render()" style="width:260px;">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;"></th>
+                                    <th>Status</th>
+                                    <th>Source DO Draft</th>
+                                    <th>Vendor</th>
+                                    <th>DOC Type</th>
+                                    <th>Plan</th>
+                                    <th>Delivery Date</th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-end">Estimated Amount</th>
+                                    <th style="width:80px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span class="text-muted me-auto" id="selectedInfo">0 PO selected</span>
+        <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="window.location.href='top_po_generation_list.html'">Batal</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="confirmGenerate()"><i class="bi bi-check2-circle me-1"></i>Generate Selected PO</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="master_data.js"></script>
+    <script src="doc_draft_storage.js"></script>
+    <script src="po_generation_storage.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        new SidebarSystem(null, "po_generation_list").render();
+
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        document.getElementById("userInfo").textContent = userData.name || userData.role || "";
+        const role = userData.role || "";
+        const isViewOnly = role === "admin_hatchery";
+        const hasGenerateAccess = ["admin_top", "super_admin"].includes(role) || (!role && true);
+
+        let batch = JSON.parse(localStorage.getItem("IBOCS_po_generation_review_batch") || "null");
+        let drafts = [];
+        let expanded = new Set();
+
+        function esc(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c]));
+        }
+        function fmtQty(n) { return Number(n || 0).toLocaleString("id-ID"); }
+        function fmtAmount(n) { return "Rp " + Number(n || 0).toLocaleString("id-ID"); }
+        function docTypeKey(d) { return d.docType === "external" ? "trading" : "hatchery"; }
+        function docTypeLabel(d) { return docTypeKey(d) === "trading" ? "Trading" : "Hatchery"; }
+        function docTypeTag(d) {
+            const key = docTypeKey(d);
+            return `<span class="tag ${key === "trading" ? "tag-trading" : "tag-hatchery"}">${docTypeLabel(d)}</span>`;
+        }
+        function lineUnitPrice(line, afterItem) {
+            return Number(afterItem.priceAfter ?? line.priceBefore ?? line.priceJual ?? 0) || 0;
+        }
+        function getDraftTotals(draft) {
+            let qty = 0;
+            let amount = 0;
+            (draft.lines || []).forEach(line => {
+                (line.afterItems || []).forEach(a => {
+                    const lineQty = Number(a.qtyAfter || 0);
+                    const price = lineUnitPrice(line, a);
+                    qty += lineQty;
+                    amount += lineQty * price;
+                });
+            });
+            return { qty, amount };
+        }
+        function getPlanText(d) {
+            if (d.planCode) return `${d.planCode}${d.planName ? " - " + d.planName : ""}`;
+            if (d.forecastRef) return `${d.forecastRef}${d.forecastDesc ? " - " + d.forecastDesc : ""}`;
+            return "-";
+        }
+        function getVendorText(d) { return d.vendorName || d.vendorCode || "CTU"; }
+        function getDriverText(d) { return (d.transport && d.transport.driverName) || "-"; }
+        function getPoliceText(d) { return d.noPol || (d.transport && d.transport.licenseNumber) || "-"; }
+        function canGeneratePO(d) { return d.statusPO !== "PO Generated" && !!d.doNumber && d.status !== "Draft"; }
+        function draftStatus(d) {
+            if (d.statusPO === "PO Generated") return { status:"Error", message:"PO sudah pernah digenerate." };
+            if (!d.doNumber || d.status === "Draft") return { status:"Error", message:"DO Draft belum confirmed atau belum punya nomor DO." };
+            const totals = getDraftTotals(d);
+            if (!totals.qty || !totals.amount) return { status:"Warning", message:"Qty atau amount masih 0, cek line item." };
+            return { status:"Ready", message:"Draft siap dibuat PO." };
+        }
+        function statusBadge(status) {
+            const cls = status === "Error" ? "tag-error" : status === "Warning" ? "tag-warning" : "tag-ready";
+            return `<span class="tag ${cls}">${esc(status)}</span>`;
+        }
+        function loadDrafts() {
+            const ids = batch?.draftIds || [];
+            drafts = ids.map(id => docDraftGet(id)).filter(Boolean).map(d => {
+                const st = draftStatus(d);
+                return { ...d, selected: st.status !== "Error", validationStatus: st.status, validationMessage: st.message };
+            });
+        }
+        function filteredDrafts() {
+            const status = document.getElementById("fStatus").value;
+            const q = document.getElementById("fSearch").value.trim().toLowerCase();
+            return drafts.filter(d => {
+                const haystack = [d.id, d.doNumber, getVendorText(d), getPlanText(d), d.customerName, d.customer].join(" ").toLowerCase();
+                if (status && d.validationStatus !== status) return false;
+                if (q && !haystack.includes(q)) return false;
+                return true;
+            });
+        }
+        function renderSummary() {
+            const selected = drafts.filter(d => d.selected);
+            const totals = selected.reduce((acc, d) => {
+                const t = getDraftTotals(d);
+                acc.qty += t.qty;
+                acc.amount += t.amount;
+                return acc;
+            }, { qty:0, amount:0 });
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-card"><div class="summary-label">Draft PO</div><div class="summary-value">${drafts.length}</div></div>
+                <div class="summary-card"><div class="summary-label">Ready</div><div class="summary-value" style="color:#047857;">${drafts.filter(d => d.validationStatus === "Ready").length}</div></div>
+                <div class="summary-card"><div class="summary-label">Warning</div><div class="summary-value" style="color:#92400e;">${drafts.filter(d => d.validationStatus === "Warning").length}</div></div>
+                <div class="summary-card"><div class="summary-label">Error</div><div class="summary-value" style="color:#b91c1c;">${drafts.filter(d => d.validationStatus === "Error").length}</div></div>
+                <div class="summary-card"><div class="summary-label">Selected Total</div><div class="summary-value" style="font-size:18px;">${fmtAmount(totals.amount)}</div><div class="text-muted small">${selected.length} PO, ${fmtQty(totals.qty)} qty</div></div>`;
+            document.getElementById("selectedInfo").textContent = `${selected.length} PO selected - ${fmtAmount(totals.amount)}`;
+            document.getElementById("confirmBtn").disabled = !selected.length || selected.some(d => d.validationStatus === "Error") || !hasGenerateAccess || isViewOnly;
+        }
+        function detailRow(d) {
+            const lineRows = [];
+            (d.lines || []).forEach(line => {
+                (line.afterItems || []).forEach(a => {
+                    const qty = Number(a.qtyAfter || 0);
+                    const price = lineUnitPrice(line, a);
+                    lineRows.push(`<tr>
+                        <td class="fw-semibold text-primary">${esc(d.id)}</td>
+                        <td>${esc(d.doNumber || "-")}</td>
+                        <td>${esc(a.itemAfter || line.itemBefore || "-")}</td>
+                        <td class="text-end">${fmtQty(qty)}</td>
+                        <td>${esc(a.uomAfter || line.uomBefore || "Ekor")}</td>
+                        <td class="text-end">${fmtAmount(price)}</td>
+                        <td>${esc(a.whseTujuan || d.whsePengirimName || d.whsePengirim || "-")}</td>
+                        <td class="text-end fw-bold">${fmtAmount(qty * price)}</td>
+                    </tr>`);
+                });
+            });
+            return `<tr><td colspan="10"><div class="detail-panel">
+                <div class="${d.validationStatus === "Error" ? "text-danger" : d.validationStatus === "Warning" ? "text-warning" : "text-success"} small mb-2">
+                    <i class="bi ${d.validationStatus === "Error" ? "bi-exclamation-circle" : "bi-check-circle"} me-1"></i>${esc(d.validationMessage)}
+                </div>
+                <div class="info-strip">
+                    <div class="info-cell"><div class="info-label">Vendor</div><div class="info-value">${esc(getVendorText(d))}</div></div>
+                    <div class="info-cell"><div class="info-label">Plan</div><div class="info-value" title="${esc(getPlanText(d))}">${esc(getPlanText(d))}</div></div>
+                    <div class="info-cell"><div class="info-label">Driver</div><div class="info-value">${esc(getDriverText(d))}</div></div>
+                    <div class="info-cell"><div class="info-label">License Number</div><div class="info-value">${esc(getPoliceText(d))}</div></div>
+                </div>
+                <div class="mini-title">Generated PO Lines from Source</div>
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Source DO Draft</th><th>DO No</th><th>Item</th><th class="text-end">Qty</th><th>UOM</th><th class="text-end">Price</th><th>Whse</th><th class="text-end">Subtotal</th></tr></thead>
+                    <tbody>${lineRows.join("") || `<tr><td colspan="8" class="text-muted text-center py-3">Tidak ada item lines.</td></tr>`}</tbody>
+                </table>
+            </div></td></tr>`;
+        }
+        function render() {
+            if (!drafts.length) {
+                document.getElementById("reviewBody").innerHTML = `<tr><td colspan="10" class="empty-state"><i class="bi bi-inbox d-block fs-1 mb-2"></i>Tidak ada batch review. Pilih DO Draft dari PO Generation dulu.</td></tr>`;
+                renderSummary();
+                return;
+            }
+            document.getElementById("batchMeta").textContent = batch?.batchId || "";
+            const groups = {};
+            filteredDrafts().forEach(d => {
+                const vendor = getVendorText(d);
+                if (!groups[vendor]) groups[vendor] = [];
+                groups[vendor].push(d);
+            });
+            let html = "";
+            Object.entries(groups).forEach(([vendor, items]) => {
+                const groupTotals = items.reduce((acc, d) => {
+                    const t = getDraftTotals(d);
+                    acc.qty += t.qty;
+                    acc.amount += t.amount;
+                    return acc;
+                }, { qty:0, amount:0 });
+                html += `<tr class="group-row"><td colspan="10"><i class="bi bi-building me-2"></i>${esc(vendor)} <span class="text-muted ms-2 fw-normal">${items.length} draft - ${fmtQty(groupTotals.qty)} qty - ${fmtAmount(groupTotals.amount)}</span></td></tr>`;
+                items.forEach(d => {
+                    const totals = getDraftTotals(d);
+                    const id = esc(d.id);
+                    html += `<tr>
+                        <td><input type="checkbox" ${d.selected ? "checked" : ""} ${d.validationStatus === "Error" ? "disabled" : ""} onchange="toggleSelect('${id}', this.checked)"></td>
+                        <td>${statusBadge(d.validationStatus)}</td>
+                        <td><span class="source-chip"><i class="bi bi-link-45deg"></i>${esc(d.id)}</span></td>
+                        <td class="fw-semibold">${esc(getVendorText(d))}</td>
+                        <td>${docTypeTag(d)}</td>
+                        <td title="${esc(getPlanText(d))}">${esc(getPlanText(d))}</td>
+                        <td>${esc(d.deliveryDate || d.date || "-")}</td>
+                        <td class="text-end">${fmtQty(totals.qty)}</td>
+                        <td class="text-end fw-bold">${fmtAmount(totals.amount)}</td>
+                        <td><button class="btn-review btn-primary-soft" onclick="toggleDetail('${id}')"><i class="bi ${expanded.has(d.id) ? "bi-chevron-up" : "bi-chevron-down"}"></i>Detail</button></td>
+                    </tr>`;
+                    if (expanded.has(d.id)) html += detailRow(d);
+                });
+            });
+            document.getElementById("reviewBody").innerHTML = html || `<tr><td colspan="10" class="empty-state">Tidak ada data sesuai filter.</td></tr>`;
+            renderSummary();
+        }
+        function toggleSelect(id, selected) {
+            const draft = drafts.find(d => d.id === id);
+            if (draft) draft.selected = selected;
+            renderSummary();
+        }
+        function toggleDetail(id) {
+            expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+            render();
+        }
+        function confirmGenerate() {
+            const selected = drafts.filter(d => d.selected && d.validationStatus !== "Error");
+            const now = new Date().toISOString().slice(0, 10);
+            selected.forEach(draft => {
+                if (!canGeneratePO(draft)) return;
+                const poId = poGenNextId();
+                poGenSave({
+                    id: poId,
+                    doDraftId: draft.id,
+                    date: now,
+                    postingDate: now,
+                    deliveryDate: draft.deliveryDate,
+                    vendorCode: draft.vendorCode || "VND-CTU",
+                    vendorName: draft.vendorName || "CTU",
+                    customerCode: draft.customer,
+                    customerName: draft.customerName,
+                    contactPerson: draft.contactPerson,
+                    customerRefNo: draft.customerRefNo,
+                    whsePengirim: draft.whsePengirim || draft.warehouse,
+                    whsePengirimName: draft.whsePengirimName || draft.warehouseName,
+                    docType: draft.docType,
+                    docTypeLabel: docTypeLabel(draft),
+                    planCode: draft.planCode,
+                    planName: draft.planName,
+                    forecastRef: draft.forecastRef,
+                    forecastDesc: draft.forecastDesc,
+                    externalVendor: draft.externalVendor,
+                    externalVendorName: draft.externalVendorName,
+                    noSuratJalan: draft.noSuratJalan,
+                    tglSuratJalan: draft.tglSuratJalan,
+                    noPol: draft.noPol,
+                    transport: draft.transport ? { ...draft.transport } : {},
+                    taxPaymentTermSource: "Default BP SAP",
+                    distRuleSource: "Plan",
+                    remarks: draft.remarks || "",
+                    lines: (draft.lines || []).map(l => ({ ...l, afterItems: (l.afterItems || []).map(a => ({ ...a })) })),
+                    status: "Open",
+                    createdBy: userData.name || userData.role || "admin_top",
+                    createdAt: now
+                });
+                draft.statusPO = "PO Generated";
+                draft.poGenId = poId;
+                docDraftSave(draft);
+            });
+            localStorage.removeItem("IBOCS_po_generation_review_batch");
+            window.location.href = "top_po_generation_list.html";
+        }
+
+        loadDrafts();
+        render();
+    </script>
+</body>
+</html>
