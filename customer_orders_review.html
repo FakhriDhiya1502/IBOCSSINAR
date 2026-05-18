@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBOCS | Review PO Generation Feed</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background:#f4f6fb; font-family:'Segoe UI', Arial, sans-serif; color:#111827; font-size:13px; }
+        .card { border:1px solid #e5eaf3; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.05); margin-bottom:16px; }
+        .card-header-custom { background:#fff; border-bottom:1px solid #e8ecf4; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+        .section-label { font-weight:800; color:#15803d; display:flex; align-items:center; gap:8px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+        .summary-card { background:#fff; border:1px solid #e5eaf3; border-radius:8px; padding:12px 14px; }
+        .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; }
+        .summary-value { margin-top:4px; font-size:22px; font-weight:800; color:#15803d; }
+        .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+        th { background:#f8faff; color:#374151; font-size:11px; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
+        td { vertical-align:middle; }
+        .group-row td { background:#ecfdf5; color:#166534; font-weight:800; border-top:2px solid #bbf7d0; }
+        .tag { display:inline-block; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:800; }
+        .tag-ready { background:#ecfdf5; color:#047857; }
+        .tag-warning { background:#fffbeb; color:#92400e; }
+        .tag-error { background:#fef2f2; color:#b91c1c; }
+        .source-chip { display:inline-flex; align-items:center; gap:5px; border:1px solid #dbe3f0; border-radius:999px; padding:3px 8px; background:#fff; font-weight:800; color:#334155; }
+        .detail-panel { background:#fff; border:1px solid #dbe3f0; border-left:4px solid #15803d; border-radius:8px; padding:12px; }
+        .mini-title { font-size:11px; font-weight:900; color:#15803d; text-transform:uppercase; margin-bottom:7px; }
+        .info-strip { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 18px; margin-bottom:12px; }
+        .info-line { display:grid; grid-template-columns:160px minmax(0,1fr); border-bottom:1px solid #e8ecf4; padding:8px 0; }
+        .info-label { color:#64748b; font-weight:900; }
+        .info-value { font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .empty-state { padding:48px; text-align:center; color:#94a3b8; }
+        .btn-review { border:0; border-radius:7px; padding:6px 10px; font-size:12px; font-weight:800; display:inline-flex; align-items:center; gap:5px; }
+        .btn-primary-soft { background:#dcfce7; color:#166534; }
+        .bottom-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #dbe3f0; padding:12px 18px; display:flex; gap:12px; align-items:center; justify-content:flex-end; box-shadow:0 -3px 12px rgba(0,0,0,.07); z-index:50; }
+        .btn-confirm { background:#15803d; color:#fff; border:0; border-radius:7px; padding:8px 14px; font-weight:800; }
+        .btn-confirm:disabled { background:#94a3b8; }
+        @media (max-width: 1100px) { .summary-grid, .info-strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media (max-width: 700px) { .summary-grid, .info-strip { grid-template-columns:1fr; } .info-line { grid-template-columns:1fr; gap:3px; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background:#15803d;">
+        <div class="container-fluid px-3">
+            <a class="navbar-brand fw-bold" href="forecast_dashboard.html">IBOCS</a>
+            <span class="navbar-text text-white-50 small d-none d-md-inline">Customer Portal</span>
+            <span class="navbar-text text-white-50 small ms-auto" id="userInfo"></span>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-3">
+        <div class="row g-3">
+            <div class="col-lg-2" id="sidebar-container"></div>
+            <div class="col-lg-10">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold mb-1"><i class="bi bi-clipboard-check me-2" style="color:#15803d;"></i>Review PO Generation Feed</h4>
+                        <div class="text-muted small">Cek forecast, item feed, dan estimasi nilai sebelum PO dibuat. 1 Forecast = 1 PO.</div>
+                    </div>
+                    <a href="customer_orders.html" class="btn btn-outline-secondary btn-sm fw-bold"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-clipboard-data"></i> Batch Summary</span>
+                        <span class="text-muted small" id="batchMeta"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-grid" id="summaryGrid"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-custom">
+                        <span class="section-label"><i class="bi bi-table"></i> Forecast PO by Vendor</span>
+                        <div class="toolbar">
+                            <select id="fStatus" class="form-select form-select-sm" onchange="render()" style="width:160px;">
+                                <option value="">Semua Status</option>
+                                <option value="Ready">Ready</option>
+                                <option value="Warning">Warning</option>
+                                <option value="Error">Error</option>
+                            </select>
+                            <input id="fSearch" class="form-control form-control-sm" placeholder="Cari forecast / farm / plan" oninput="render()" style="width:260px;">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width:40px;"></th>
+                                    <th>Status</th>
+                                    <th>No Forecast</th>
+                                    <th>Vendor</th>
+                                    <th>Plan</th>
+                                    <th>Week</th>
+                                    <th>Farm</th>
+                                    <th>Warehouse</th>
+                                    <th class="text-end">Total Qty</th>
+                                    <th class="text-end">Total Amount</th>
+                                    <th style="width:80px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviewBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <span class="text-muted me-auto" id="selectedInfo">0 PO selected</span>
+        <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="window.location.href='customer_orders.html'">Batal</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="confirmGenerate()"><i class="bi bi-check2-circle me-1"></i>Generate Selected PO</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="forecast_master.js"></script>
+    <script src="sidebar.js"></script>
+    <script>
+        new SidebarSystem(null, "orders").render();
+
+        const LS_ORDERS = "IBOCS_customer_orders";
+        const LS_ORDER_LINES = "IBOCS_customer_order_lines";
+        const userData = JSON.parse(localStorage.getItem("IBOCS_user") || "{}");
+        document.getElementById("userInfo").textContent = userData.name || userData.role || "";
+
+        let batch = JSON.parse(localStorage.getItem("IBOCS_feed_po_review_batch") || "null");
+        let forecasts = [];
+        let expanded = new Set();
+
+        const feedPrices = {
+            "FEED-001": 6200,
+            "FEED-002": 6500,
+            "FEED-003": 6800,
+            "FEED-004": 7200,
+            "FEED-005": 7600,
+            "FEED-006": 8000
+        };
+
+        function esc(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[c]));
+        }
+        function fmtQty(n) { return Number(n || 0).toLocaleString("id-ID"); }
+        function fmtAmount(n) { return "Rp " + Number(n || 0).toLocaleString("id-ID"); }
+        function todayYMD() { return new Date().toISOString().slice(0, 10); }
+        function getAllFc() {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const master = window.IBOCS_FORECAST_MASTER || [];
+            const storedNos = new Set(stored.map(f => f.fcNo));
+            return [...stored, ...master.filter(f => !storedNos.has(f.fcNo))];
+        }
+        function lineQty(line) {
+            return (Number(line.recommendedQty || line.standardNeed) || 0) + (Number(line.manualAdjustment) || 0);
+        }
+        function linePrice(line) {
+            return Number(line.price || line.unitPrice || line.priceAfter || feedPrices[line.itemCode] || 0) || 0;
+        }
+        function getTotals(fc) {
+            return (fc.lines || []).reduce((acc, line) => {
+                const qty = lineQty(line);
+                const price = linePrice(line);
+                acc.qty += qty;
+                acc.amount += qty * price;
+                return acc;
+            }, { qty:0, amount:0 });
+        }
+        function getVendorCode(fc) {
+            const firstLine = (fc.lines || []).find(l => l.vendorCode);
+            return fc.vendorCode || firstLine?.vendorCode || "VND-SIC";
+        }
+        function getVendorText(fc) {
+            const code = getVendorCode(fc);
+            if (fc.vendorName) return `${code} - ${fc.vendorName}`;
+            return code === "VND-CTU" ? "VND-CTU - CTU" : "VND-SIC - SIC";
+        }
+        function getPlanText(fc) {
+            return fc.planName || fc.planDesc || fc.planNo || "-";
+        }
+        function forecastStatus(fc) {
+            const orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            if (orders.some(o => o.fcRef === fc.fcNo)) return { status:"Error", message:"Forecast sudah pernah dibuat PO." };
+            const totals = getTotals(fc);
+            if (!fc.lines || !fc.lines.length) return { status:"Error", message:"Forecast belum punya item lines." };
+            if (!totals.qty || !totals.amount) return { status:"Warning", message:"Qty atau amount masih 0, cek item feed." };
+            return { status:"Ready", message:"Forecast siap dibuat PO." };
+        }
+        function statusBadge(status) {
+            const cls = status === "Error" ? "tag-error" : status === "Warning" ? "tag-warning" : "tag-ready";
+            return `<span class="tag ${cls}">${esc(status)}</span>`;
+        }
+        function loadForecasts() {
+            const ids = batch?.fcNos || [];
+            forecasts = ids.map(id => getAllFc().find(f => f.fcNo === id)).filter(Boolean).map(fc => {
+                const st = forecastStatus(fc);
+                return { ...fc, selected: st.status !== "Error", validationStatus: st.status, validationMessage: st.message };
+            });
+        }
+        function filteredForecasts() {
+            const status = document.getElementById("fStatus").value;
+            const q = document.getElementById("fSearch").value.trim().toLowerCase();
+            return forecasts.filter(fc => {
+                const haystack = [fc.fcNo, getVendorText(fc), getPlanText(fc), fc.company, fc.farm, fc.warehouse, fc.period, fc.week].join(" ").toLowerCase();
+                if (status && fc.validationStatus !== status) return false;
+                if (q && !haystack.includes(q)) return false;
+                return true;
+            });
+        }
+        function renderSummary() {
+            const selected = forecasts.filter(fc => fc.selected);
+            const totals = selected.reduce((acc, fc) => {
+                const t = getTotals(fc);
+                acc.qty += t.qty;
+                acc.amount += t.amount;
+                return acc;
+            }, { qty:0, amount:0 });
+            document.getElementById("summaryGrid").innerHTML = `
+                <div class="summary-card"><div class="summary-label">Forecast</div><div class="summary-value">${forecasts.length}</div></div>
+                <div class="summary-card"><div class="summary-label">Ready</div><div class="summary-value" style="color:#047857;">${forecasts.filter(fc => fc.validationStatus === "Ready").length}</div></div>
+                <div class="summary-card"><div class="summary-label">Warning/Error</div><div class="summary-value" style="color:#92400e;">${forecasts.filter(fc => fc.validationStatus !== "Ready").length}</div></div>
+                <div class="summary-card"><div class="summary-label">Selected Total</div><div class="summary-value" style="font-size:18px;">${fmtAmount(totals.amount)}</div><div class="text-muted small">${selected.length} PO, ${fmtQty(totals.qty)} qty</div></div>`;
+            document.getElementById("selectedInfo").textContent = `${selected.length} PO selected - ${fmtAmount(totals.amount)}`;
+            document.getElementById("confirmBtn").disabled = !selected.length || selected.some(fc => fc.validationStatus === "Error");
+        }
+        function detailRow(fc) {
+            const totals = getTotals(fc);
+            const tax = Math.round(totals.amount * 0.11);
+            const lineRows = (fc.lines || []).map(line => {
+                const qty = lineQty(line);
+                const price = linePrice(line);
+                return `<tr>
+                    <td>${esc(line.itemCode || "-")}</td>
+                    <td>${esc(line.itemName || "-")}</td>
+                    <td class="text-end">${fmtQty(qty)}</td>
+                    <td>Kg</td>
+                    <td>${esc(fc.warehouse || "-")}</td>
+                    <td class="text-end">${fmtAmount(price)}</td>
+                    <td class="text-end">0%</td>
+                    <td>PPN</td>
+                    <td class="text-end fw-bold">${fmtAmount(qty * price)}</td>
+                </tr>`;
+            }).join("");
+            return `<tr><td colspan="11"><div class="detail-panel">
+                <div class="${fc.validationStatus === "Error" ? "text-danger" : fc.validationStatus === "Warning" ? "text-warning" : "text-success"} small mb-2">
+                    <i class="bi ${fc.validationStatus === "Error" ? "bi-exclamation-circle" : "bi-check-circle"} me-1"></i>${esc(fc.validationMessage)}
+                </div>
+                <div class="mini-title">Header</div>
+                <div class="info-strip">
+                    <div>
+                        <div class="info-line"><div class="info-label">No Forecast</div><div class="info-value">${esc(fc.fcNo)}</div></div>
+                        <div class="info-line"><div class="info-label">Plan</div><div class="info-value">${esc(getPlanText(fc))}</div></div>
+                        <div class="info-line"><div class="info-label">Total Qty</div><div class="info-value">${fmtQty(totals.qty)} Kg</div></div>
+                        <div class="info-line"><div class="info-label">Net</div><div class="info-value">${fmtAmount(totals.amount)}</div></div>
+                        <div class="info-line"><div class="info-label">Total Amount</div><div class="info-value">${fmtAmount(totals.amount + tax)}</div></div>
+                    </div>
+                    <div>
+                        <div class="info-line"><div class="info-label">Tgl Forecast</div><div class="info-value">${esc(fc.fcDate || "-")}</div></div>
+                        <div class="info-line"><div class="info-label">Vendor Code & Name</div><div class="info-value">${esc(getVendorText(fc))}</div></div>
+                        <div class="info-line"><div class="info-label">Farm</div><div class="info-value">${esc(fc.farm || "-")}</div></div>
+                        <div class="info-line"><div class="info-label">Amount</div><div class="info-value">${fmtAmount(totals.amount)}</div></div>
+                        <div class="info-line"><div class="info-label">Tax</div><div class="info-value">${fmtAmount(tax)}</div></div>
+                    </div>
+                </div>
+                <div class="mini-title">Item Lines</div>
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>Item Code</th><th>Item Name</th><th class="text-end">Qty</th><th>UoM</th><th>Whse</th><th class="text-end">Unit Price</th><th class="text-end">Discount</th><th>Tax Code</th><th class="text-end">Total</th></tr></thead>
+                    <tbody>${lineRows || `<tr><td colspan="9" class="text-muted text-center py-3">Tidak ada item lines.</td></tr>`}</tbody>
+                </table>
+            </div></td></tr>`;
+        }
+        function render() {
+            if (!forecasts.length) {
+                document.getElementById("reviewBody").innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-inbox d-block fs-1 mb-2"></i>Tidak ada batch review. Pilih forecast dari Customer Orders dulu.</td></tr>`;
+                renderSummary();
+                return;
+            }
+            document.getElementById("batchMeta").textContent = batch?.batchId || "";
+            const groups = {};
+            filteredForecasts().forEach(fc => {
+                const vendor = getVendorText(fc);
+                if (!groups[vendor]) groups[vendor] = [];
+                groups[vendor].push(fc);
+            });
+            let html = "";
+            Object.entries(groups).forEach(([vendor, items]) => {
+                const groupTotals = items.reduce((acc, fc) => {
+                    const t = getTotals(fc);
+                    acc.qty += t.qty;
+                    acc.amount += t.amount;
+                    return acc;
+                }, { qty:0, amount:0 });
+                html += `<tr class="group-row"><td colspan="11"><i class="bi bi-building me-2"></i>${esc(vendor)} <span class="text-muted ms-2 fw-normal">${items.length} forecast - ${fmtQty(groupTotals.qty)} qty - ${fmtAmount(groupTotals.amount)}</span></td></tr>`;
+                items.forEach(fc => {
+                    const totals = getTotals(fc);
+                    const id = esc(fc.fcNo);
+                    html += `<tr>
+                        <td><input type="checkbox" ${fc.selected ? "checked" : ""} ${fc.validationStatus === "Error" ? "disabled" : ""} onchange="toggleSelect('${id}', this.checked)"></td>
+                        <td>${statusBadge(fc.validationStatus)}</td>
+                        <td><span class="source-chip"><i class="bi bi-link-45deg"></i>${esc(fc.fcNo)}</span></td>
+                        <td class="fw-semibold">${esc(getVendorText(fc))}</td>
+                        <td title="${esc(getPlanText(fc))}">${esc(getPlanText(fc))}</td>
+                        <td>${esc(fc.period || fc.week || "-")}</td>
+                        <td>${esc(fc.farm || "-")}</td>
+                        <td>${esc(fc.warehouse || "-")}</td>
+                        <td class="text-end">${fmtQty(totals.qty)}</td>
+                        <td class="text-end fw-bold">${fmtAmount(totals.amount)}</td>
+                        <td><button class="btn-review btn-primary-soft" onclick="toggleDetail('${id}')"><i class="bi ${expanded.has(fc.fcNo) ? "bi-chevron-up" : "bi-chevron-down"}"></i>Detail</button></td>
+                    </tr>`;
+                    if (expanded.has(fc.fcNo)) html += detailRow(fc);
+                });
+            });
+            document.getElementById("reviewBody").innerHTML = html || `<tr><td colspan="11" class="empty-state">Tidak ada data sesuai filter.</td></tr>`;
+            renderSummary();
+        }
+        function toggleSelect(id, selected) {
+            const fc = forecasts.find(f => f.fcNo === id);
+            if (fc) fc.selected = selected;
+            renderSummary();
+        }
+        function toggleDetail(id) {
+            expanded.has(id) ? expanded.delete(id) : expanded.add(id);
+            render();
+        }
+        function nextPoNo(date, existingCount) {
+            return "PO-FEED-" + date.replace(/-/g, "").slice(2, 6) + "-" + String(existingCount + 1).padStart(4, "0");
+        }
+        function markForecastCreated(fc) {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const idx = stored.findIndex(f => f.fcNo === fc.fcNo);
+            const updated = { ...fc, status:"PO Created" };
+            if (idx >= 0) stored[idx] = { ...stored[idx], status:"PO Created" };
+            else stored.unshift(updated);
+            localStorage.setItem("IBOCS_fc_list", JSON.stringify(stored));
+        }
+        function confirmGenerate() {
+            const selected = forecasts.filter(fc => fc.selected && fc.validationStatus !== "Error");
+            const date = todayYMD();
+            const orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            const orderLines = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+            const soList = JSON.parse(localStorage.getItem("IBOCS_so_list") || "[]");
+            selected.forEach(fc => {
+                if (orders.some(o => o.fcRef === fc.fcNo)) return;
+                const totals = getTotals(fc);
+                const poNo = nextPoNo(date, orders.length);
+                const lines = (fc.lines || []).map(line => ({
+                    sku: line.itemCode || "",
+                    name: line.itemName || line.itemCode || "",
+                    qty: lineQty(line),
+                    price: linePrice(line),
+                    uom: "Kg",
+                    whse: fc.warehouse || ""
+                })).filter(line => line.sku && line.qty > 0);
+                orders.unshift({
+                    no: poNo,
+                    customerName: fc.company || "Customer",
+                    customer: fc.customerCode || fc.company || "Customer",
+                    date: date,
+                    requiredDate: fc.fcDate || date,
+                    total: Math.round(totals.amount * 1.11),
+                    status: "Open",
+                    warehouse: fc.warehouse || "",
+                    planNo: fc.planNo || "",
+                    planName: getPlanText(fc),
+                    fcRef: fc.fcNo,
+                    week: fc.period || fc.week || "",
+                    vendorCode: getVendorCode(fc).replace("VND-", ""),
+                    sourceType: "Feed",
+                    remarks: `Generated from Forecast ${fc.fcNo}. 1 Forecast = 1 PO.`
+                });
+                orderLines[poNo] = lines;
+                soList.unshift({
+                    soNo: "SO-" + date.replace(/-/g, "").slice(0, 6) + "-" + String(soList.length + 1).padStart(4, "0"),
+                    soDate: date,
+                    deliveryDate: fc.fcDate || date,
+                    store: fc.company || "Customer",
+                    customer: fc.company || "Customer",
+                    type: "FROM_PO",
+                    slot: "-",
+                    totalQty: lines.reduce((s, line) => s + (line.qty || 0), 0),
+                    status: "Draft",
+                    sourcePoNo: poNo,
+                    planNo: fc.planNo || "",
+                    fcRef: fc.fcNo,
+                    warehouse: fc.warehouse || "",
+                    remarks: `Auto-created from PO Feed ${poNo}`,
+                    lines: lines.map(line => ({
+                        itemCode: line.sku,
+                        itemName: line.name,
+                        qty: line.qty,
+                        uom: line.uom,
+                        source: "Customer PO Feed"
+                    }))
+                });
+                markForecastCreated(fc);
+            });
+            localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
+            localStorage.setItem(LS_ORDER_LINES, JSON.stringify(orderLines));
+            localStorage.setItem("IBOCS_so_list", JSON.stringify(soList));
+            localStorage.removeItem("IBOCS_feed_po_review_batch");
+            window.location.href = "customer_orders.html";
+        }
+
+        loadForecasts();
+        render();
+    </script>
+</body>
+</html>

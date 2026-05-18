@@ -13,7 +13,7 @@
         .card { border:none; border-radius:14px; box-shadow:0 2px 12px rgba(0,0,0,.07); margin-bottom:18px; }
         .card-header-custom { background:#fff; border-bottom:1.5px solid #e8ecf4; padding:16px 20px; border-radius:14px 14px 0 0; display:flex; align-items:center; justify-content:space-between; }
         .section-label { font-weight:700; font-size:.95rem; color:#1a237e; display:flex; align-items:center; gap:8px; }
-        .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
         .summary-card { border:1px solid #e8ecf4; border-radius:10px; padding:14px 16px; background:#fff; }
         .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
         .summary-value { margin-top:5px; font-size:24px; font-weight:800; color:#1a237e; }
@@ -108,7 +108,10 @@
                                     <th>GRPO Ref</th>
                                     <th>PO Ref</th>
                                     <th>Vendor</th>
-                                    <th class="text-end">Total Qty</th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-end">Tax</th>
+                                    <th class="text-end">Total</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -143,20 +146,38 @@
             return `<span class="status-badge ${cls}">${text}</span>`;
         }
 
+        function money(n) {
+            return "IDR " + Math.round(Number(n || 0)).toLocaleString("id-ID");
+        }
+
+        function apAmount(ap) {
+            return Number(ap.totalBeforeDisc ?? ap.amount ?? ap.total ?? 0);
+        }
+
+        function apTax(ap) {
+            return Number(ap.tax ?? Math.max(0, Number(ap.total || 0) - apAmount(ap)));
+        }
+
+        function apTotal(ap) {
+            return Number(ap.total ?? (apAmount(ap) + apTax(ap)));
+        }
+
         function renderSummary(list) {
             const total = list.length;
             const open = list.filter(a => statusText(a.status) === "Open").length;
             const closed = list.filter(a => ["Closed", "Paid"].includes(statusText(a.status))).length;
+            const totalAmount = list.reduce((s, a) => s + apTotal(a), 0);
             document.getElementById("summaryGrid").innerHTML = `
                 <div class="summary-card"><div class="summary-label">Total AP</div><div class="summary-value">${total}</div></div>
                 <div class="summary-card"><div class="summary-label">Open</div><div class="summary-value" style="color:#1d4ed8;">${open}</div></div>
-                <div class="summary-card"><div class="summary-label">Closed / Paid</div><div class="summary-value" style="color:#166534;">${closed}</div></div>`;
+                <div class="summary-card"><div class="summary-label">Closed / Paid</div><div class="summary-value" style="color:#166534;">${closed}</div></div>
+                <div class="summary-card"><div class="summary-label">Total Amount</div><div class="summary-value" style="font-size:18px;color:#92400e;">${money(totalAmount)}</div></div>`;
         }
 
         function renderTable(list) {
             const tbody = document.getElementById("apBody");
             if (!list.length) {
-                tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="bi bi-file-earmark-x"></i>Belum ada GRPO yang sudah di-AP.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-file-earmark-x"></i>Belum ada GRPO yang sudah di-AP.</td></tr>`;
                 return;
             }
 
@@ -168,6 +189,9 @@
                     <td>${a.poRef || "-"}</td>
                     <td>${a.vendor || "-"}</td>
                     <td class="text-end">${(a.totalQty || 0).toLocaleString()}</td>
+                    <td class="text-end">${money(apAmount(a))}</td>
+                    <td class="text-end">${money(apTax(a))}</td>
+                    <td class="text-end fw-semibold">${money(apTotal(a))}</td>
                     <td>${statusBadge(a.status)}</td>
                     <td><a class="btn-view" href="customer_ap_view.html?no=${encodeURIComponent(a.apNo || "")}"><i class="bi bi-eye"></i>View</a></td>
                 </tr>`).join("");

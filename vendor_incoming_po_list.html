@@ -30,9 +30,9 @@
         }
 
         .page {
-            background: #fff;
-            border-radius: 12px;
-            padding: 24px;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
         }
 
         .topbar {
@@ -46,7 +46,8 @@
 
         h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 18px;
+            font-weight: 800;
         }
 
         .subtext {
@@ -57,44 +58,46 @@
 
         .card {
             background: var(--card);
-            border-radius: 12px;
+            border-radius: 8px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
-            border: 1px solid var(--line);
+            box-shadow: 0 2px 10px rgba(0,0,0,.04);
+            border: 1px solid #e8ebf1;
             overflow: hidden;
         }
 
         .card-header {
             padding: 12px 16px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 13px;
-            border-bottom: 1px solid var(--line);
-            background: var(--soft);
+            border-bottom: 1px solid #eef0f4;
+            background: #fafbfe;
         }
 
         .card-body {
-            padding: 16px;
+            padding: 18px;
         }
 
         .filter-grid {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 12px;
+            grid-template-columns: minmax(220px, 2fr) minmax(160px, 1fr) minmax(145px, 1fr) minmax(145px, 1fr) auto;
+            gap: 14px;
+            align-items: end;
+            margin-bottom: 16px;
         }
 
         .field label {
             display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            color: #555;
             margin-bottom: 5px;
         }
 
         .field input,
         .field select {
             width: 100%;
-            height: 36px;
-            border: 1px solid var(--line);
+            height: 38px;
+            border: 1px solid #d5dae3;
             border-radius: 7px;
             padding: 0 10px;
             font-size: 13px;
@@ -109,9 +112,20 @@
         }
 
         .filter-actions {
-            margin-top: 12px;
             display: flex;
             gap: 8px;
+        }
+
+        .filter-actions .btn-primary,
+        .filter-actions .btn-secondary {
+            height: 38px;
+            padding: 0 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         /* Summary */
@@ -122,21 +136,25 @@
         }
 
         .summary-box {
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 12px 14px;
-            background: var(--soft);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            background: #fff;
         }
 
         .summary-box .s-label {
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 4px;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
         }
 
         .summary-box .s-value {
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-top: 4px;
         }
 
         .s-value.blue {
@@ -154,18 +172,19 @@
         /* Table */
         .table-wrap {
             overflow-x: auto;
+            margin-top: 8px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            min-width: 860px;
+            min-width: 1080px;
         }
 
         th,
         td {
-            padding: 10px 12px;
+            padding: 13px 14px;
             border-bottom: 1px solid #edf0f5;
             text-align: left;
             vertical-align: middle;
@@ -173,36 +192,10 @@
         }
 
         th {
-            background: var(--soft);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--muted);
-        }
-
-        .company-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #dcfce7;
-        }
-
-        .company-header h6 {
-            margin: 0;
-            font-size: 1.1rem;
-            letter-spacing: 0.025em;
-            text-transform: uppercase;
-            font-weight: 700;
-            color: #0f172a;
-        }
-
-        .company-header::before {
-            content: "";
-            width: 4px;
-            height: 24px;
-            background: #15803d;
-            border-radius: 2px;
+            background: #f9fafc;
+            font-size: 12px;
+            font-weight: 800;
+            color: #555;
         }
 
         .mono {
@@ -220,18 +213,27 @@
             display: none;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
             padding: 10px 14px;
             background: #eff6ff;
             border: 1px solid #bfdbfe;
             border-radius: 8px;
-            margin-bottom: 12px;
+            margin: 4px 0 18px;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 800;
             color: #1d4ed8;
+        }
+
+        .bulk-bar:not(.visible) {
+            margin: 0 0 14px;
         }
 
         .bulk-bar.visible {
             display: flex;
+        }
+
+        .bulk-bar .spacer {
+            flex: 1;
         }
 
         /* Tags */
@@ -333,6 +335,66 @@
 
         .btn-bulk-confirm:hover {
             background: #14532d;
+        }
+
+        .action-cell {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 30px;
+            min-width: 30px;
+            height: 28px;
+            border: 1px solid #bbf7d0;
+            border-radius: 7px;
+            background: #fff;
+            color: #15803d;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            transition: background .18s ease;
+        }
+
+        .action-btn:hover {
+            background: #ecfdf5;
+        }
+
+        .action-btn-review {
+            color: #2563eb;
+            border-color: #bfdbfe;
+        }
+
+        .action-btn-review:hover {
+            background: #eff6ff;
+        }
+
+        .action-btn .action-text {
+            position: absolute;
+            right: 50%;
+            bottom: calc(100% + 6px);
+            transform: translateX(50%);
+            background: #111827;
+            color: #fff;
+            border-radius: 5px;
+            padding: 4px 7px;
+            font-size: 11px;
+            line-height: 1;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,.16);
+            transition: opacity .14s ease;
+            z-index: 20;
+        }
+
+        .action-btn:hover .action-text {
+            opacity: 1;
         }
 
         /* Checkbox */
@@ -798,49 +860,12 @@
 
                     <div class="topbar">
                         <div>
-                            <h1>Incoming PO from Customers</h1>
-                            <div class="subtext">Review and confirm Purchase Orders to generate Sales Orders.</div>
+                            <h1>SO Generation</h1>
+                            <div class="subtext">Review incoming PO dari customer untuk generate Sales Order.</div>
                         </div>
-                    </div>
-
-                    <!-- Filter -->
-                    <div class="card">
-                        <div class="card-header"><i class="bi bi-funnel me-1"></i>Filter</div>
-                        <div class="card-body">
-                            <div class="filter-grid">
-                                <div class="field">
-                                    <label>PO Reference</label>
-                                    <input id="fPoRef" type="text" placeholder="e.g. PO-0001">
-                                </div>
-                                <div class="field">
-                                    <label>Customer</label>
-                                    <input id="fVendor" type="text" placeholder="Search customer...">
-                                </div>
-                                <div class="field">
-                                    <label>Status</label>
-                                    <select id="fStatus">
-                                        <option value="">All Status</option>
-                                        <option value="Open">Open</option>
-                                        <option value="Closed">Closed</option>
-                                        <option value="Rejected">Rejected</option>
-                                    </select>
-                                </div>
-                                <div class="field">
-                                    <label>Date From</label>
-                                    <input id="fDateFrom" type="date">
-                                </div>
-                                <div class="field">
-                                    <label>Date To</label>
-                                    <input id="fDateTo" type="date">
-                                </div>
-                            </div>
-                            <div class="filter-actions">
-                                <button class="btn-primary" onclick="renderTable()">
-                                    <i class="bi bi-search me-1"></i>Search
-                                </button>
-                                <button class="btn-secondary" onclick="resetFilter()">Reset</button>
-                            </div>
-                        </div>
+                        <a href="vendor_salesorderlist.html" class="btn btn-outline-success btn-sm fw-bold">
+                            <i class="bi bi-list-ul me-1"></i>Lihat SO yang Sudah Dibuat
+                        </a>
                     </div>
 
                     <!-- Summary -->
@@ -853,7 +878,7 @@
                                     <div class="s-value text-primary" id="sumTotal">0</div>
                                 </div>
                                 <div class="summary-box">
-                                    <div class="s-label">Open</div>
+                                    <div class="s-label">Belum Generate SO</div>
                                     <div class="s-value amber" id="sumPending">0</div>
                                 </div>
                                 <div class="summary-box">
@@ -868,23 +893,55 @@
                         </div>
                     </div>
 
-                    <!-- Bulk Action Bar -->
-                    <div class="bulk-bar" id="bulkBar">
-                        <i class="bi bi-check2-square"></i>
-                        <span id="bulkCount">0 PO selected</span>
-                        <button class="btn-bulk-confirm" onclick="bulkConfirm()">
-                            <i class="bi bi-table me-1"></i>Process Selected in Worksheet
-                        </button>
-                        <button class="btn-secondary" style="font-size:12px;padding:5px 10px;"
-                            onclick="clearSelection()">
-                            Clear
-                        </button>
-                    </div>
-
-                    <!-- PO Table -->
                     <div class="card">
                         <div class="card-header"><i class="bi bi-table me-1"></i>Incoming PO Documents</div>
                         <div class="card-body">
+                            <div class="filter-grid">
+                                <div class="field">
+                                    <label>Search Box</label>
+                                    <input id="fPoRef" type="text" placeholder="Search by PO Reference / Customer">
+                                </div>
+                                <div class="field">
+                                    <label>Status</label>
+                                    <select id="fStatus">
+                                        <option value="Open" selected>Belum Generate SO</option>
+                                        <option value="Rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="field">
+                                    <label>Dari Tanggal</label>
+                                    <input id="fDateFrom" type="date">
+                                </div>
+                                <div class="field">
+                                    <label>Sampai</label>
+                                    <input id="fDateTo" type="date">
+                                </div>
+                                <div class="field">
+                                    <label>&nbsp;</label>
+                                    <div class="filter-actions">
+                                        <button class="btn-primary" onclick="renderTable()">
+                                            <i class="bi bi-search"></i>Filter
+                                        </button>
+                                        <button class="btn-secondary" onclick="resetFilter()">
+                                            <i class="bi bi-arrow-counterclockwise"></i>Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bulk-bar" id="bulkBar">
+                                <i class="bi bi-check2-square"></i>
+                                <span id="bulkCount">0 PO selected</span>
+                                <span class="spacer"></span>
+                                <button class="btn-bulk-confirm" onclick="bulkConfirm()">
+                                    <i class="bi bi-eye me-1"></i>Review &amp; Generate SO
+                                </button>
+                                <button class="btn-secondary" style="font-size:12px;padding:5px 10px;"
+                                    onclick="clearSelection()">
+                                    Clear
+                                </button>
+                            </div>
+
                             <div class="table-wrap" id="poContainer">
                                 <!-- Tables injected by JS -->
                             </div>
@@ -1234,6 +1291,10 @@
             localStorage.setItem(LS_VENDOR_ORDERS, JSON.stringify(stored));
         }
 
+        function persistStatus(poRef, newStatus) {
+            updateStatus(poRef, newStatus);
+        }
+
         // =============================
         // UTILITIES
         // =============================
@@ -1259,12 +1320,113 @@
             setTimeout(() => t.remove(), 3500);
         }
 
+        function todayYMD() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function nextSoNo(date, existingCount) {
+            return "SO-" + date.replace(/-/g, "").slice(0, 6) + "-" + String(existingCount + 1).padStart(4, "0");
+        }
+
+        function poTotalQty(po) {
+            return (po.items || []).reduce((s, item) => s + Number(item.origQty || 0), 0);
+        }
+
+        function isPoAlreadySO(poRef) {
+            const soList = JSON.parse(localStorage.getItem("IBOCS_so_list") || "[]");
+            return soList.some(so => so.sourcePoNo === poRef);
+        }
+
+        function saveSOFromPayload(payload) {
+            const soList = JSON.parse(localStorage.getItem("IBOCS_so_list") || "[]");
+            if (soList.some(so => so.sourcePoNo === payload.poRef)) return null;
+            const soNo = nextSoNo(payload.soDate || todayYMD(), soList.length);
+            const acceptedItems = payload.items.filter(item => item.approvedQty > 0);
+            const so = {
+                soNo,
+                soDate: payload.soDate || todayYMD(),
+                deliveryDate: payload.deliveryDate || payload.soDate || todayYMD(),
+                store: payload.customer || "-",
+                customer: payload.customer || "-",
+                type: "FROM_PO",
+                slot: "-",
+                totalQty: acceptedItems.reduce((s, item) => s + Number(item.approvedQty || 0), 0),
+                status: "Draft",
+                sourcePoNo: payload.poRef,
+                warehouse: payload.warehouse || "",
+                notes: payload.vendorNotes || "",
+                lines: acceptedItems.map(item => ({
+                    itemCode: item.sku,
+                    itemName: item.name,
+                    qty: item.approvedQty,
+                    uom: "Kg",
+                    price: item.unitPrice,
+                    source: "Incoming PO"
+                }))
+            };
+            soList.unshift(so);
+            localStorage.setItem("IBOCS_so_list", JSON.stringify(soList));
+            return so;
+        }
+
+        function buildPayloadFromPO(po, options = {}) {
+            const items = (po.items || []).map(item => ({
+                sku: item.sku,
+                name: item.name,
+                origQty: item.origQty,
+                approvedQty: Number(options.approvedQtyBySku?.[item.sku] ?? item.origQty) || 0,
+                unitPrice: item.price,
+                subtotal: (Number(options.approvedQtyBySku?.[item.sku] ?? item.origQty) || 0) * item.price,
+                lineStatus: "full"
+            })).map(item => ({
+                ...item,
+                lineStatus: item.approvedQty === 0 ? "rejected" : item.approvedQty < item.origQty ? "partial" : "full"
+            }));
+
+            return {
+                action: options.action || "confirm",
+                poRef: po.poRef,
+                customer: po.customer || po.vendor || "-",
+                warehouse: options.warehouse || po.whse || "WH-MAIN",
+                soDate: options.soDate || todayYMD(),
+                poDate: po.poDate,
+                deliveryDate: options.deliveryDate || po.deliveryDate || todayYMD(),
+                vendorNotes: options.vendorNotes || "",
+                confirmedBy: user.email,
+                confirmedAt: new Date().toISOString(),
+                items,
+                grandTotal: items.reduce((s, item) => s + item.subtotal, 0)
+            };
+        }
+
+        function generateSOFromPO(poRef) {
+            const po = getList().find(p => p.poRef === poRef);
+            if (!po) return alert("PO tidak ditemukan.");
+            if (po.status !== "Open") return alert("PO ini sudah diproses.");
+            if (isPoAlreadySO(po.poRef)) {
+                updateStatus(po.poRef, "Closed");
+                renderTable();
+                return alert("SO untuk PO ini sudah ada.");
+            }
+            if (!confirm(`Generate SO untuk ${po.poRef}?`)) return;
+            const payload = buildPayloadFromPO(po);
+            const so = saveSOFromPayload(payload);
+            updateStatus(po.poRef, "Closed");
+            const orders = JSON.parse(localStorage.getItem("IBOCS_customer_orders") || "[]");
+            const idx = orders.findIndex(o => o.no === po.poRef);
+            if (idx !== -1) {
+                orders[idx].status = "Confirmed";
+                localStorage.setItem("IBOCS_customer_orders", JSON.stringify(orders));
+            }
+            renderTable();
+            showToast(so ? `SO ${so.soNo} generated for ${po.poRef}` : `SO already exists for ${po.poRef}`);
+        }
+
         // =============================
         // LIST TABLE
         // =============================
         function renderTable() {
             const fPoRef = document.getElementById("fPoRef").value.toLowerCase();
-            const fVendor = document.getElementById("fVendor").value.toLowerCase();
             const fStatus = document.getElementById("fStatus").value;
             const fDateFrom = document.getElementById("fDateFrom").value;
             const fDateTo = document.getElementById("fDateTo").value;
@@ -1418,6 +1580,121 @@
             container.innerHTML = html;
         }
 
+        function renderTable() {
+            const fPoRef = document.getElementById("fPoRef").value.toLowerCase();
+            const fStatus = document.getElementById("fStatus").value;
+            const fDateFrom = document.getElementById("fDateFrom").value;
+            const fDateTo = document.getElementById("fDateTo").value;
+
+            const all = getList();
+            if (document.getElementById("sumTotal")) {
+                document.getElementById("sumTotal").textContent = all.length;
+            }
+            document.getElementById("sumPending").textContent = all.filter(p => p.status === "Open").length;
+            document.getElementById("sumReviewed").textContent = all.filter(p => p.status === "Closed").length;
+            document.getElementById("sumConfirmed").textContent = all.filter(p => p.status === "Rejected").length;
+
+            const list = all.filter(p => {
+                const haystack = [p.poRef, p.customer, p.vendorName, p.whse].join(" ").toLowerCase();
+                if (fPoRef && !haystack.includes(fPoRef)) return false;
+                if (p.status === "Closed") return false;
+                if (fStatus && p.status !== fStatus) return false;
+                if (fDateFrom && p.poDate < fDateFrom) return false;
+                if (fDateTo && p.poDate > fDateTo) return false;
+                return true;
+            });
+
+            const container = document.getElementById("poContainer");
+            if (!list.length) {
+                container.innerHTML = '<div style="text-align:center;padding:28px;color:#6b7280;">No data found.</div>';
+                return;
+            }
+
+            const rows = list.map((p, idx) => {
+                const selectable = p.status === "Open";
+                const totalItems = p.items ? p.items.length : 0;
+                const totalQty = poTotalQty(p);
+                const expandId = `exp-po-${idx}`;
+                const checkbox = selectable
+                    ? `<input type="checkbox" class="row-check" data-ref="${p.poRef}" data-exp="${expandId}" onchange="handleRowCheck(this)">`
+                    : `<input type="checkbox" disabled style="opacity:.3">`;
+                const actionBtns = `
+                    <button class="action-btn action-btn-review" title="${p.status === "Open" ? "Review" : "View"}" onclick="openReviewModal('${p.poRef}')">
+                        <i class="bi bi-eye"></i><span class="action-text">${p.status === "Open" ? "Review" : "View"}</span>
+                    </button>
+                    ${p.status === "Open" ? `<button class="action-btn" title="Generate SO" onclick="generateSOFromPO('${p.poRef}')"><i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate SO</span></button>` : ""}
+                `;
+
+                return `
+                    <tr>
+                        <td>${checkbox}</td>
+                        <td class="text-center">
+                            <button class="expand-btn" onclick="toggleExpand('${expandId}', this)">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </td>
+                        <td class="mono fw-bold text-dark">${p.poRef}<div style="margin-top:3px;">${statusTag(p.status)}</div></td>
+                        <td>${p.poDate || "-"}</td>
+                        <td style="font-size:12px;">${p.customer || "-"}</td>
+                        <td>${p.vendorName || "-"}</td>
+                        <td><span class="badge bg-light text-dark border-secondary-subtle fw-medium">${p.whse || "-"}</span></td>
+                        <td>${totalItems}</td>
+                        <td class="text-end fw-bold">${totalQty.toLocaleString()}</td>
+                        <td class="action-cell">${actionBtns}</td>
+                    </tr>
+                    <tr class="expand-row" id="${expandId}">
+                        <td colspan="10" class="p-0">
+                            <div class="expand-content">
+                                <div style="font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;"><i class="bi bi-box-seam me-1"></i>Line Items - ${p.poRef}</div>
+                                <table class="expand-table m-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-end">Price / Unit</th>
+                                            <th class="text-end">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${(p.items || []).map(item => `
+                                            <tr>
+                                                <td class="mono" style="color:#475569;">${item.sku}</td>
+                                                <td class="fw-bold">${item.name}</td>
+                                                <td class="text-center" style="font-weight:700;color:#2563eb;">${Number(item.origQty || 0).toLocaleString()}</td>
+                                                <td class="text-end">${fmt(item.price)}</td>
+                                                <td class="text-end fw-bold">${fmt(Number(item.origQty || 0) * Number(item.price || 0))}</td>
+                                            </tr>
+                                        `).join("")}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join("");
+
+            container.innerHTML = `
+                <div class="table-responsive" style="border:1px solid var(--line);border-radius:8px;margin-top:8px;">
+                    <table class="table table-hover mb-0" style="margin:0;border:0;">
+                        <thead style="background:var(--soft);">
+                            <tr>
+                                <th style="width:40px;"><input type="checkbox" onchange="toggleSelectAll(this)"></th>
+                                <th style="width:40px;"></th>
+                                <th>PO Reference</th>
+                                <th>PO Date</th>
+                                <th>Customer</th>
+                                <th>Vendor</th>
+                                <th>Whse</th>
+                                <th>Total Items</th>
+                                <th class="text-end">Total Qty</th>
+                                <th style="width:100px;text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
         function handleRowCheck(cb, doUpdate = true) {
             const expandId = cb.getAttribute("data-exp");
             if (expandId) {
@@ -1452,8 +1729,9 @@
         }
 
         function resetFilter() {
-            ["fPoRef", "fVendor", "fStatus", "fDateFrom", "fDateTo"]
+            ["fPoRef", "fDateFrom", "fDateTo"]
                 .forEach(id => document.getElementById(id).value = "");
+            document.getElementById("fStatus").value = "Open";
             renderTable();
         }
 
@@ -1661,8 +1939,9 @@
             return {
                 action: "confirm",
                 poRef: currentPO.poRef,
-                customer: currentPO.vendor,
+                customer: currentPO.customer || currentPO.vendor || "-",
                 warehouse: document.getElementById("mWhseSelect").value,
+                soDate: todayYMD(),
                 poDate: currentPO.poDate,
                 deliveryDate: currentPO.deliveryDate,
                 vendorNotes: document.getElementById("mVendorNotes").value.trim(),
@@ -1754,18 +2033,20 @@
              */
 
             // --- Local simulation ---
+            const so = saveSOFromPayload(payload);
             const orders = JSON.parse(localStorage.getItem('IBOCS_customer_orders') || "[]");
             const idx = orders.findIndex(o => o.no === payload.poRef);
             if (idx !== -1) {
                 orders[idx].warehouse = payload.warehouse; // update warehouse selection
+                orders[idx].status = "Confirmed";
                 localStorage.setItem('IBOCS_customer_orders', JSON.stringify(orders));
             }
 
-            persistStatus(payload.poRef, "Confirmed");
+            persistStatus(payload.poRef, "Closed");
             closeConfirmModal();
             closeReviewModal();
             renderTable();
-            showToast(`SO generated for ${payload.poRef}`);
+            showToast(so ? `SO ${so.soNo} generated for ${payload.poRef}` : `SO already exists for ${payload.poRef}`);
         }
 
         // =============================
@@ -1777,7 +2058,7 @@
             const payload = {
                 action: "reject",
                 poRef: currentPO.poRef,
-                customer: currentPO.vendor,
+                customer: currentPO.customer || currentPO.vendor || "-",
                 rejectedBy: user.email,
                 rejectedAt: new Date().toISOString()
             };

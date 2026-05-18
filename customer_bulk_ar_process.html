@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8" />
@@ -20,6 +20,7 @@
         .page-wrap { padding: 20px 24px; }
         .page-title { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
         .page-title h4 { margin:0; font-size:17px; font-weight:700; color:var(--primary); }
+        .page-actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
 
         .mode-badge { padding:3px 12px; border-radius:20px; font-size:11.5px; font-weight:700; }
         .mode-do { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
@@ -46,7 +47,7 @@
         .inv-tab.active { color:var(--primary); border-bottom-color:var(--primary); background:#fff; }
 
         .inv-table-wrap { overflow-x:auto; }
-        table.inv-table { width:100%; border-collapse:collapse; min-width:700px; }
+        table.inv-table { width:100%; border-collapse:collapse; min-width:980px; }
         table.inv-table th { background:#f0f3fa; font-size:11px; font-weight:700; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--line); text-align:left; white-space:nowrap; }
         table.inv-table td { padding:7px 10px; border-bottom:1px solid #edf0f7; vertical-align:middle; white-space:nowrap; }
         table.inv-table tr:hover td { background:#f8faff; }
@@ -89,6 +90,14 @@
                     </a>
                     <h4 id="pageTitle"><i class="bi bi-file-earmark-plus me-2"></i>Detail</h4>
                     <span class="mode-badge" id="modeBadge"></span>
+                    <div class="page-actions">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='customer_AR.html'">
+                            <i class="bi bi-arrow-left me-1"></i>Kembali
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="btnGenerateTop" onclick="generateARFromPreview()" style="display:none;">
+                            <i class="bi bi-file-earmark-plus me-1"></i>Generate AR
+                        </button>
+                    </div>
                 </div>
 
                 <div class="info-banner" id="infoBanner" style="display:none;">
@@ -106,21 +115,29 @@
                     <div class="inv-header">
                         <div class="inv-header-left">
                             <div class="field-row">
-                                <label id="lblParty">Customer</label>
+                                <label>Customer Code</label>
                                 <input type="text" id="fCustomerCode" readonly>
                             </div>
                             <div class="field-row">
-                                <label>Name</label>
+                                <label>Customer Name</label>
                                 <input type="text" id="fCustomerName" readonly>
                             </div>
                             <div class="field-row">
-                                <label>Currency</label>
-                                <input type="text" value="IDR — Rupiah" readonly>
+                                <label>Contact</label>
+                                <input type="text" id="fContact" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>BP Currency</label>
+                                <input type="text" value="IDR - Rupiah" readonly>
+                            </div>
+                            <div class="field-row">
+                                <label>Payment Term</label>
+                                <input type="text" id="fPaymentTerm" readonly>
                             </div>
                         </div>
                         <div class="inv-header-right">
                             <div class="field-row">
-                                <label>No.</label>
+                                <label>No. DO</label>
                                 <input type="text" id="fDocNo" readonly>
                             </div>
                             <div class="field-row">
@@ -132,15 +149,15 @@
                                 <input type="text" id="fPostingDate" readonly>
                             </div>
                             <div class="field-row">
-                                <label>Due Date</label>
-                                <input type="text" id="fDueDate" readonly>
+                                <label>Delivery Date</label>
+                                <input type="text" id="fDeliveryDate" readonly>
                             </div>
                             <div class="field-row">
-                                <label id="lblRef1">DO Ref</label>
-                                <input type="text" id="fDoRef" readonly>
+                                <label>Document Date</label>
+                                <input type="text" id="fDocumentDate" readonly>
                             </div>
                             <div class="field-row">
-                                <label id="lblRef2">Order Ref</label>
+                                <label>Order Ref</label>
                                 <input type="text" id="fOrderRef" readonly>
                             </div>
                         </div>
@@ -159,14 +176,16 @@
                                 <thead>
                                     <tr>
                                         <th style="width:36px;">#</th>
-                                        <th>Description</th>
-                                        <th style="width:110px;">G/L Account</th>
-                                        <th>G/L Account Name</th>
-                                        <th style="width:90px;">Distr. Rule</th>
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
                                         <th style="width:80px;text-align:right;">Qty</th>
-                                        <th style="width:140px;text-align:right;">Unit Price (IDR)</th>
+                                        <th style="width:70px;">UoM</th>
+                                        <th style="width:110px;">Dist Rule</th>
+                                        <th style="width:80px;">Whse</th>
+                                        <th style="width:130px;text-align:right;">Unit Price</th>
                                         <th style="width:90px;text-align:right;">Discount %</th>
                                         <th style="width:90px;">Tax Code</th>
+                                        <th style="width:130px;text-align:right;">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody id="contentsBody"></tbody>
@@ -193,7 +212,11 @@
                         <div class="inv-footer-left">
                             <div>
                                 <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Sales Employee</div>
-                                <input type="text" value="-No Sales Employee-" readonly style="border:1px solid #d0d7e3;border-radius:5px;padding:5px 9px;font-size:13px;width:200px;background:#f5f7fb;">
+                                <input type="text" id="fSalesEmp" value="-No Sales Employee-" readonly style="border:1px solid #d0d7e3;border-radius:5px;padding:5px 9px;font-size:13px;width:200px;background:#f5f7fb;">
+                            </div>
+                            <div style="min-width:280px;flex:1;">
+                                <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Remarks</div>
+                                <textarea id="fRemarks" readonly rows="2" style="border:1px solid #d0d7e3;border-radius:5px;padding:5px 9px;font-size:13px;width:100%;background:#f5f7fb;resize:none;"></textarea>
                             </div>
                         </div>
                         <div class="inv-footer-right">
@@ -332,7 +355,50 @@
             return [...stored, ...DEMO_DO.filter(d => !storedNos.has(d.doNo))];
         }
 
-        function fmt(n) { return "IDR " + Math.round(n).toLocaleString("id-ID"); }
+        let currentPreviewDo = null;
+
+        function fmt(n) { return "IDR " + Math.round(Number(n || 0)).toLocaleString("id-ID"); }
+        function currentDate() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        function addDays(dateStr, days) {
+            const d = new Date(dateStr);
+            d.setDate(d.getDate() + days);
+            return d.toISOString().split("T")[0];
+        }
+        function customerCode(customer) {
+            return (customer || "-").replace(/\s+/g, "").slice(0, 8).toUpperCase();
+        }
+        function lineTotal(line) {
+            return Number(line.qty || 0) * Number(line.unitPrice || 0);
+        }
+        function buildArLines(items) {
+            return (items || []).map(l => {
+                const qty = Number(l.qty || l.qtyDelivered || 0);
+                const unitPrice = Number(l.unitPrice || 0);
+                return {
+                    itemCode: l.itemCode || "-",
+                    itemName: l.itemName || "-",
+                    qty,
+                    uom: l.uom || "PCS",
+                    whse: l.whse || "MAIN",
+                    unitPrice,
+                    discount: l.discount || 0,
+                    subtotal: qty * unitPrice,
+                    glAccount: "4110101",
+                    glName: "SALES REVENUE",
+                    distrRule: l.distrRule || "SALES;HO",
+                    taxCode: l.taxCode || "PPNO-NO"
+                };
+            });
+        }
+        function setGenerateButton(visible) {
+            document.getElementById("btnGenerateTop").style.display = visible ? "" : "none";
+        }
 
         function loadView() {
             const params = new URLSearchParams(window.location.search);
@@ -344,7 +410,7 @@
             }
 
             const arList = JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]");
-            const existingAR = arList.find(a => a.doRef === doNo);
+            const existingAR = arList.find(a => a.doRef === doNo || (a.sourceDocs || []).some(doc => doc.docType === "DO" && doc.docNo === doNo));
 
             if (existingAR) {
                 loadArView(existingAR);
@@ -354,22 +420,23 @@
         }
 
         function loadArView(ar) {
-            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-file-earmark-plus me-2"></i>Detail AR — ${ar.arNo}`;
+            currentPreviewDo = null;
+            setGenerateButton(false);
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-file-earmark-plus me-2"></i>Detail AR - ${ar.arNo}`;
             document.getElementById("modeBadge").className = "mode-badge mode-ar";
             document.getElementById("modeBadge").textContent = "AR Generated";
             document.getElementById("cardTitle").textContent = "A/R Invoice";
             document.getElementById("infoBanner").style.display = "flex";
             document.getElementById("infoBannerText").textContent = `Dokumen AR ini sudah digenerate dari ${ar.doRef}. Tampilan read-only.`;
 
-            document.getElementById("lblParty").textContent = "Customer";
-            document.getElementById("fCustomerCode").value = (ar.customer || "").replace(/\s+/g,"").slice(0,8).toUpperCase();
+            document.getElementById("fCustomerCode").value = customerCode(ar.customer);
             document.getElementById("fCustomerName").value = ar.customer || "-";
+            document.getElementById("fContact").value = ar.contact || "-";
+            document.getElementById("fPaymentTerm").value = ar.paymentTerm || "30 Days";
             document.getElementById("fDocNo").value = ar.arNo;
             document.getElementById("fPostingDate").value = ar.arDate || "-";
-            document.getElementById("fDueDate").value = ar.dueDate || "-";
-            document.getElementById("lblRef1").textContent = "DO Ref";
-            document.getElementById("fDoRef").value = ar.doRef || "-";
-            document.getElementById("lblRef2").textContent = "Order Ref";
+            document.getElementById("fDeliveryDate").value = ar.deliveryDate || "-";
+            document.getElementById("fDocumentDate").value = ar.documentDate || ar.arDate || "-";
             document.getElementById("fOrderRef").value = ar.orderRef || "-";
 
             const statusEl = document.getElementById("fStatus");
@@ -378,6 +445,8 @@
 
             document.getElementById("gAccount").value = ar.accountCode || "-";
             document.getElementById("gNotes").value = ar.notes || "";
+            document.getElementById("fSalesEmp").value = ar.salesEmployee || "-No Sales Employee-";
+            document.getElementById("fRemarks").value = ar.remarks || "";
 
             let html = "";
             let lineNo = 0;
@@ -385,17 +454,19 @@
                 lineNo++;
                 html += `<tr>
                     <td class="text-muted">${lineNo}</td>
+                    <td>${l.itemCode || "-"}</td>
                     <td>${l.itemName || "-"}</td>
-                    <td>${l.glAccount || "-"}</td>
-                    <td>${l.glName || "-"}</td>
-                    <td>${l.distrRule || "-"}</td>
                     <td style="text-align:right;">${(l.qty || 0).toLocaleString()}</td>
+                    <td>${l.uom || "PCS"}</td>
+                    <td>${l.distrRule || "-"}</td>
+                    <td>${l.whse || "MAIN"}</td>
                     <td style="text-align:right;">${l.unitPrice ? l.unitPrice.toLocaleString("id-ID") : "-"}</td>
                     <td style="text-align:right;">${(l.discount || 0)}%</td>
                     <td>${l.taxCode || "-"}</td>
+                    <td style="text-align:right;font-weight:700;">${fmt(l.subtotal ?? lineTotal(l))}</td>
                 </tr>`;
             });
-            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="11" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
 
             const total = ar.totalBeforeDisc || 0;
             document.getElementById("totBeforeDisc").textContent = fmt(total);
@@ -408,8 +479,10 @@
         function loadDoPreview(doNo) {
             const allDo = getDoList();
             const d = allDo.find(x => x.doNo === doNo);
+            currentPreviewDo = d || null;
+            setGenerateButton(!!d);
 
-            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-truck me-2"></i>Preview DO — ${doNo}`;
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-truck me-2"></i>Preview DO - ${doNo}`;
             document.getElementById("modeBadge").className = "mode-badge mode-do";
             document.getElementById("modeBadge").textContent = "DO Preview";
             document.getElementById("cardTitle").textContent = "Delivery Order Detail";
@@ -417,20 +490,20 @@
             document.getElementById("infoBannerText").textContent = `DO ini belum di-generate menjadi AR. Tampilan preview data DO.`;
 
             if (!d) {
-                document.getElementById("contentsBody").innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Data DO tidak ditemukan.</td></tr>`;
+                setGenerateButton(false);
+                document.getElementById("contentsBody").innerHTML = `<tr><td colspan="11" class="text-center py-4 text-muted">Data DO tidak ditemukan.</td></tr>`;
                 return;
             }
 
-            document.getElementById("lblParty").textContent = "Customer";
-            document.getElementById("fCustomerCode").value = (d.customer || "").slice(0,8).toUpperCase();
+            document.getElementById("fCustomerCode").value = customerCode(d.customer);
             document.getElementById("fCustomerName").value = d.customer || "-";
+            document.getElementById("fContact").value = d.contact || "-";
+            document.getElementById("fPaymentTerm").value = d.paymentTerm || "30 Days";
             document.getElementById("fDocNo").value = d.doNo;
             document.getElementById("fPostingDate").value = d.eta || "-";
-            document.getElementById("fDueDate").value = "-";
-            document.getElementById("lblRef1").textContent = "Order Ref";
-            document.getElementById("fDoRef").value = d.orderNo || "-";
-            document.getElementById("lblRef2").textContent = "Status";
-            document.getElementById("fOrderRef").value = d.status || "Shipped";
+            document.getElementById("fDeliveryDate").value = d.deliveryDate || d.eta || "-";
+            document.getElementById("fDocumentDate").value = d.documentDate || d.eta || "-";
+            document.getElementById("fOrderRef").value = d.orderNo || "-";
 
             const statusEl = document.getElementById("fStatus");
             statusEl.textContent = "Belum di-AR";
@@ -438,6 +511,8 @@
 
             document.getElementById("gAccount").value = "-";
             document.getElementById("gNotes").value = "";
+            document.getElementById("fSalesEmp").value = d.salesEmployee || "-No Sales Employee-";
+            document.getElementById("fRemarks").value = d.remarks || "";
 
             let html = "";
             let lineNo = 0;
@@ -450,23 +525,82 @@
                 grandTotal += total;
                 html += `<tr>
                     <td class="text-muted">${lineNo}</td>
+                    <td>${l.itemCode || "-"}</td>
                     <td>${l.itemName || "-"}</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
                     <td style="text-align:right;">${qty.toLocaleString()}</td>
+                    <td>${l.uom || "PCS"}</td>
+                    <td>${l.distrRule || "SALES;HO"}</td>
+                    <td>${l.whse || "MAIN"}</td>
                     <td style="text-align:right;">${price ? price.toLocaleString("id-ID") : "-"}</td>
                     <td style="text-align:right;">0%</td>
-                    <td>-</td>
+                    <td>${l.taxCode || "PPNO-NO"}</td>
+                    <td style="text-align:right;font-weight:700;">${fmt(total)}</td>
                 </tr>`;
             });
-            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="9" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
+            document.getElementById("contentsBody").innerHTML = html || `<tr><td colspan="11" class="text-center py-4 text-muted">Tidak ada item.</td></tr>`;
 
             document.getElementById("totBeforeDisc").textContent = fmt(grandTotal);
             document.getElementById("totDiscount").textContent = "0%";
             document.getElementById("totFreight").textContent = fmt(0);
             document.getElementById("totTax").textContent = fmt(0);
             document.getElementById("totGrand").textContent = fmt(grandTotal);
+        }
+
+        function generateARFromPreview() {
+            const d = currentPreviewDo;
+            if (!d) return;
+
+            const arList = JSON.parse(localStorage.getItem("IBOCS_ar_list") || "[]");
+            const alreadyExists = arList.some(a => a.doRef === d.doNo || (a.sourceDocs || []).some(doc => doc.docType === "DO" && doc.docNo === d.doNo));
+            if (alreadyExists) {
+                alert("DO ini sudah pernah dibuatkan AR.");
+                loadView();
+                return;
+            }
+
+            const today = currentDate();
+            const lines = buildArLines(d.items || []);
+            const totalBeforeDisc = lines.reduce((s, l) => s + Number(l.subtotal || 0), 0);
+            const arNo = "AR-" + today.replace(/-/g, "").slice(2) + "-" + String(arList.length + 1).padStart(4, "0");
+
+            const ar = {
+                arNo,
+                arDate: today,
+                dueDate: addDays(today, 30),
+                deliveryDate: d.deliveryDate || d.eta || "",
+                documentDate: today,
+                accountCode: "1100",
+                notes: "",
+                remarks: d.remarks || "",
+                salesEmployee: d.salesEmployee || "-No Sales Employee-",
+                contact: d.contact || "",
+                paymentTerm: d.paymentTerm || "30 Days",
+                doRef: d.doNo,
+                orderRef: d.orderNo || "",
+                company: d.company || "",
+                customer: d.customer || "",
+                sourceDocs: [{
+                    docNo: d.doNo,
+                    docType: "DO",
+                    docDate: d.eta || "",
+                    orderNo: d.orderNo || "",
+                    amount: totalBeforeDisc,
+                    status: d.status || "Shipped"
+                }],
+                totalQty: lines.reduce((s, l) => s + Number(l.qty || 0), 0),
+                discountPct: 0,
+                freight: 0,
+                tax: 0,
+                totalBeforeDisc,
+                total: totalBeforeDisc,
+                status: "Open",
+                lines
+            };
+
+            arList.unshift(ar);
+            localStorage.setItem("IBOCS_ar_list", JSON.stringify(arList));
+            alert(`AR ${arNo} berhasil dibuat.`);
+            loadArView(ar);
         }
 
         function switchInvTab(tab, btn) {
@@ -478,3 +612,5 @@
     </script>
 </body>
 </html>
+
+

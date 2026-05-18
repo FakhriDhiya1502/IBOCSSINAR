@@ -169,6 +169,22 @@
         .summary-label { font-size:11px; color:#64748b; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
         .summary-value { margin-top:5px; font-size:24px; font-weight:800; color:#1a237e; }
 
+        .filter-grid {
+            display: grid;
+            grid-template-columns: minmax(180px, 1.3fr) minmax(140px, .8fr) minmax(140px, .7fr) minmax(140px, .7fr) auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .filter-grid label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
         .empty-state {
             padding: 48px;
             text-align: center;
@@ -271,6 +287,7 @@
 
         @media (max-width: 900px) {
             .summary-grid { grid-template-columns:1fr; }
+            .filter-grid { grid-template-columns:1fr; }
         }
 
         /* Progress modal */
@@ -381,9 +398,33 @@
                 <div class="card">
                     <div class="card-header-custom">
                         <span class="section-label"><i class="bi bi-truck"></i> Daftar Delivery Order Tersedia</span>
-                        <input type="text" id="fDoSearch" class="form-control form-control-sm"
-                            placeholder="Cari DO No / Order No..." oninput="renderDoTable()"
-                            style="width:260px; border-radius:8px;">
+                    </div>
+                    <div class="card-body border-bottom">
+                        <div class="filter-grid">
+                            <div>
+                                <label>Search Box</label>
+                                <input type="text" id="fDoSearch" class="form-control form-control-sm"
+                                    placeholder="Cari DO No / Order No" oninput="renderDoTable()">
+                            </div>
+                            <div>
+                                <label>Customer</label>
+                                <select id="fCustomer" class="form-select form-select-sm" onchange="renderDoTable()">
+                                    <option value="">Semua</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Dari Tanggal</label>
+                                <input type="date" id="fDateFrom" class="form-control form-control-sm" onchange="renderDoTable()">
+                            </div>
+                            <div>
+                                <label>Sampai</label>
+                                <input type="date" id="fDateTo" class="form-control form-control-sm" onchange="renderDoTable()">
+                            </div>
+                            <div>
+                                <label>&nbsp;</label>
+                                <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="resetDoFilters()">Clear</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table mb-0">
@@ -528,13 +569,40 @@
         }
 
         function generatedDoNos() {
-            return new Set(getArList().map(a => a.doRef));
+            const refs = [];
+            getArList().forEach(a => {
+                if (a.doRef) refs.push(a.doRef);
+                (a.sourceDocs || []).forEach(doc => {
+                    if ((doc.docType || "").toUpperCase() === "DO" && doc.docNo) refs.push(doc.docNo);
+                });
+            });
+            return new Set(refs);
+        }
+
+        function eligibleDoList() {
+            const done = generatedDoNos();
+            return getDoList().filter(d => !done.has(d.doNo));
+        }
+
+        function populateCustomerFilter() {
+            const select = document.getElementById("fCustomer");
+            const current = select.value;
+            const customers = [...new Set(eligibleDoList().map(d => d.customer).filter(Boolean))].sort();
+            select.innerHTML = `<option value="">Semua</option>` + customers.map(c => `<option value="${c}">${c}</option>`).join("");
+            select.value = customers.includes(current) ? current : "";
+        }
+
+        function resetDoFilters() {
+            document.getElementById("fDoSearch").value = "";
+            document.getElementById("fCustomer").value = "";
+            document.getElementById("fDateFrom").value = "";
+            document.getElementById("fDateTo").value = "";
+            renderDoTable();
         }
 
         // ── Tabs ──────────────────────────────────────────────────────────────────
         function renderSummary() {
-            const done = generatedDoNos();
-            const pending = getDoList().filter(d => !done.has(d.doNo)).length;
+            const pending = eligibleDoList().length;
             const selected = document.querySelectorAll(".row-check:checked").length;
             document.getElementById("sumPendingDo").textContent = pending;
             document.getElementById("sumSelectedDo").textContent = selected;
@@ -556,11 +624,18 @@
 
         // ── DO Table ──────────────────────────────────────────────────────────────
         function renderDoTable() {
+            populateCustomerFilter();
             const q = (document.getElementById("fDoSearch").value || "").toLowerCase();
-            const done = generatedDoNos();
-            const rows = getDoList().filter(d => {
-                if (!q) return true;
-                return d.doNo.toLowerCase().includes(q) || (d.orderNo || "").toLowerCase().includes(q) || (d.customer || "").toLowerCase().includes(q) || (d.company || "").toLowerCase().includes(q);
+            const customer = document.getElementById("fCustomer").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo = document.getElementById("fDateTo").value;
+            const rows = eligibleDoList().filter(d => {
+                const doDate = d.eta || d.deliveryDate || "";
+                if (q && !d.doNo.toLowerCase().includes(q) && !(d.orderNo || "").toLowerCase().includes(q)) return false;
+                if (customer && d.customer !== customer) return false;
+                if (dateFrom && doDate < dateFrom) return false;
+                if (dateTo && doDate > dateTo) return false;
+                return true;
             });
 
             const tbody = document.getElementById("doBody");
@@ -570,33 +645,12 @@
                 return;
             }
 
-            const groups = {};
-            rows.forEach(d => {
-                const company = d.company || "Unknown";
-                if (!groups[company]) groups[company] = [];
-                groups[company].push(d);
-            });
-
             let html = "";
-            let idx = 0;
-            Object.entries(groups).forEach(([company, doList]) => {
-                html += `<tr style="background:#f0f3fa;">
-                    <td colspan="11" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
-                        <i class="bi bi-building me-2"></i>${company}
-                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${doList.length} DO)</span>
-                    </td>
-                </tr>`;
-
-                doList.forEach(d => {
-                    const isDone = done.has(d.doNo);
+            rows.forEach((d, idx) => {
                     const expandId = `exp-do-${idx}`;
-                    const cb = isDone
-                        ? `<input type="checkbox" disabled title="Sudah di-AR">`
-                        : `<input type="checkbox" class="row-check" data-do="${d.doNo}" onchange="updateBulkBar()">`;
-                    const arStatus = isDone
-                        ? `<span class="status-badge s-generated">Closed</span>`
-                        : `<span class="status-badge s-open">Open</span>`;
-                    const note = isDone ? `<span class="text-muted small">Sudah ada AR</span>` : `<span class="text-muted small">Siap di-generate</span>`;
+                    const cb = `<input type="checkbox" class="row-check" data-do="${d.doNo}" onchange="updateBulkBar()">`;
+                    const arStatus = `<span class="status-badge s-open">Open</span>`;
+                    const note = `<span class="text-muted small">Siap direview</span>`;
 
                     const lines = d.items || [];
                     const totalQty     = lines.reduce((s, l) => s + (l.qty || 0), 0);
@@ -636,7 +690,7 @@
                         </td>
                     </tr>`;
 
-                    const mainRow = `<tr style="${isDone ? 'opacity:.6;' : ''}">
+                    const mainRow = `<tr>
                         <td>${cb}</td>
                         <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
                         <td class="fw-semibold">${d.doNo}</td>
@@ -650,14 +704,12 @@
                         <td>
                             <div class="action-cell">
                                 <button class="action-btn" title="Detail" onclick="viewDetail('${d.doNo}')"><i class="bi bi-eye"></i><span class="action-text">Detail</span></button>
-                                ${isDone ? "" : `<button class="action-btn action-btn-generate" title="Generate AR" onclick="generateSingleAR('${d.doNo}')"><i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate AR</span></button>`}
+                                <button class="action-btn action-btn-generate" title="Preview & Generate" onclick="generateSingleAR('${d.doNo}')"><i class="bi bi-clipboard-check"></i><span class="action-text">Preview & Generate</span></button>
                             </div>
                         </td>
                     </tr>`;
 
                     html += mainRow + expandRow;
-                    idx++;
-                });
             });
 
             tbody.innerHTML = html;
@@ -678,12 +730,7 @@
         }
 
         function generateSingleAR(doNo) {
-            document.querySelectorAll(".row-check").forEach(c => c.checked = false);
-            const cb = [...document.querySelectorAll(".row-check")].find(c => c.dataset.do === doNo);
-            if (!cb) return;
-            cb.checked = true;
-            updateBulkBar();
-            generateAR();
+            viewDetail(doNo);
         }
 
         // ── AR Table ──────────────────────────────────────────────────────────────

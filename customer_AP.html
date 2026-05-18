@@ -215,6 +215,22 @@
             color: #1a237e;
         }
 
+        .filter-grid {
+            display: grid;
+            grid-template-columns: minmax(180px, 1.3fr) minmax(140px, .8fr) minmax(140px, .7fr) minmax(140px, .7fr) auto;
+            gap: 10px;
+            align-items: end;
+        }
+
+        .filter-grid label {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
         .empty-state {
             padding: 48px;
             text-align: center;
@@ -273,6 +289,10 @@
 
         @media (max-width: 900px) {
             .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -403,6 +423,9 @@
 
                 <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
                     <div>
+                        <nav class="small text-muted mb-1" aria-label="breadcrumb">
+                            Home &gt; Finance &gt; AP Generation
+                        </nav>
                         <h4 class="fw-bold text-dark mb-1"><i class="bi bi-file-earmark-minus me-2"
                                 style="color:#1a237e;"></i>Accounts Payable</h4>
                         <p class="text-muted small mb-0">Generate AP dokumen dari GRPO yang sudah diterima. 1 GRPO = 1
@@ -438,10 +461,32 @@
                 <div class="card">
                     <div class="card-header-custom">
                         <span class="section-label"><i class="bi bi-inbox"></i> Daftar GRPO Tersedia</span>
-                        <div class="d-flex gap-2">
-                            <input type="text" id="fGrpoSearch" class="form-control form-control-sm"
-                                placeholder="Cari GRPO / PO No..." oninput="renderGrpoTable()"
-                                style="width:260px; border-radius:8px;">
+                    </div>
+                    <div class="card-body border-bottom">
+                        <div class="filter-grid">
+                            <div>
+                                <label>Search Box</label>
+                                <input type="text" id="fGrpoSearch" class="form-control form-control-sm"
+                                    placeholder="Cari GRPO No / PO No" oninput="renderGrpoTable()">
+                            </div>
+                            <div>
+                                <label>Vendor</label>
+                                <select id="fVendor" class="form-select form-select-sm" onchange="renderGrpoTable()">
+                                    <option value="">Semua</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Dari Tanggal</label>
+                                <input type="date" id="fDateFrom" class="form-control form-control-sm" onchange="renderGrpoTable()">
+                            </div>
+                            <div>
+                                <label>Sampai</label>
+                                <input type="date" id="fDateTo" class="form-control form-control-sm" onchange="renderGrpoTable()">
+                            </div>
+                            <div>
+                                <label>&nbsp;</label>
+                                <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="resetGrpoFilters()">Clear</button>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -449,16 +494,15 @@
                             <thead>
                                 <tr>
                                     <th style="width:40px;"></th>
-                                    <th style="width:36px;"></th>
                                     <th>GRPO No</th>
-                                    <th>Tanggal</th>
+                                    <th>Tgl GRPO</th>
                                     <th>PO Ref</th>
                                     <th>Vendor</th>
-                                    <th class="text-end">Total Qty</th>
-                                    <th class="text-end">Open Qty</th>
-                                    <th>Status</th>
-                                    <th>Keterangan</th>
-                                    <th></th>
+                                    <th class="text-end">Qty</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-end">Net</th>
+                                    <th class="text-end">Tax</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody id="grpoBody"></tbody>
@@ -474,7 +518,7 @@
     <div class="bulk-bar" id="bulkBar">
         <span class="text-muted small me-auto" id="bulkBarLabel">0 GRPO dipilih</span>
         <button class="btn btn-outline-secondary btn-sm" onclick="clearSelection()">Batal</button>
-        <button class="btn-generate" onclick="generateAPReview()"><i class="bi bi-clipboard-check me-2"></i>Review AP</button>
+        <button class="btn-generate" onclick="generateAPReview()"><i class="bi bi-clipboard-check me-2"></i>Review & Generate</button>
     </div>
 
     <!-- Toast -->
@@ -623,7 +667,22 @@
         }
 
         function generatedGrpoNos() {
-            return new Set(getApList().map(a => a.grpoRef));
+            const refs = [];
+            getApList().forEach(a => {
+                if (a.grpoRef) refs.push(a.grpoRef);
+                (a.sourceDocs || []).forEach(doc => {
+                    if ((doc.docType || "").toUpperCase() === "GRPO" && doc.docNo) refs.push(doc.docNo);
+                });
+            });
+            return new Set(refs);
+        }
+
+        function currentDate() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
         }
 
         function statusBadge(status) {
@@ -632,10 +691,54 @@
             return `<span class="status-badge ${cls}">${text}</span>`;
         }
 
+        function money(n) {
+            return "IDR " + Math.round(Number(n || 0)).toLocaleString("id-ID");
+        }
+
+        function grpoQty(g) {
+            return (g.rows || []).reduce((s, r) => s + Number(r.qtyReceived || r.qty || 0), 0);
+        }
+
+        function grpoAmount(g) {
+            return (g.rows || []).reduce((s, r) => {
+                const qty = Number(r.qtyReceived || r.qty || 0);
+                const price = Number(r.unitPrice || 0);
+                return s + qty * price;
+            }, 0);
+        }
+
+        function grpoTax(g) {
+            return Number(g.tax || 0);
+        }
+
+        function grpoNet(g) {
+            return Number(g.net ?? grpoAmount(g));
+        }
+
+        function eligibleGrpoList() {
+            const done = generatedGrpoNos();
+            return getGrpoList().filter(g => !done.has(g.grpoNo));
+        }
+
+        function populateVendorFilter() {
+            const select = document.getElementById("fVendor");
+            const current = select.value;
+            const vendors = [...new Set(eligibleGrpoList().map(g => g.vendor).filter(Boolean))].sort();
+            select.innerHTML = `<option value="">Semua</option>` + vendors.map(v => `<option value="${v}">${v}</option>`).join("");
+            select.value = vendors.includes(current) ? current : "";
+        }
+
+        function resetGrpoFilters() {
+            document.getElementById("fGrpoSearch").value = "";
+            document.getElementById("fVendor").value = "";
+            document.getElementById("fDateFrom").value = "";
+            document.getElementById("fDateTo").value = "";
+            renderGrpoTable();
+        }
+
         // ── Tabs ─────────────────────────────────────────────────────────────────
         function renderSummary() {
-            const done = generatedGrpoNos();
-            const pending = getGrpoList().filter(g => !done.has(g.grpoNo)).length;
+            const pending = eligibleGrpoList().length;
             const selected = document.querySelectorAll(".row-check:checked").length;
             document.getElementById("sumPendingGrpo").textContent = pending;
             document.getElementById("sumSelectedGrpo").textContent = selected;
@@ -644,73 +747,56 @@
 
         // ── GRPO Table ────────────────────────────────────────────────────────────
         function renderGrpoTable() {
+            populateVendorFilter();
             const q = (document.getElementById("fGrpoSearch").value || "").toLowerCase();
-            const done = generatedGrpoNos();
-            const rows = getGrpoList().filter(g => {
-                if (q && !g.grpoNo.toLowerCase().includes(q) && !(g.poNo || "").toLowerCase().includes(q) && !(g.customer || "").toLowerCase().includes(q)) return false;
+            const vendor = document.getElementById("fVendor").value;
+            const dateFrom = document.getElementById("fDateFrom").value;
+            const dateTo = document.getElementById("fDateTo").value;
+            const rows = eligibleGrpoList().filter(g => {
+                const grpoDate = g.grpoDate || "";
+                if (q && !g.grpoNo.toLowerCase().includes(q) && !(g.poNo || "").toLowerCase().includes(q)) return false;
+                if (vendor && g.vendor !== vendor) return false;
+                if (dateFrom && grpoDate < dateFrom) return false;
+                if (dateTo && grpoDate > dateTo) return false;
                 return true;
             });
 
             const tbody = document.getElementById("grpoBody");
             if (!rows.length) {
-                tbody.innerHTML = `<tr><td colspan="11" class="empty-state"><i class="bi bi-inbox"></i>Tidak ada GRPO tersedia.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="empty-state"><i class="bi bi-inbox"></i>Tidak ada GRPO tersedia.</td></tr>`;
                 renderSummary();
                 return;
             }
 
-            const groups = {};
-            rows.forEach(g => {
-                const company = g.customer || g.store || "Unknown";
-                if (!groups[company]) groups[company] = [];
-                groups[company].push(g);
-            });
-
             let html = "";
-            let idx = 0;
-            Object.entries(groups).forEach(([company, grpoList]) => {
-                html += `<tr style="background:#f0f3fa;">
-                    <td colspan="11" style="padding:8px 16px; font-weight:700; font-size:12px; color:#1a237e; letter-spacing:.3px; border-top:2px solid #c7d2fe;">
-                        <i class="bi bi-building me-2"></i>${company}
-                        <span style="font-weight:400;color:#6b7280;margin-left:8px;">(${grpoList.length} GRPO)</span>
-                    </td>
-                </tr>`;
-
-                grpoList.forEach(g => {
-                    const isDone = done.has(g.grpoNo);
+            rows.forEach((g, idx) => {
                     const expandId = `exp-grpo-${idx}`;
-                    const cb = isDone
-                        ? `<input type="checkbox" disabled title="Sudah di-AP">`
-                        : `<input type="checkbox" class="row-check" data-grpo="${g.grpoNo}" onchange="updateBulkBar()">`;
-                    const statusHtml = isDone
-                        ? `<span class="status-badge s-generated">AP Generated</span>`
-                        : `<span class="status-badge s-open">${g.status || "Open"}</span>`;
-                    const note = isDone ? `<span class="text-muted small">Sudah ada AP</span>` : `<span class="text-muted small">Siap di-generate</span>`;
-
-                    const totalOpenQty = (g.rows || []).reduce((s, r) => s + (r.openQty !== undefined ? r.openQty : (r.qtyReceived || r.qty || 0)), 0);
+                    const cb = `<input type="checkbox" class="row-check" data-grpo="${g.grpoNo}" onchange="updateBulkBar()">`;
+                    const qtyTotal = grpoQty(g);
+                    const amountTotal = grpoAmount(g);
+                    const netTotal = grpoNet(g);
+                    const taxTotal = grpoTax(g);
 
                     const itemRows = (g.rows || []).map(r => {
                         const qty = r.qtyReceived || r.qty || 0;
-                        const openQty = r.openQty !== undefined ? r.openQty : qty;
                         const unitPrice = r.unitPrice || 0;
                         const lineTotal = qty * unitPrice;
                         return `<tr>
                             <td>${r.itemCode || "-"}</td>
                             <td>${r.itemName || "-"}</td>
                             <td class="text-end">${qty.toLocaleString()}</td>
-                            <td class="text-end text-primary fw-semibold">${openQty.toLocaleString()}</td>
                             <td class="text-end">${unitPrice ? unitPrice.toLocaleString("id-ID") : "-"}</td>
                             <td class="text-end fw-semibold">${lineTotal ? "IDR " + lineTotal.toLocaleString("id-ID") : "-"}</td>
                         </tr>`;
-                    }).join("") || `<tr><td colspan="6" class="text-muted text-center">Tidak ada item.</td></tr>`;
+                    }).join("") || `<tr><td colspan="5" class="text-muted text-center">Tidak ada item.</td></tr>`;
 
                     const expandRow = `<tr class="expand-row" id="${expandId}" style="display:none;">
-                        <td colspan="11">
+                        <td colspan="10">
                             <div class="expand-inner">
                                 <table class="item-mini-table">
                                     <thead><tr>
                                         <th>Item Code</th><th>Item Name</th>
                                         <th class="text-end">Qty</th>
-                                        <th class="text-end">Open Qty</th>
                                         <th class="text-end">Unit Price</th>
                                         <th class="text-end">Line Total</th>
                                     </tr></thead>
@@ -720,28 +806,28 @@
                         </td>
                     </tr>`;
 
-                    const mainRow = `<tr style="${isDone ? 'opacity:.6;' : ''}">
+                    const mainRow = `<tr>
                         <td>${cb}</td>
-                        <td><button class="expand-btn" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button></td>
-                        <td class="fw-semibold">${g.grpoNo}</td>
+                        <td class="fw-semibold">
+                            <button class="expand-btn me-1" id="btn-${expandId}" onclick="toggleExpand('${expandId}')"><i class="bi bi-chevron-right"></i></button>
+                            ${g.grpoNo}
+                        </td>
                         <td>${g.grpoDate || "-"}</td>
                         <td><span class="text-primary">${g.poNo || "-"}</span></td>
                         <td><span class="fw-semibold">${g.vendor || "-"}</span></td>
-                        <td class="text-end">${(g.totalQty || 0).toLocaleString()}</td>
-                        <td class="text-end text-primary fw-semibold">${totalOpenQty.toLocaleString()}</td>
-                        <td>${statusHtml}</td>
-                        <td>${note}</td>
+                        <td class="text-end">${qtyTotal.toLocaleString("id-ID")}</td>
+                        <td class="text-end">${money(amountTotal)}</td>
+                        <td class="text-end">${money(netTotal)}</td>
+                        <td class="text-end">${money(taxTotal)}</td>
                         <td>
                             <div class="action-cell">
                                 <button class="action-btn" title="Detail" onclick="viewDetail('${g.grpoNo}')"><i class="bi bi-eye"></i><span class="action-text">Detail</span></button>
-                                ${isDone ? "" : `<button class="action-btn action-btn-generate" title="Generate AP" onclick="generateSingleAP('${g.grpoNo}')"><i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate AP</span></button>`}
+                                <button class="action-btn action-btn-generate" title="Review & Generate" onclick="generateSingleAP('${g.grpoNo}')"><i class="bi bi-clipboard-check"></i><span class="action-text">Review & Generate</span></button>
                             </div>
                         </td>
                     </tr>`;
 
                     html += mainRow + expandRow;
-                    idx++;
-                });
             });
 
             tbody.innerHTML = html;
@@ -754,8 +840,8 @@
 
             const selectedGrpos = checked.map(c => c.dataset.grpo);
             const allGrpo = getGrpoList();
-            const today = new Date().toISOString().split("T")[0];
-            const existingGrpoNos = new Set(getApList().map(a => a.grpoRef));
+            const today = currentDate();
+            const existingGrpoNos = generatedGrpoNos();
 
             const drafts = selectedGrpos.map((grpoNo, index) => {
                 const g = allGrpo.find(x => x.grpoNo === grpoNo);
@@ -808,7 +894,7 @@
                     notes: "",
                     grpoRef: g.grpoNo,
                     poRef: g.poNo || "",
-                    vendor: g.customer || g.store || g.vendor || "",
+                    vendor: g.vendor || "",
                     sourceDocs: [{
                         docNo: g.grpoNo,
                         docType: "GRPO",
@@ -830,6 +916,7 @@
             localStorage.setItem("IBOCS_ap_review_batch", JSON.stringify({
                 batchId: "APREV-" + Date.now(),
                 createdAt: new Date().toISOString(),
+                mode: drafts.length === 1 ? "single" : "bulk",
                 drafts
             }));
             window.location.href = "customer_ap_review.html";
@@ -945,7 +1032,7 @@
             const n = checked.length;
             document.getElementById("bulkBar").classList.toggle("visible", n > 0);
             renderSummary();
-            document.getElementById("bulkBarLabel").textContent = `${n} GRPO dipilih - siap direview sebelum dibuat AP`;
+            document.getElementById("bulkBarLabel").textContent = `${n} GRPO dipilih - siap Review & Generate`;
         }
 
         function clearSelection() {
@@ -961,7 +1048,7 @@
 
             const selectedGrpos = checked.map(c => c.dataset.grpo);
             const allGrpo = getGrpoList();
-            const today = new Date().toISOString().split("T")[0];
+            const today = currentDate();
 
             // Build progress list UI
             const progressList = document.getElementById("progressList");
@@ -1011,7 +1098,7 @@
                         accountCode: "2100", notes: "",
                         grpoRef: g.grpoNo,
                         poRef: g.poNo || "",
-                        vendor: g.customer || g.store || "",
+                        vendor: g.vendor || "",
                         totalQty: lines.reduce((s, l) => s + l.qty, 0),
                         discountPct: 0, freight: 0,
                         totalBeforeDisc,

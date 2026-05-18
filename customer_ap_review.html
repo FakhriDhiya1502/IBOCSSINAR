@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IBOCS | Review Bulk AP</title>
+    <title>IBOCS | Review & Generate AP</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -31,11 +31,16 @@
         .group-row td { background:#eef2ff; color:#1a237e; font-weight:800; border-top:2px solid #c7d2fe; }
         .source-chip { display:inline-flex; align-items:center; gap:5px; border:1px solid #dbe3f0; border-radius:999px; padding:3px 8px; background:#fff; font-weight:700; color:#334155; }
         .detail-panel { background:#fff; border:1px solid #dbe3f0; border-left:4px solid #1a237e; border-radius:8px; padding:12px; }
+        .detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 16px; margin-bottom:12px; }
+        .detail-field { display:grid; grid-template-columns:150px minmax(0,1fr); gap:8px; border-bottom:1px solid #eef2f7; padding:6px 0; }
+        .detail-field label { color:#64748b; font-weight:800; font-size:12px; margin:0; }
+        .detail-field span { color:#1f2937; font-weight:700; min-width:0; }
+        .review-note { border-left:4px solid #e5e7eb; margin:14px 18px 18px; padding:8px 12px; color:#4b5563; font-style:italic; background:#fff; }
         .mini-title { font-size:11px; font-weight:900; color:#1a237e; text-transform:uppercase; margin-bottom:7px; }
         .empty-state { padding:48px; text-align:center; color:#94a3b8; }
         .bottom-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #dbe3f0; padding:12px 18px; display:flex; gap:12px; align-items:center; justify-content:flex-end; box-shadow:0 -3px 12px rgba(0,0,0,.07); }
         @media (max-width: 1000px) { .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-        @media (max-width: 640px) { .summary-grid { grid-template-columns:1fr; } }
+        @media (max-width: 640px) { .summary-grid, .detail-grid { grid-template-columns:1fr; } .detail-field { grid-template-columns:1fr; } }
     </style>
 </head>
 <body>
@@ -50,8 +55,8 @@
             <div class="col-lg-10 py-4 px-4">
                 <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
                     <div>
-                        <h4 class="fw-bold mb-1"><i class="bi bi-clipboard-check me-2" style="color:#1a237e;"></i>Review Bulk AP</h4>
-                        <p class="text-muted small mb-0">Cek batch, source document, dan exception sebelum AP dibuat.</p>
+                        <h4 class="fw-bold mb-1" id="pageTitle"><i class="bi bi-clipboard-check me-2" style="color:#1a237e;"></i>Review & Generate AP</h4>
+                        <p class="text-muted small mb-0" id="pageSubtitle">Cek GRPO, source document, dan exception sebelum AP dibuat.</p>
                     </div>
                     <a href="customer_AP.html" class="btn btn-outline-secondary btn-sm fw-bold"><i class="bi bi-arrow-left me-1"></i>Kembali</a>
                 </div>
@@ -68,7 +73,7 @@
 
                 <div class="card">
                     <div class="card-header-custom">
-                        <span class="section-label"><i class="bi bi-table"></i> Draft AP by Vendor</span>
+                        <span class="section-label"><i class="bi bi-table"></i> Info GRPO by Vendor</span>
                         <div class="toolbar">
                             <select id="fStatus" class="form-select form-select-sm" onchange="render()">
                                 <option value="">Semua Status</option>
@@ -85,18 +90,19 @@
                                 <tr>
                                     <th style="width:40px;"></th>
                                     <th>Status</th>
-                                    <th>Vendor</th>
-                                    <th>Source Docs</th>
+                                    <th>No. GRPO</th>
+                                    <th>Tgl GRPO</th>
                                     <th>PO Ref</th>
-                                    <th>Due Date</th>
-                                    <th class="text-end">Qty</th>
-                                    <th class="text-end">Total</th>
+                                    <th>Vendor Code & Name</th>
+                                    <th class="text-end">Total Qty</th>
+                                    <th class="text-end">Total Amount</th>
                                     <th style="width:80px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="reviewBody"></tbody>
                         </table>
                     </div>
+                    <div class="review-note"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>Setiap GRPO akan menghasilkan 1 dokumen AP tersendiri.</div>
                 </div>
             </div>
         </div>
@@ -105,7 +111,7 @@
     <div class="bottom-bar">
         <span class="text-muted me-auto" id="selectedInfo">0 AP selected</span>
         <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="window.location.href='customer_AP.html'">Batal</button>
-        <button class="btn-confirm" id="confirmBtn" onclick="confirmCreate()"><i class="bi bi-check2-circle me-1"></i>Create Selected AP</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="confirmCreate()"><i class="bi bi-check2-circle me-1"></i>Generate AP</button>
     </div>
 
     <script>
@@ -118,6 +124,13 @@
         let expanded = new Set();
 
         function fmt(n) { return "IDR " + Math.round(Number(n || 0)).toLocaleString("id-ID"); }
+        function currentDate() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
         function esc(v) {
             return String(v ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
         }
@@ -131,6 +144,25 @@
             const first = docs[0].docNo || "-";
             const more = docs.length > 1 ? ` + ${docs.length - 1} more` : "";
             return `<span class="source-chip"><i class="bi bi-link-45deg"></i>${esc(first)}${more}</span>`;
+        }
+        function firstSource(draft) {
+            return (draft.sourceDocs || [])[0] || {};
+        }
+        function vendorLabel(draft) {
+            const code = (draft.vendor || "-").replace(/\s+/g, "").slice(0, 12).toUpperCase();
+            return `${code} - ${draft.vendor || "-"}`;
+        }
+        function amountValue(draft) {
+            return Number(draft.totalBeforeDisc ?? draft.amount ?? draft.total ?? 0);
+        }
+        function taxValue(draft) {
+            return Number(draft.tax ?? Math.max(0, Number(draft.total || 0) - amountValue(draft)));
+        }
+        function netValue(draft) {
+            return Number(draft.net ?? amountValue(draft));
+        }
+        function totalValue(draft) {
+            return Number(draft.total ?? (netValue(draft) + taxValue(draft)));
         }
         function getFilteredDrafts() {
             if (!batch) return [];
@@ -146,8 +178,10 @@
         function renderSummary() {
             const drafts = batch?.drafts || [];
             const selected = drafts.filter(d => d.selected);
-            const totalAmount = selected.reduce((s, d) => s + Number(d.total || 0), 0);
+            const totalAmount = selected.reduce((s, d) => s + totalValue(d), 0);
             const vendorCount = new Set(selected.map(d => d.vendor).filter(Boolean)).size;
+            const confirmLabel = drafts.length === 1 ? "Generate AP" : "Generate Semua AP";
+            document.getElementById("confirmBtn").innerHTML = `<i class="bi bi-check2-circle me-1"></i>${confirmLabel}`;
             document.getElementById("summaryGrid").innerHTML = `
                 <div class="summary-card"><div class="summary-label">Draft AP</div><div class="summary-value">${drafts.length}</div></div>
                 <div class="summary-card"><div class="summary-label">Ready</div><div class="summary-value" style="color:#047857;">${drafts.filter(d => d.validationStatus === "Ready").length}</div></div>
@@ -158,12 +192,13 @@
             document.getElementById("confirmBtn").disabled = !selected.length || selected.some(d => d.validationStatus === "Error");
         }
         function detailRow(draft) {
-            const docs = draft.sourceDocs || [];
-            const docNos = docs.map(s => s.docNo).filter(Boolean).join(", ") || draft.grpoRef || "-";
+            const source = firstSource(draft);
+            const amount = amountValue(draft);
+            const net = netValue(draft);
+            const tax = taxValue(draft);
+            const total = totalValue(draft);
             const lineRows = (draft.lines || []).map(l => `
                 <tr>
-                    <td class="fw-semibold text-primary">${esc(docNos)}</td>
-                    <td>${esc(draft.poRef || "-")}</td>
                     <td>${esc(l.itemCode)}</td>
                     <td>${esc(l.itemName)}</td>
                     <td class="text-end">${Number(l.qty || 0).toLocaleString("id-ID")}</td>
@@ -173,10 +208,19 @@
             const messages = (draft.validationMessages || []).map(m => `<div class="text-danger small"><i class="bi bi-exclamation-circle me-1"></i>${esc(m)}</div>`).join("");
             return `<tr><td colspan="9"><div class="detail-panel">
                 ${messages || `<div class="text-success small mb-2"><i class="bi bi-check-circle me-1"></i>Draft siap dibuat AP.</div>`}
-                <div class="mini-title">Generated AP Lines from Source</div>
+                <div class="mini-title">Header</div>
+                <div class="detail-grid">
+                    <div class="detail-field"><label>Vendor Code & Name</label><span>${esc(vendorLabel(draft))}</span></div>
+                    <div class="detail-field"><label>Total Qty</label><span>${Number(draft.totalQty || 0).toLocaleString("id-ID")}</span></div>
+                    <div class="detail-field"><label>Amount</label><span>${fmt(amount)}</span></div>
+                    <div class="detail-field"><label>Net</label><span>${fmt(net)}</span></div>
+                    <div class="detail-field"><label>Tax</label><span>${fmt(tax)}</span></div>
+                    <div class="detail-field"><label>Total Amount</label><span>${fmt(total)}</span></div>
+                </div>
+                <div class="mini-title">Item Lines</div>
                 <table class="table table-sm mb-0">
-                    <thead><tr><th>Source Doc</th><th>PO Ref</th><th>Item</th><th>Name</th><th class="text-end">Qty</th><th class="text-end">Price</th><th class="text-end">Subtotal</th></tr></thead>
-                    <tbody>${lineRows || `<tr><td colspan="7" class="text-muted text-center py-3">Tidak ada detail item.</td></tr>`}</tbody>
+                    <thead><tr><th>Item Code</th><th>Item Name</th><th class="text-end">Qty</th><th class="text-end">Price</th><th class="text-end">Total</th></tr></thead>
+                    <tbody>${lineRows || `<tr><td colspan="5" class="text-muted text-center py-3">Tidak ada detail item.</td></tr>`}</tbody>
                 </table>
             </div></td></tr>`;
         }
@@ -186,7 +230,12 @@
                 renderSummary();
                 return;
             }
-            document.getElementById("batchMeta").textContent = batch.batchId || "";
+            const draftCount = (batch.drafts || []).length;
+            document.getElementById("pageTitle").innerHTML = `<i class="bi bi-clipboard-check me-2" style="color:#1a237e;"></i>${draftCount === 1 ? "Review & Generate AP" : "Review Bulk AP"}`;
+            document.getElementById("pageSubtitle").textContent = draftCount === 1
+                ? "Cek GRPO sebelum AP dibuat."
+                : "Cek batch, source document, dan exception sebelum AP dibuat.";
+            document.getElementById("batchMeta").textContent = `${batch.batchId || ""} - ${draftCount} GRPO`;
             const groups = {};
             getFilteredDrafts().forEach(d => {
                 const vendor = d.vendor || "Unknown";
@@ -195,19 +244,20 @@
             });
             let html = "";
             Object.entries(groups).forEach(([vendor, drafts]) => {
-                const amount = drafts.reduce((s, d) => s + Number(d.total || 0), 0);
-                html += `<tr class="group-row"><td colspan="9"><i class="bi bi-building me-2"></i>${esc(vendor)} <span class="text-muted ms-2 fw-normal">${drafts.length} AP - ${fmt(amount)}</span></td></tr>`;
+                const amount = drafts.reduce((s, d) => s + totalValue(d), 0);
+                html += `<tr class="group-row"><td colspan="9"><i class="bi bi-building me-2"></i>${esc(vendor)} <span class="text-muted ms-2 fw-normal">${drafts.length} GRPO - ${fmt(amount)}</span></td></tr>`;
                 drafts.forEach(d => {
                     const id = esc(d.draftId);
+                    const source = firstSource(d);
                     html += `<tr>
                         <td><input type="checkbox" ${d.selected ? "checked" : ""} ${d.validationStatus === "Error" ? "disabled" : ""} onchange="toggleSelect('${id}', this.checked)"></td>
                         <td>${statusBadge(d.validationStatus)}</td>
-                        <td class="fw-semibold">${esc(d.vendor || "-")}</td>
-                        <td>${sourceLabel(d)}</td>
+                        <td class="fw-semibold text-primary">${esc(d.grpoRef || source.docNo || "-")}</td>
+                        <td>${esc(source.docDate || "-")}</td>
                         <td>${esc(d.poRef || "-")}</td>
-                        <td>${esc(d.dueDate || "-")}</td>
+                        <td class="fw-semibold">${esc(vendorLabel(d))}</td>
                         <td class="text-end">${Number(d.totalQty || 0).toLocaleString("id-ID")}</td>
-                        <td class="text-end fw-bold">${fmt(d.total)}</td>
+                        <td class="text-end fw-bold">${fmt(totalValue(d))}</td>
                         <td><button class="btn-review btn-primary-soft" onclick="toggleDetail('${id}')"><i class="bi ${expanded.has(d.draftId) ? "bi-chevron-up" : "bi-chevron-down"}"></i>Detail</button></td>
                     </tr>`;
                     if (expanded.has(d.draftId)) html += detailRow(d);
@@ -227,19 +277,29 @@
             render();
         }
         function nextApNo(baseLength, offset) {
-            const today = new Date().toISOString().split("T")[0];
+            const today = currentDate();
             return "AP-" + today.replace(/-/g, "").slice(2) + "-" + String(baseLength + offset + 1).padStart(4, "0");
+        }
+        function generatedGrpoNos(apList) {
+            const refs = [];
+            apList.forEach(a => {
+                if (a.grpoRef) refs.push(a.grpoRef);
+                (a.sourceDocs || []).forEach(doc => {
+                    if ((doc.docType || "").toUpperCase() === "GRPO" && doc.docNo) refs.push(doc.docNo);
+                });
+            });
+            return new Set(refs);
         }
         function confirmCreate() {
             const apList = JSON.parse(localStorage.getItem("IBOCS_ap_list") || "[]");
             const baseLength = apList.length;
-            const existingGrpoNos = new Set(apList.map(a => a.grpoRef));
+            const existingGrpoNos = generatedGrpoNos(apList);
             const selected = (batch.drafts || []).filter(d => d.selected && d.validationStatus !== "Error" && !existingGrpoNos.has(d.grpoRef));
             selected.forEach((d, index) => {
                 const apNo = nextApNo(baseLength, index);
                 apList.unshift({
                     apNo,
-                    apDate: d.apDate,
+                    apDate: currentDate(),
                     dueDate: d.dueDate,
                     accountCode: d.accountCode,
                     notes: d.notes,

@@ -52,30 +52,6 @@
             padding: 1.5rem;
         }
 
-        .company-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary-light);
-        }
-
-        .company-header h6 {
-            margin: 0;
-            font-size: 1.1rem;
-            letter-spacing: 0.025em;
-            text-transform: uppercase;
-        }
-
-        .company-header::before {
-            content: "";
-            width: 4px;
-            height: 24px;
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
         .table thead th {
             background: #f1f5f9;
             text-transform: uppercase;
@@ -169,6 +145,63 @@
 
         .animate-in {
             animation: fadeInSlideUp 0.3s ease-out forwards;
+        }
+
+        .page-title { font-size: 18px; font-weight: 800; margin: 0; }
+        .page-subtitle { font-size: 13px; color: #6b7280; margin-top: 2px; }
+        .crumb { font-size: 12px; color: #6b7280; margin-top: 8px; }
+        .po-gen-card { background:#fff; border:1px solid #e8ebf1; border-radius:8px; margin-bottom:16px; box-shadow:0 2px 10px rgba(0,0,0,.04); overflow:hidden; }
+        .po-gen-card .card-header { padding:12px 16px; font-weight:800; font-size:13px; border-bottom:1px solid #eef0f4; background:#fafbfe; }
+        .po-gen-card .card-body { padding:18px; }
+        .summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .summary-box { border:1px solid #e2e8f0; border-radius:8px; padding:16px; background:#fff; }
+        .summary-box .lbl { font-size:12px; color:#6b7280; font-weight:800; text-transform:uppercase; letter-spacing:.4px; }
+        .summary-box .val { font-size:30px; font-weight:800; color:#15803d; line-height:1.1; margin-top:4px; }
+        .summary-box .hint { color:#6b7280; font-size:12px; margin-top:4px; }
+        .filter-row { display:grid; grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(145px,1fr) minmax(145px,1fr) auto; gap:14px; align-items:end; margin-bottom:16px; }
+        .filter-row label { display:block; font-size:12px; font-weight:800; color:#555; margin-bottom:5px; }
+        .filter-row select,
+        .filter-row input { width:100%; height:38px; border:1px solid #d5dae3; border-radius:7px; padding:0 10px; font-size:13px; background:#fff; }
+        .btn-xs { padding:6px 10px; border-radius:7px; border:0; font-size:12px; font-weight:800; cursor:pointer; white-space:nowrap; text-decoration:none; display:inline-flex; align-items:center; gap:4px; }
+        .btn-view { background:#dbeafe; color:#1d4ed8; }
+        .btn-neutral { background:#f3f4f6; color:#374151; border:1px solid #d1d5db; }
+        .table-wrap { overflow-x:auto; }
+        .po-generation-table { margin-top:8px; }
+        .po-generation-table table { width:100%; border-collapse:collapse; min-width:1080px; }
+        .po-generation-table th,
+        .po-generation-table td { padding:13px 14px; border-bottom:1px solid #edf0f5; font-size:13px; text-align:left; vertical-align:middle; }
+        .po-generation-table th { background:#f9fafc; font-size:12px; color:#555; font-weight:800; white-space:nowrap; }
+        .po-generation-table tbody tr.main-row:hover { background:#fafcff; }
+        .po-generation-table input[type="checkbox"] { width:15px; height:15px; cursor:pointer; accent-color:#15803d; }
+        .tag { display:inline-block; padding:4px 9px; border-radius:999px; font-size:11px; font-weight:800; }
+        .tag-ready { background:#fef9c3; color:#92400e; }
+        .tag-feed { background:#dcfce7; color:#166534; }
+        .tag-blocked { background:#f3f4f6; color:#6b7280; }
+        .expand-btn { background:none; border:none; cursor:pointer; color:#9ca3af; padding:2px 4px; transition:transform .2s ease, color .15s; display:inline-flex; align-items:center; }
+        .expand-btn:hover { color:#374151; }
+        .expand-btn.open { transform:rotate(180deg); color:#15803d; }
+        .expand-row { display:none; background:#f8fafc; }
+        .expand-row.open { display:table-row; }
+        .expand-content { padding:14px 16px 18px 52px; border-left:3px solid #15803d; }
+        .section-label { font-size:11px; font-weight:800; color:#374151; text-transform:uppercase; letter-spacing:.05em; margin:0 0 8px; display:flex; align-items:center; gap:6px; }
+        .inner-table { width:100%; border-collapse:collapse; background:#fff; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; margin-top:10px; box-shadow:0 1px 4px rgba(0,0,0,.05); }
+        .inner-table th { background:#f1f5f9; padding:7px 10px; font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; border-bottom:1px solid #e2e8f0; }
+        .inner-table td { padding:8px 10px; font-size:12px; color:#334155; border-bottom:1px solid #f1f5f9; }
+        .inner-table tfoot td { background:#f8fafc; font-weight:800; border-top:1px solid #e2e8f0; }
+        .action-cell { display:flex; justify-content:center; gap:6px; }
+        .action-btn { width:30px; min-width:30px; height:28px; border:1px solid #bbf7d0; border-radius:7px; background:#fff; color:#15803d; display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; cursor:pointer; position:relative; transition:background .18s ease; }
+        .action-btn:hover { background:#ecfdf5; }
+        .action-btn .action-text { position:absolute; right:50%; bottom:calc(100% + 6px); transform:translateX(50%); background:#111827; color:#fff; border-radius:5px; padding:4px 7px; font-size:11px; line-height:1; opacity:0; pointer-events:none; white-space:nowrap; box-shadow:0 4px 12px rgba(0,0,0,.16); transition:opacity .14s ease; z-index:20; }
+        .action-btn:hover .action-text { opacity:1; }
+        .bulk-bar { display:none; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; background:#ecfdf5; border:1px solid #bbf7d0; border-radius:8px; margin:4px 0 18px; font-size:13px; font-weight:800; color:#166534; }
+        .bulk-bar.visible { display:flex; }
+        .bulk-bar .spacer { flex:1; }
+        @media (max-width: 1100px) {
+            .filter-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .summary-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        }
+        @media (max-width: 640px) {
+            .filter-row, .summary-grid { grid-template-columns:1fr; }
         }
 
         /* Modern PO Modal Style (Inspired by SAP but Styled like IBOCS) */
@@ -305,38 +338,92 @@
 
             <!-- Main -->
             <div class="col-lg-10">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white py-3">
-                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
-                            <div>
-                                <div class="d-flex align-items-center gap-3 mb-1">
-                                    <h5 class="fw-bold mb-0">Customer Orders</h5>
-                                </div>
-                                <div class="text-muted small">Centang forecast confirmed untuk dibuat PO.</div>
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <h1 class="page-title">PO Generation Feed</h1>
+                        <div class="page-subtitle">Buat Purchase Order Feed berdasarkan Forecast yang sudah confirmed.</div>
+                        <div class="crumb">Home &gt; Customer &gt; PO Generation Feed</div>
+                    </div>
+                    <a href="customer_po_list.html" class="btn btn-outline-primary btn-sm fw-bold">
+                        <i class="bi bi-list-ul me-1"></i>Lihat PO yang Sudah Digenerate
+                    </a>
+                </div>
+
+                <div class="po-gen-card">
+                    <div class="card-header"><i class="bi bi-clipboard-data me-1"></i>Summary</div>
+                    <div class="card-body">
+                        <div class="summary-grid">
+                            <div class="summary-box">
+                                <div class="lbl">Belum Generate PO</div>
+                                <div class="val" id="summaryPending">0</div>
+                                <div class="hint">Forecast confirmed yang belum ada PO. Tidak terpengaruh filter.</div>
                             </div>
-                            <div class="d-flex flex-wrap gap-2 align-items-center">
-                                <button id="btnBulkPO" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm"
-                                    style="border-radius:20px;padding:.25rem .9rem;background:linear-gradient(135deg,var(--primary),#22c55e);font-size:.85rem;display:none!important;"
-                                    onclick="startBulkPO()">
-                                    <i class="bi bi-bag-plus"></i>
-                                    <span class="fw-bold">Bulk Create PO (<span id="bulkCount">0</span>)</span>
-                                </button>
-                                <select id="periodFilter" class="form-select form-select-sm" style="width:150px" onchange="render()">
-                                    <option value="ALL">Semua Week</option>
-                                </select>
-                                <input id="q" class="form-control form-control-sm" style="width:200px"
-                                    placeholder="Cari FC / Plan / Farm / Whse" oninput="render()">
+                            <div class="summary-box">
+                                <div class="lbl">Total Qty Feed</div>
+                                <div class="val" id="summaryQty" style="color:#1d4ed8;">0</div>
+                                <div class="hint">Akumulasi qty dari forecast pending.</div>
+                            </div>
+                            <div class="summary-box">
+                                <div class="lbl">Vendor</div>
+                                <div class="val" id="summaryVendor" style="color:#7c3aed;">0</div>
+                                <div class="hint">Jumlah vendor dari forecast pending.</div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div id="ordersContainer" class="p-3">
-                        <!-- Dynamic sections per company will be injected here -->
+                <div class="po-gen-card">
+                    <div class="card-header"><i class="bi bi-table me-1"></i>Daftar Forecast</div>
+                    <div class="card-body">
+                        <div class="filter-row">
+                            <div>
+                                <label>Search Box</label>
+                                <input type="text" id="q" placeholder="Search by No. Forecast / Plan / Farm">
+                            </div>
+                            <div>
+                                <label>Week</label>
+                                <select id="periodFilter">
+                                    <option value="ALL">Semua Week</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Dari Tanggal</label>
+                                <input type="date" id="fDateFrom">
+                            </div>
+                            <div>
+                                <label>Sampai</label>
+                                <input type="date" id="fDateTo">
+                            </div>
+                            <div>
+                                <label>&nbsp;</label>
+                                <div style="display:flex;gap:8px;">
+                                    <button class="btn-xs btn-view" style="height:38px;padding:0 14px;" onclick="applyFilter()"><i class="bi bi-search"></i>Filter</button>
+                                    <button class="btn-xs btn-neutral" style="height:38px;padding:0 14px;" onclick="resetFilter()"><i class="bi bi-arrow-counterclockwise"></i>Reset</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bulk-bar" id="bulkBar">
+                            <i class="bi bi-check2-square"></i>
+                            <span id="bulkCount">0 Forecast dipilih</span>
+                            <span class="spacer"></span>
+                            <button class="btn-xs btn-view" onclick="startBulkPO()"><i class="bi bi-eye"></i>Review &amp; Generate PO</button>
+                            <button class="btn-xs btn-neutral" onclick="clearSelection()"><i class="bi bi-x-lg"></i>Clear</button>
+                        </div>
+
+                        <div id="ordersContainer">
+                            <!-- Forecast rows will be injected here -->
+                        </div>
+                        <div id="emptyState" class="text-center text-muted py-4" style="display:none;font-size:13px;">
+                            <i class="bi bi-inbox" style="font-size:32px;opacity:.3;display:block;margin-bottom:8px;"></i>
+                            Tidak ada forecast ditemukan
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+
+            </div><!-- /col-lg-10 -->
+        </div><!-- /row -->
+    </div><!-- /container-fluid -->
 
     <!-- Order Detail Modal (Modern PO Style) -->
     <div class="modal fade po-modal" id="orderDetailModal" tabindex="-1">
@@ -824,6 +911,26 @@
         // =========================
         // FORECAST DATA
         // =========================
+        const LS_ORDERS = "IBOCS_customer_orders";
+        const LS_ORDER_LINES = "IBOCS_customer_order_lines";
+        const feedPrices = {
+            "FEED-001": 6200,
+            "FEED-002": 6500,
+            "FEED-003": 6800,
+            "FEED-004": 7200,
+            "FEED-005": 7600,
+            "FEED-006": 8000
+        };
+
+        function rupiah(n) { return "Rp " + Number(n || 0).toLocaleString("id-ID"); }
+        function formatDateShort(dateStr) {
+            if (!dateStr) return "-";
+            const date = new Date(dateStr);
+            if (Number.isNaN(date.getTime())) return dateStr;
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return `${date.getDate()}-${months[date.getMonth()]}-${String(date.getFullYear()).slice(-2)}`;
+        }
+
         const DEMO_FC = [
             { fcNo: "FC-001", fcDate: "2026-04-29", period: "Week 18", company: "PT TOP Distribusi", farm: "Farm Deli",   warehouse: "WH-KDG01", planNo: "PLAN-2026-001", planName: "Farm Deli / KDG-01",   status: "Confirmed", lines: [{ itemCode:"FEED-002", itemName:"Pakan Starter (BR-1)", recommendedQty:7300 }, { itemCode:"FEED-003", itemName:"Pakan Grower (BR-2)", recommendedQty:5200 }] },
             { fcNo: "FC-002", fcDate: "2026-04-29", period: "Week 18", company: "PT TOP Distribusi", farm: "Farm Deli",   warehouse: "WH-KDG02", planNo: "PLAN-2026-002", planName: "Farm Deli / KDG-02",   status: "Confirmed", lines: [{ itemCode:"FEED-002", itemName:"Pakan Starter (BR-1)", recommendedQty:8000 }, { itemCode:"FEED-004", itemName:"Pakan Finisher (BR-3)", recommendedQty:7000 }] },
@@ -834,8 +941,9 @@
 
         function getFcList() {
             const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const master = window.IBOCS_FORECAST_MASTER || DEMO_FC;
             const storedNos = new Set(stored.map(f => f.fcNo));
-            return [...stored, ...DEMO_FC.filter(d => !storedNos.has(d.fcNo))];
+            return [...stored, ...master.filter(d => !storedNos.has(d.fcNo))];
         }
 
         function calcTotalQty(fc) {
@@ -843,9 +951,167 @@
         }
 
         function fmt(n) { return Number(n || 0).toLocaleString("id-ID"); }
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, c => ({
+                "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+            }[c]));
+        }
+        function getPendingForecasts() {
+            const createdOrders = JSON.parse(localStorage.getItem("IBOCS_customer_orders") || "[]");
+            const usedFcNos = new Set(createdOrders.map(o => o.fcRef).filter(Boolean));
+            return getFcList().filter(fc => fc.status === "Confirmed" && !usedFcNos.has(fc.fcNo));
+        }
+        function getVendorCode(fc) {
+            const firstLine = (fc.lines || []).find(l => l.vendorCode);
+            return fc.vendorCode || firstLine?.vendorCode || "VND-SIC";
+        }
+        function getVendorText(fc) {
+            const code = getVendorCode(fc);
+            if (fc.vendorName) return `${code} - ${fc.vendorName}`;
+            return code === "VND-CTU" ? "VND-CTU - CTU" : "VND-SIC - SIC";
+        }
+        function renderItemLinesTable(fc) {
+            let totalQty = 0;
+            const rows = (fc.lines || []).map(line => {
+                const qty = (Number(line.recommendedQty || line.standardNeed) || 0) + (Number(line.manualAdjustment) || 0);
+                totalQty += qty;
+                return `
+                    <tr>
+                        <td>${escapeHtml(line.itemCode || "-")}</td>
+                        <td>${escapeHtml(line.itemName || "-")}</td>
+                        <td style="text-align:right;">${fmt(qty)}</td>
+                        <td>Kg</td>
+                        <td>${escapeHtml(fc.warehouse || "-")}</td>
+                    </tr>`;
+            }).join("");
+            return `
+                <table class="inner-table">
+                    <thead>
+                        <tr>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th style="text-align:right;">Qty</th>
+                            <th>UoM</th>
+                            <th>Whse</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows || `<tr><td colspan="5" class="text-muted">Tidak ada item lines.</td></tr>`}</tbody>
+                    <tfoot><tr><td colspan="2" style="text-align:right;">Total Qty</td><td style="text-align:right;">${fmt(totalQty)}</td><td colspan="2"></td></tr></tfoot>
+                </table>`;
+        }
+        function lineQty(line) {
+            return (Number(line.recommendedQty || line.standardNeed) || 0) + (Number(line.manualAdjustment) || 0);
+        }
+        function linePrice(line) {
+            return Number(line.price || line.unitPrice || line.priceAfter || feedPrices[line.itemCode] || 0) || 0;
+        }
+        function getForecastAmount(fc) {
+            return (fc.lines || []).reduce((sum, line) => sum + (lineQty(line) * linePrice(line)), 0);
+        }
+        function todayYMD() {
+            return new Date().toISOString().slice(0, 10);
+        }
+        function nextPoNo(date, existingCount) {
+            return "PO-FEED-" + date.replace(/-/g, "").slice(2, 6) + "-" + String(existingCount + 1).padStart(4, "0");
+        }
+        function markForecastCreated(fc) {
+            const stored = JSON.parse(localStorage.getItem("IBOCS_fc_list") || "[]");
+            const idx = stored.findIndex(f => f.fcNo === fc.fcNo);
+            const updated = { ...fc, status:"PO Created" };
+            if (idx >= 0) stored[idx] = { ...stored[idx], status:"PO Created" };
+            else stored.unshift(updated);
+            localStorage.setItem("IBOCS_fc_list", JSON.stringify(stored));
+        }
+        function generateForecastPO(fcNo) {
+            const fc = getFcList().find(f => f.fcNo === fcNo);
+            if (!fc) return alert("Forecast tidak ditemukan.");
+            if (!confirm(`Generate PO untuk ${fc.fcNo}?`)) return;
+
+            const date = todayYMD();
+            const orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            if (orders.some(o => o.fcRef === fc.fcNo)) {
+                alert("Forecast ini sudah pernah dibuat PO.");
+                render();
+                return;
+            }
+
+            const orderLines = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+            const soList = JSON.parse(localStorage.getItem("IBOCS_so_list") || "[]");
+            const amount = getForecastAmount(fc);
+            const poNo = nextPoNo(date, orders.length);
+            const lines = (fc.lines || []).map(line => ({
+                sku: line.itemCode || "",
+                name: line.itemName || line.itemCode || "",
+                qty: lineQty(line),
+                price: linePrice(line),
+                uom: "Kg",
+                whse: fc.warehouse || ""
+            })).filter(line => line.sku && line.qty > 0);
+
+            if (!lines.length) return alert("Forecast belum punya item lines yang valid.");
+
+            orders.unshift({
+                no: poNo,
+                customerName: fc.company || "Customer",
+                customer: fc.customerCode || fc.company || "Customer",
+                date: date,
+                requiredDate: fc.fcDate || date,
+                total: Math.round(amount * 1.11),
+                status: "Open",
+                warehouse: fc.warehouse || "",
+                planNo: fc.planNo || "",
+                planName: fc.planName || fc.planDesc || "",
+                fcRef: fc.fcNo,
+                week: fc.period || fc.week || "",
+                vendorCode: getVendorCode(fc).replace("VND-", ""),
+                sourceType: "Feed",
+                remarks: `Generated from Forecast ${fc.fcNo}. 1 Forecast = 1 PO.`
+            });
+            orderLines[poNo] = lines;
+            soList.unshift({
+                soNo: "SO-" + date.replace(/-/g, "").slice(0, 6) + "-" + String(soList.length + 1).padStart(4, "0"),
+                soDate: date,
+                deliveryDate: fc.fcDate || date,
+                store: fc.company || "Customer",
+                customer: fc.company || "Customer",
+                type: "FROM_PO",
+                slot: "-",
+                totalQty: lines.reduce((s, line) => s + (line.qty || 0), 0),
+                status: "Draft",
+                sourcePoNo: poNo,
+                planNo: fc.planNo || "",
+                fcRef: fc.fcNo,
+                warehouse: fc.warehouse || "",
+                remarks: `Auto-created from PO Feed ${poNo}`,
+                lines: lines.map(line => ({
+                    itemCode: line.sku,
+                    itemName: line.name,
+                    qty: line.qty,
+                    uom: line.uom,
+                    source: "Customer PO Feed"
+                }))
+            });
+
+            localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
+            localStorage.setItem(LS_ORDER_LINES, JSON.stringify(orderLines));
+            localStorage.setItem("IBOCS_so_list", JSON.stringify(soList));
+            markForecastCreated(fc);
+            selectedFcNos.delete(fc.fcNo);
+            render();
+            renderPoList();
+            alert(`PO ${poNo} berhasil dibuat dari ${fc.fcNo}.`);
+        }
+        function renderSummary() {
+            const pending = getPendingForecasts();
+            const qty = pending.reduce((sum, fc) => sum + calcTotalQty(fc), 0);
+            const vendors = new Set(pending.map(getVendorText));
+            document.getElementById("summaryPending").textContent = pending.length;
+            document.getElementById("summaryQty").textContent = fmt(qty);
+            document.getElementById("summaryVendor").textContent = vendors.size;
+        }
 
         function setupPeriodFilter() {
-            const data = getFcList().filter(f => f.status === "Confirmed");
+            const data = getPendingForecasts();
             const periods = ["ALL", ...new Set(data.map(f => f.period || f.week || "Week 18"))];
             document.getElementById("periodFilter").innerHTML = periods.map(p =>
                 `<option value="${p}">${p === "ALL" ? "Semua Week" : p}</option>`
@@ -867,17 +1133,30 @@
         }
 
         function updateBulkBtn() {
-            const btn = document.getElementById("btnBulkPO");
+            const bar = document.getElementById("bulkBar");
             const count = selectedFcNos.size;
-            document.getElementById("bulkCount").textContent = count;
-            btn.style.display = count > 0 ? "inline-flex" : "none";
+            document.getElementById("bulkCount").textContent = `${count} Forecast dipilih`;
+            bar.classList.toggle("visible", count > 0);
         }
 
         function startBulkPO() {
             const queue = [...selectedFcNos];
             if (!queue.length) return;
-            localStorage.setItem("IBOCS_bulk_po_queue", JSON.stringify({ fcNos: queue, index: 0 }));
-            window.location.href = `customer_order_detail.html?fcNo=${encodeURIComponent(queue[0])}&bulk=1`;
+            localStorage.setItem("IBOCS_feed_po_review_batch", JSON.stringify({
+                batchId: "FEED-PO-" + Date.now(),
+                fcNos: queue,
+                createdAt: new Date().toISOString()
+            }));
+            window.location.href = "customer_orders_review.html";
+        }
+
+        function reviewSingleForecast(fcNo) {
+            localStorage.setItem("IBOCS_feed_po_review_batch", JSON.stringify({
+                batchId: "FEED-PO-" + Date.now(),
+                fcNos: [fcNo],
+                createdAt: new Date().toISOString()
+            }));
+            window.location.href = "customer_orders_review.html";
         }
 
         function changePage(delta) {
@@ -885,86 +1164,135 @@
             render();
         }
 
+        function applyFilter() {
+            currentPage = 1;
+            render();
+        }
+
+        function resetFilter() {
+            document.getElementById("q").value = "";
+            document.getElementById("periodFilter").value = "ALL";
+            document.getElementById("fDateFrom").value = "";
+            document.getElementById("fDateTo").value = "";
+            currentPage = 1;
+            render();
+        }
+
+        function clearSelection() {
+            selectedFcNos.clear();
+            render();
+        }
+
+        function toggleExpand(rowId, btnId) {
+            const row = document.getElementById(rowId);
+            const btn = document.getElementById(btnId);
+            if (!row || !btn) return;
+            const isOpen = row.classList.contains("open");
+            row.classList.toggle("open", !isOpen);
+            btn.classList.toggle("open", !isOpen);
+        }
+
         function render() {
             const q      = document.getElementById("q").value.trim().toLowerCase();
             const period = document.getElementById("periodFilter").value || "ALL";
+            const from = document.getElementById("fDateFrom").value;
+            const to = document.getElementById("fDateTo").value;
             const container = document.getElementById("ordersContainer");
+            const emptyState = document.getElementById("emptyState");
 
-            const data = getFcList().filter(fc => {
-                if (fc.status !== "Confirmed") return false;
+            renderSummary();
+            const data = getPendingForecasts().filter(fc => {
                 const fcPeriod = fc.period || fc.week || "Week 18";
-                const hay = [fc.fcNo, fc.planNo, fc.planName, fc.company, fc.farm, fc.warehouse].join(" ").toLowerCase();
-                return (period === "ALL" || fcPeriod === period) && (!q || hay.includes(q));
+                const fcDate = fc.fcDate || "";
+                const hay = [fc.fcNo, fc.planNo, fc.planName, fc.planDesc, fc.company, fc.farm, fc.warehouse, getVendorText(fc)].join(" ").toLowerCase();
+                if (period !== "ALL" && fcPeriod !== period) return false;
+                if (from && fcDate < from) return false;
+                if (to && fcDate > to) return false;
+                if (q && !hay.includes(q)) return false;
+                return true;
             }).sort((a, b) => String(b.fcNo).localeCompare(String(a.fcNo)));
 
             if (data.length === 0) {
-                container.innerHTML = `<div class="text-center text-muted py-5"><i class="bi bi-inbox fs-3 d-block mb-2"></i>Tidak ada forecast confirmed.</div>`;
+                container.innerHTML = "";
+                emptyState.style.display = "";
+                selectedFcNos.forEach(id => {
+                    if (!getPendingForecasts().some(fc => fc.fcNo === id)) selectedFcNos.delete(id);
+                });
+                updateBulkBtn();
                 return;
             }
+            emptyState.style.display = "none";
 
             const totalPages = Math.ceil(data.length / pageSize);
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
             const page = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-            const companies = [...new Set(page.map(fc => fc.company || "Lainnya"))];
-
-            let html = companies.map(company => {
-                const rows = page.filter(fc => (fc.company || "Lainnya") === company);
-                const rowsHtml = rows.map((fc) => {
-                    const checked = selectedFcNos.has(fc.fcNo) ? "checked" : "";
-                    return `
-                    <tr class="${selectedFcNos.has(fc.fcNo) ? 'table-success' : ''}" style="cursor:default;">
-                        <td class="ps-3">
-                            <input type="checkbox" class="form-check-input fc-check" value="${fc.fcNo}"
+            const rowsHtml = page.map((fc, idx) => {
+                const checked = selectedFcNos.has(fc.fcNo) ? "checked" : "";
+                const expandId = `exp-fc-${idx}`;
+                const btnId = `expbtn-fc-${idx}`;
+                return `
+                    <tr class="main-row ${selectedFcNos.has(fc.fcNo) ? 'table-success' : ''}">
+                        <td>
+                            <input type="checkbox" value="${escapeHtml(fc.fcNo)}"
                                 ${checked} onchange="onCheckChange(this)">
                         </td>
-                        <td class="fw-bold text-primary mono">${fc.fcNo}</td>
-                        <td>${fc.planNo || "-"}</td>
-                        <td>${fc.planName || "-"}</td>
-                        <td><span class="badge bg-light text-dark border">${fc.period || fc.week || "-"}</span></td>
-                        <td>${fc.farm || "-"}</td>
-                        <td><span class="badge bg-light text-dark border">${fc.warehouse || "-"}</span></td>
-                        <td class="fw-bold text-success">${fmt(calcTotalQty(fc))} kg</td>
                         <td>
-                            <a href="customer_order_detail.html?fcNo=${encodeURIComponent(fc.fcNo)}"
-                               class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1"
-                               style="border-radius:8px;font-size:12px;">
-                                <i class="bi bi-bag-plus"></i> Create PO
-                            </a>
+                            <button class="expand-btn" id="${btnId}" onclick="toggleExpand('${expandId}','${btnId}')">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                        </td>
+                        <td><strong class="mono">${escapeHtml(fc.fcNo)}</strong><div style="margin-top:3px;"><span class="tag tag-ready">Belum Generate PO</span></div></td>
+                        <td>${escapeHtml(fc.fcDate || "-")}</td>
+                        <td><span class="tag tag-feed">Feed</span></td>
+                        <td>${escapeHtml(getVendorText(fc))}</td>
+                        <td>${escapeHtml(fc.planNo || "-")}</td>
+                        <td>${escapeHtml(fc.period || fc.week || "-")}</td>
+                        <td>${escapeHtml(fc.farm || "-")}</td>
+                        <td>${escapeHtml(fc.warehouse || "-")}</td>
+                        <td style="text-align:right;font-weight:800;color:#166534;">${fmt(calcTotalQty(fc))} kg</td>
+                        <td class="action-cell">
+                            <button type="button" class="action-btn" title="Review & Generate" onclick="reviewSingleForecast('${escapeHtml(fc.fcNo)}')">
+                                <i class="bi bi-eye"></i><span class="action-text">Review & Generate</span>
+                            </button>
+                            <button type="button" class="action-btn" title="Generate PO" onclick="generateForecastPO('${escapeHtml(fc.fcNo)}')">
+                                <i class="bi bi-file-earmark-plus"></i><span class="action-text">Generate PO</span>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="expand-row" id="${expandId}">
+                        <td colspan="12" style="padding:0;">
+                            <div class="expand-content">
+                                <div class="section-label"><i class="bi bi-box"></i>Item Lines - ${escapeHtml(fc.fcNo)}</div>
+                                <div class="table-wrap">${renderItemLinesTable(fc)}</div>
+                            </div>
                         </td>
                     </tr>`;
-                }).join("");
-
-                return `
-                <div class="mb-4">
-                    <div style="display:flex;align-items:center;background:#15803d;border-radius:10px 10px 0 0;padding:10px 16px;">
-                        <i class="bi bi-building me-2" style="color:#fff;"></i>
-                        <span style="font-size:13px;font-weight:700;color:#fff;">${company}</span>
-                        <span style="font-size:11px;color:#bbf7d0;margin-left:10px;">${rows.length} forecast confirmed</span>
-                    </div>
-                    <div style="border:1.5px solid #e0e7ef;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="ps-3" style="width:44px"></th>
-                                        <th>No Forecast</th>
-                                        <th>Plan No</th>
-                                        <th>Plan Name</th>
-                                        <th>Week</th>
-                                        <th>Farm</th>
-                                        <th>Warehouse</th>
-                                        <th>Total QTY</th>
-                                        <th style="width:130px"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>${rowsHtml}</tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>`;
             }).join("");
+
+            let html = `
+                <div class="table-wrap po-generation-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:44px;"></th>
+                                    <th style="width:36px;"></th>
+                                    <th>No Forecast</th>
+                                    <th>Tanggal</th>
+                                    <th>Source</th>
+                                    <th>Vendor</th>
+                                    <th>Plan No</th>
+                                    <th>Week</th>
+                                    <th>Farm</th>
+                                    <th>Warehouse</th>
+                                    <th style="text-align:right;">Total Qty</th>
+                                    <th style="width:80px;text-align:center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                </div>`;
 
             // Pagination
             html += `
@@ -977,6 +1305,10 @@
                 </div>`;
 
             container.innerHTML = html;
+            selectedFcNos.forEach(id => {
+                if (!data.some(fc => fc.fcNo === id)) selectedFcNos.delete(id);
+            });
+            updateBulkBtn();
         }
         // =========================
         // ORDER DETAIL MODAL LOGIC (Ported from customer_order_detail.html)
@@ -1131,6 +1463,88 @@
             }
         };
 
+        // =========================
+        // PO LIST (sudah digenerate)
+        // =========================
+        function renderPoList() {
+            const q        = (document.getElementById("poQ").value || "").trim().toLowerCase();
+            const fStatus  = document.getElementById("poFStatus").value;
+            const fFrom    = document.getElementById("poFDateFrom").value;
+            const fTo      = document.getElementById("poFDateTo").value;
+
+            const orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            const container = document.getElementById("poListContainer");
+            const empty     = document.getElementById("poListEmpty");
+
+            let list = orders.filter(o => {
+                if (fStatus && o.status !== fStatus) return false;
+                if (fFrom  && o.date < fFrom) return false;
+                if (fTo    && o.date > fTo)   return false;
+                if (q) {
+                    const hay = [o.no, o.fcRef, o.vendorCode, o.planNo, o.customer, o.week].join(" ").toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+
+            if (!list.length) {
+                container.innerHTML = "";
+                empty.style.display = "";
+                return;
+            }
+            empty.style.display = "none";
+
+            const statusBadge = s => {
+                const map = { Open: "badge bg-success", Closed: "badge bg-secondary", Cancelled: "badge bg-danger" };
+                return `<span class="${map[s] || 'badge bg-secondary'}">${s || "-"}</span>`;
+            };
+
+            const linesMap = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+            const rows = list.map(o => {
+                const lines = linesMap[o.no] || [];
+                const totalQty = lines.reduce((s, l) => s + (Number(l.qty) || 0), 0);
+                return `<tr>
+                    <td class="fw-semibold text-primary mono" style="cursor:pointer;" onclick="openOrderDetail('${escapeHtml(o.no)}')">
+                        ${escapeHtml(o.no)} <i class="bi bi-box-arrow-up-right ms-1" style="font-size:10px;opacity:.5;"></i>
+                    </td>
+                    <td>${escapeHtml(formatDateShort(o.date))}</td>
+                    <td><span class="tag" style="background:#ede9fe;color:#5b21b6;">${escapeHtml(o.fcRef || "-")}</span></td>
+                    <td>${escapeHtml(o.vendorCode ? "VND-" + o.vendorCode : "-")}</td>
+                    <td>${escapeHtml(o.planNo || "-")}</td>
+                    <td>${escapeHtml(o.week || "-")}</td>
+                    <td style="text-align:right;font-weight:700;color:#166534;">${fmt(totalQty)} kg</td>
+                    <td>${statusBadge(o.status)}</td>
+                </tr>`;
+            }).join("");
+
+            container.innerHTML = `
+                <div class="table-wrap po-generation-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>PO No</th>
+                                <th>Tanggal</th>
+                                <th>Forecast Ref</th>
+                                <th>Vendor</th>
+                                <th>Plan No</th>
+                                <th>Week</th>
+                                <th style="text-align:right;">Total Qty</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
+        }
+
+        function resetPoFilter() {
+            document.getElementById("poQ").value = "";
+            document.getElementById("poFStatus").value = "";
+            document.getElementById("poFDateFrom").value = "";
+            document.getElementById("poFDateTo").value = "";
+            renderPoList();
+        }
+
         // Global exposure for onclick
         window.changePage = changePage;
 
@@ -1138,7 +1552,12 @@
         document.addEventListener("DOMContentLoaded", () => {
             new SidebarSystem(null, "orders").render();
             setupPeriodFilter();
+            document.getElementById("q").addEventListener("input", applyFilter);
+            document.getElementById("periodFilter").addEventListener("change", applyFilter);
+            document.getElementById("fDateFrom").addEventListener("change", applyFilter);
+            document.getElementById("fDateTo").addEventListener("change", applyFilter);
             render();
+            renderPoList();
         });
 
         /* legacy code removed

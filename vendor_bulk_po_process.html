@@ -28,9 +28,9 @@
         }
 
         .page {
-            background: #fff;
-            border-radius: 12px;
-            padding: 24px;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
         }
 
         .topbar {
@@ -42,39 +42,69 @@
             flex-wrap: wrap;
         }
 
-        h1 { margin: 0; font-size: 22px; }
+        h1 { margin: 0; font-size: 18px; font-weight: 800; }
         .subtext { margin-top: 4px; font-size: 13px; color: var(--muted); }
 
         .card {
             background: var(--card);
-            border-radius: 12px;
+            border-radius: 8px;
             margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(15,23,42,.05);
-            border: 1px solid var(--line);
+            box-shadow: 0 2px 10px rgba(0,0,0,.04);
+            border: 1px solid #e8ebf1;
             overflow: hidden;
         }
 
         .card-header {
             padding: 12px 16px;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 13px;
-            border-bottom: 1px solid var(--line);
-            background: var(--soft);
+            border-bottom: 1px solid #eef0f4;
+            background: #fafbfe;
         }
 
-        .card-body { padding: 16px; }
+        .card-body { padding: 18px; }
 
         .global-settings-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .summary-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            background: #fff;
+        }
+
+        .summary-box .lbl {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .summary-box .val {
+            margin-top: 4px;
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #15803d;
         }
 
         .field label {
             display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            color: #555;
             margin-bottom: 5px;
         }
 
@@ -82,7 +112,7 @@
         .field select,
         .field textarea {
             width: 100%;
-            border: 1px solid var(--line);
+            border: 1px solid #d5dae3;
             border-radius: 7px;
             padding: 8px 10px;
             font-size: 13px;
@@ -103,17 +133,17 @@
             box-shadow: 0 0 0 3px rgba(37,99,235,.1);
         }
 
-        .table-wrap { overflow-x: auto; }
+        .table-wrap { overflow-x: auto; margin-top: 8px; }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
-            min-width: 900px;
+            min-width: 1080px;
         }
 
         th, td {
-            padding: 10px 12px;
+            padding: 13px 14px;
             border-bottom: 1px solid #edf0f5;
             text-align: left;
             vertical-align: middle;
@@ -122,9 +152,10 @@
 
         th {
             background: var(--soft);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--muted);
+            background: #f9fafc;
+            font-size: 12px;
+            font-weight: 800;
+            color: #555;
         }
 
         .po-group-header {
@@ -146,6 +177,62 @@
         }
 
         tbody tr:hover:not(.po-group-header):not(.grand-total-row) { background: #f9fbff; }
+
+        .review-table table { min-width: 1080px; }
+        .review-main-row td { background: #fff; }
+        .review-main-row:hover td { background: #fafcff; }
+        .tag { display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; }
+        .tag-ready { background: #fef9c3; color: #92400e; }
+        .tag-feed { background: #dcfce7; color: #166534; }
+        .expand-btn { background: none; border: none; cursor: pointer; color: #9ca3af; padding: 2px 4px; transition: transform .2s ease, color .15s; display: inline-flex; align-items: center; }
+        .expand-btn:hover { color: #374151; }
+        .expand-btn.open { transform: rotate(180deg); color: #15803d; }
+        .expand-row { display: none; background: #f8fafc; }
+        .expand-row.open { display: table-row; }
+        .expand-content { padding: 14px 16px 18px 52px; border-left: 3px solid #15803d; }
+        .mini-title { font-size: 11px; font-weight: 900; color: #15803d; text-transform: uppercase; margin-bottom: 7px; }
+        .info-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin-bottom: 12px; }
+        .info-line { display: grid; grid-template-columns: 160px minmax(0, 1fr); border-bottom: 1px solid #e8ecf4; padding: 8px 0; }
+        .info-label { color: #64748b; font-weight: 900; }
+        .info-value { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .confirm-qty-input {
+            width: 92px;
+            height: 32px;
+            border: 1px solid #d5dae3;
+            border-radius: 7px;
+            padding: 0 8px;
+            text-align: right;
+            font-weight: 800;
+            background: #fff;
+        }
+        .confirm-qty-input:focus {
+            outline: none;
+            border-color: #15803d;
+            box-shadow: 0 0 0 3px rgba(21, 128, 61, .1);
+        }
+        .confirm-qty-input.partial {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        .confirm-qty-input.zero {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        .whse-select {
+            min-width: 170px;
+            height: 32px;
+            border: 1px solid #d5dae3;
+            border-radius: 7px;
+            padding: 0 8px;
+            font-weight: 800;
+            background: #fff;
+        }
+        .whse-select:focus {
+            outline: none;
+            border-color: #15803d;
+            box-shadow: 0 0 0 3px rgba(21, 128, 61, .1);
+        }
 
         /* Qty input */
         .qty-input {
@@ -306,11 +393,11 @@
                 <div class="page shadow-sm">
                     <div class="topbar">
                         <div>
-                            <h1>Worksheet: Process Selected POs</h1>
-                            <div class="subtext">Review and adjust approved quantities for multiple POs simultaneously before generating Sales Orders.</div>
+                            <h1>Review & Generate SO</h1>
+                            <div class="subtext">Review selected incoming PO sebelum generate Sales Order. 1 PO = 1 SO.</div>
                         </div>
                         <button class="btn-success" onclick="generateBatchSO()">
-                            <i class="bi bi-rocket-takeoff me-2"></i>Generate All Sales Orders
+                            <i class="bi bi-rocket-takeoff me-2"></i>Generate Semua SO
                         </button>
                     </div>
 
@@ -319,71 +406,45 @@
                         <span>One or more items have been adjusted (partial or over quantity). Please review carefully.</span>
                     </div>
 
-                    <!-- Global Settings -->
                     <div class="card">
-                        <div class="card-header"><i class="bi bi-gear-fill me-1"></i>Global Fulfillment Settings</div>
+                        <div class="card-header"><i class="bi bi-clipboard-data me-1"></i>Batch Summary</div>
                         <div class="card-body">
-                            <div class="global-settings-grid">
-                                <div class="field">
-                                    <label>Global SO Date</label>
-                                    <input type="date" id="gSoDate">
+                            <div class="summary-grid">
+                                <div class="summary-box">
+                                    <div class="lbl">Selected PO</div>
+                                    <div class="val" id="summaryPo">0</div>
                                 </div>
-                                <div class="field">
-                                    <label>Expected Delivery Date</label>
-                                    <input type="date" id="gDelivDate">
+                                <div class="summary-box">
+                                    <div class="lbl">Total Lines</div>
+                                    <div class="val" id="summaryLines" style="color:#1d4ed8;">0</div>
                                 </div>
-                                <div class="field">
-                                    <label>Source Warehouse / Location</label>
-                                    <select id="gWarehouse">
-                                        <option value="WH-MAIN">WH-MAIN (Main Warehouse)</option>
-                                        <option value="WH-NORTH">WH-NORTH (North Facility)</option>
-                                        <option value="WH-EAST">WH-EAST (East Facility)</option>
-                                    </select>
+                                <div class="summary-box">
+                                    <div class="lbl">Total Qty</div>
+                                    <div class="val" id="summaryQty" style="color:#7c3aed;">0</div>
                                 </div>
-                                <div class="field">
-                                    <label>Global Notes (Internal)</label>
-                                    <textarea id="gNotes" placeholder="Delivery instruction, tags, etc..."></textarea>
+                                <div class="summary-box">
+                                    <div class="lbl">Total Amount</div>
+                                    <div class="val" id="summaryAmount" style="font-size:22px;color:#166534;">Rp 0</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Worksheet Table -->
                     <div class="card">
                         <div class="toolbar">
                             <div style="font-weight:700;font-size:14px;color:#1e293b;">
-                                <i class="bi bi-list-check me-1"></i>Items to Process (<span id="totalLinesCount">0</span> lines)
-                            </div>
-                            <div class="d-flex gap-2" id="massActionsContainer">
-                                <button class="btn-outline" onclick="setAllToFull()"><i class="bi bi-check2-all me-1"></i>Set All to Full</button>
-                                <button class="btn-outline text-danger border-danger-subtle" onclick="setAllToZero()"><i class="bi bi-x-circle me-1"></i>Set All to Zero</button>
+                                <i class="bi bi-table me-1"></i>Review PO by Customer
                             </div>
                         </div>
-                        <div class="table-wrap">
-                            <table id="worksheetTable">
-                                <thead>
-                                    <tr>
-                                        <th style="width:50px;">#</th>
-                                        <th style="width:120px;">SKU</th>
-                                        <th>Product Name</th>
-                                        <th style="width:100px;">PO Qty</th>
-                                        <th style="width:120px;text-align:center;">Action: Confirm Qty</th>
-                                        <th style="width:150px;text-align:right;">Unit Price (Rp)</th>
-                                        <th style="width:150px;text-align:right;">Subtotal (Rp)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="worksheetBody">
-                                    <!-- Dynamic -->
-                                </tbody>
-                                <tfoot>
-                                    <tr class="grand-total-row">
-                                        <td colspan="6" style="text-align:right;">Batch Grand Total:</td>
-                                        <td id="batchGrandTotal" style="text-align:right;color:#15803d;">Rp 0</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                        <div class="card-body">
+                            <div class="table-wrap review-table" id="reviewContainer"></div>
+                            <div class="text-muted fst-italic mt-3" style="border-left:4px solid #f59e0b;padding-left:12px;">
+                                Setiap PO akan menghasilkan 1 dokumen SO tersendiri.
+                            </div>
                         </div>
                     </div>
+
+                    <input type="hidden" id="gSoDate">
 
                 </div>
             </div>
@@ -409,10 +470,6 @@
         // Set default dates
         const today = new Date().toISOString().split('T')[0];
         document.getElementById("gSoDate").value = today;
-        
-        let tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById("gDelivDate").value = tomorrow.toISOString().split('T')[0];
 
         document.addEventListener("DOMContentLoaded", () => {
             new SidebarSystem(null, 'incoming_po').render();
@@ -424,8 +481,135 @@
         // =============================
         const LS_ORDERS = "IBOCS_customer_orders";
         const LS_ORDER_LINES = "IBOCS_customer_order_lines";
+        const LS_VENDOR_ORDERS = "IBOCS_vendor_incoming_po";
         
         let workingData = []; // Array of PO objects with their modifiable lines
+
+        const DEMO_INCOMING_PO = [
+            {
+                poRef: "PO-2604-001", poDate: "2026-04-01", deliveryDate: "2026-04-08",
+                customer: "PT TOP Distribusi", contact: "Budi Santoso",
+                address: "Jl. Distribusi No. 1, Medan", notes: "Kirim pagi sebelum jam 08.00",
+                vendorName: "SIC", status: "Open", whse: "WH-KDG01",
+                items: [
+                    { sku: "FEED-002", name: "Pakan Starter (BR-1)", origQty: 7500, price: 50000 },
+                    { sku: "FEED-003", name: "Pakan Grower (BR-2)", origQty: 5500, price: 48000 }
+                ]
+            },
+            {
+                poRef: "PO-2604-003", poDate: "2026-04-03", deliveryDate: "2026-04-10",
+                customer: "PT AYM (Ayam Yummy Makmur)", contact: "Dewi Rahayu",
+                address: "Jl. Poultry No. 12, Binjai", notes: "",
+                vendorName: "SIC", status: "Open", whse: "WH-KDG03",
+                items: [
+                    { sku: "FEED-002", name: "Pakan Starter (BR-1)", origQty: 6200, price: 50000 },
+                    { sku: "FEED-003", name: "Pakan Grower (BR-2)", origQty: 4300, price: 48000 }
+                ]
+            },
+            {
+                poRef: "PO-2604-005", poDate: "2026-04-05", deliveryDate: "2026-04-12",
+                customer: "PT TOP Distribusi", contact: "Budi Santoso",
+                address: "Jl. Distribusi No. 1, Medan", notes: "PO sebelumnya - sudah selesai",
+                vendorName: "SIC", status: "Closed", whse: "WH-KDG02",
+                items: [
+                    { sku: "FEED-002", name: "Pakan Starter (BR-1)", origQty: 8000, price: 50000 },
+                    { sku: "FEED-004", name: "Pakan Finisher (BR-3)", origQty: 7000, price: 46000 }
+                ]
+            },
+            {
+                poRef: "PO-2604-007", poDate: "2026-04-07", deliveryDate: "2026-04-14",
+                customer: "PT BMAX", contact: "Andi Susanto",
+                address: "Jl. Farm Raya No. 5, Binjai", notes: "",
+                vendorName: "SIC", status: "Open", whse: "WH-KDG02",
+                items: [
+                    { sku: "FEED-004", name: "Pakan Finisher (BR-3)", origQty: 8700, price: 46000 },
+                    { sku: "FEED-003", name: "Pakan Grower (BR-2)", origQty: 5700, price: 48000 }
+                ]
+            }
+        ];
+
+        function getIncomingPOList() {
+            const stored = JSON.parse(localStorage.getItem(LS_VENDOR_ORDERS) || "{}");
+            let list = DEMO_INCOMING_PO.map(po => {
+                const override = stored[po.poRef] || {};
+                return { ...po, status: override.status || po.status, whse: override.whse || po.whse };
+            });
+
+            const custOrders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            const custLines = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+            const demoRefs = new Set(DEMO_INCOMING_PO.map(p => p.poRef));
+
+            custOrders.forEach(ord => {
+                if (demoRefs.has(ord.no)) return;
+                const lines = custLines[ord.no] || [];
+                const sicItems = lines.filter(it => it.sku && it.sku.startsWith("FEED-"));
+                if (!sicItems.length) return;
+                const override = stored[ord.no] || {};
+                list.push({
+                    poRef: ord.no,
+                    poDate: ord.date || ord.createdAt?.slice(0, 10) || "",
+                    deliveryDate: ord.deliveryDate || ord.requiredDate || "",
+                    customer: ord.customerName || ord.customer || "",
+                    contact: ord.contact || "",
+                    address: ord.address || "",
+                    notes: ord.notes || ord.remarks || "",
+                    vendorName: "SIC",
+                    status: override.status || "Open",
+                    whse: override.whse || ord.warehouse || "",
+                    items: sicItems.map(it => ({
+                        sku: it.sku,
+                        name: it.name,
+                        origQty: Number(it.qty || 0),
+                        price: Number(it.price || 0)
+                    }))
+                });
+            });
+
+            return list;
+        }
+
+        function updateIncomingStatus(poRef, status) {
+            const stored = JSON.parse(localStorage.getItem(LS_VENDOR_ORDERS) || "{}");
+            stored[poRef] = stored[poRef] || {};
+            stored[poRef].status = status;
+            localStorage.setItem(LS_VENDOR_ORDERS, JSON.stringify(stored));
+        }
+
+        function nextSoNo(date, existingCount) {
+            return "SO-" + date.replace(/-/g, "").slice(0, 6) + "-" + String(existingCount + 1).padStart(4, "0");
+        }
+
+        function saveSOFromPayload(payload, offset = 0) {
+            const soList = JSON.parse(localStorage.getItem("IBOCS_so_list") || "[]");
+            if (soList.some(so => so.sourcePoNo === payload.poRef)) return null;
+            const acceptedItems = payload.items.filter(item => item.approvedQty > 0);
+            const soNo = nextSoNo(payload.soDate, soList.length + offset);
+            const so = {
+                soNo,
+                soDate: payload.soDate,
+                deliveryDate: payload.deliveryDate,
+                store: payload.customer || "-",
+                customer: payload.customer || "-",
+                type: "FROM_PO",
+                slot: "-",
+                totalQty: acceptedItems.reduce((s, item) => s + Number(item.approvedQty || 0), 0),
+                status: "Draft",
+                sourcePoNo: payload.poRef,
+                warehouse: payload.warehouse || "",
+                notes: payload.vendorNotes || "",
+                lines: acceptedItems.map(item => ({
+                    itemCode: item.sku,
+                    itemName: item.name,
+                    qty: item.approvedQty,
+                    uom: "Kg",
+                    price: item.unitPrice,
+                    source: "Incoming PO"
+                }))
+            };
+            soList.unshift(so);
+            localStorage.setItem("IBOCS_so_list", JSON.stringify(soList));
+            return so;
+        }
 
         function loadWorksheet() {
             const rawRefs = localStorage.getItem("IBOCS_bulk_po_refs");
@@ -436,24 +620,23 @@
             }
 
             const targetRefs = JSON.parse(rawRefs);
-            let orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
-            let orderLines = JSON.parse(localStorage.getItem(LS_ORDER_LINES) || "{}");
+            const incoming = getIncomingPOList();
 
             workingData = targetRefs.map(poRef => {
-                const head = orders.find(o => o.no === poRef);
+                const head = incoming.find(o => o.poRef === poRef);
                 if (!head) return null;
 
-                const lines = orderLines[poRef] || [];
                 return {
-                    poRef: head.no,
-                    vendor: head.customerName || head.customer || "Toko Customer",
-                    poDate: head.date,
+                    poRef: head.poRef,
+                    vendor: head.customer || "Customer",
+                    poDate: head.poDate,
+                    deliveryDate: head.deliveryDate,
                     whse: head.warehouse || "WH-MAIN",
-                    items: lines.map(l => ({
+                    items: (head.items || []).map(l => ({
                         sku: l.sku || "N/A",
-                        name: l.name || l.product,
-                        origQty: parseInt(l.qty) || 0,
-                        approvedQty: parseInt(l.qty) || 0, // Default to full
+                        name: l.name || l.product || "-",
+                        origQty: parseInt(l.origQty ?? l.qty) || 0,
+                        approvedQty: parseInt(l.origQty ?? l.qty) || 0,
                         price: parseFloat(l.price) || 0
                     }))
                 };
@@ -464,6 +647,19 @@
 
         function fmt(n) {
             return "Rp " + Number(n).toLocaleString("id-ID");
+        }
+
+        function fmtQty(n) {
+            return Number(n || 0).toLocaleString("id-ID");
+        }
+
+        function poTotals(po) {
+            return (po.items || []).reduce((acc, item) => {
+                acc.lines += 1;
+                acc.qty += Number(item.approvedQty || item.origQty || 0);
+                acc.amount += Number(item.approvedQty || item.origQty || 0) * Number(item.price || 0);
+                return acc;
+            }, { lines: 0, qty: 0, amount: 0 });
         }
 
         function showToast(msg, type = "success") {
@@ -479,80 +675,154 @@
         // RENDER WORKSHEET
         // =============================
         function renderTable() {
-            const settingsRaw = localStorage.getItem('IBOCS_platform_settings');
-            const settings = settingsRaw ? JSON.parse(settingsRaw) : { allowEditApprovedQty: true };
-            const allowEdit = settings.allowEditApprovedQty ?? true;
+            const container = document.getElementById("reviewContainer");
+            const batch = workingData.reduce((acc, po) => {
+                const t = poTotals(po);
+                acc.po += 1;
+                acc.lines += t.lines;
+                acc.qty += t.qty;
+                acc.amount += t.amount;
+                return acc;
+            }, { po: 0, lines: 0, qty: 0, amount: 0 });
 
-            // Hide massive action container if not allowed
-            const massActions = document.getElementById("massActionsContainer");
-            if (massActions) {
-                massActions.style.display = allowEdit ? "flex" : "none";
+            document.getElementById("summaryPo").textContent = batch.po;
+            document.getElementById("summaryLines").textContent = batch.lines;
+            document.getElementById("summaryQty").textContent = fmtQty(batch.qty);
+            document.getElementById("summaryAmount").textContent = fmt(batch.amount);
+
+            if (!workingData.length) {
+                container.innerHTML = `<div class="text-center py-4 text-muted">Tidak ada PO dipilih.</div>`;
+                return;
             }
 
-            const tbody = document.getElementById("worksheetBody");
-            let html = "";
-            let overallLines = 0;
-
-            workingData.forEach((po, poIdx) => {
-                // Group Header
-                html += `
-                <tr class="po-group-header">
-                    <td colspan="7">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="fw-bold text-dark me-3"><i class="bi bi-shop me-1 text-muted"></i>${po.vendor}</span>
-                                <span class="mono">${po.poRef}</span>
-                                <span class="badge bg-white text-primary border border-primary-subtle ms-3 fw-medium">${po.whse}</span>
-                                <span class="text-muted ms-3" style="font-size:11px;">PO Date: ${po.poDate}</span>
-                            </div>
-                            ${allowEdit ? `<button class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:11px;" onclick="syncPOFull(${poIdx})">Max Qty for PO</button>` : ''}
-                        </div>
-                    </td>
-                </tr>`;
-
-                // Lines
-                po.items.forEach((item, lineIdx) => {
-                    overallLines++;
-                    const subtotal = item.approvedQty * item.price;
-                    const elId = `qty_${poIdx}_${lineIdx}`;
-                    
-                    let rowClass = "";
-                    let inputClass = "qty-input";
-                    
-                    if (item.approvedQty === 0) {
-                        rowClass = "row-zero";
-                    } else if (item.approvedQty < item.origQty) {
-                        rowClass = "row-partial";
-                        inputClass += " partial";
-                    } else if (item.approvedQty > item.origQty) {
-                        inputClass += " over";
-                    }
-
-                    html += `
-                    <tr class="${rowClass}" id="row_${poIdx}_${lineIdx}">
-                        <td class="text-muted">${lineIdx + 1}</td>
-                        <td class="fw-bold">${item.sku}</td>
-                        <td>${item.name}</td>
-                        <td class="text-muted fw-bold">${item.origQty}</td>
-                        <td style="text-align:center;">
-                            ${allowEdit 
-                                ? `<input type="number" class="${inputClass}" id="${elId}" value="${item.approvedQty}" min="0" oninput="updateQty(${poIdx}, ${lineIdx}, this.value)">` 
-                                : `<span style="font-weight:700;">${item.approvedQty}</span>`}
+            const rows = workingData.map((po, idx) => {
+                const totals = poTotals(po);
+                const expandId = `po-detail-${idx}`;
+                const btnId = `po-detail-btn-${idx}`;
+                const lineRows = (po.items || []).map(item => {
+                    const qty = Number(item.approvedQty || item.origQty || 0);
+                    const inputClass = qty === 0 ? "zero" : qty < Number(item.origQty || 0) ? "partial" : "";
+                    return `
+                        <tr>
+                            <td>${item.sku}</td>
+                            <td>${item.name}</td>
+                            <td style="text-align:right;">${fmtQty(item.origQty)}</td>
+                            <td style="text-align:right;">
+                                <input type="number" class="confirm-qty-input ${inputClass}" min="0" value="${qty}" oninput="updateConfirmQty(${idx}, '${item.sku}', this.value)">
+                            </td>
+                            <td>Kg</td>
+                            <td style="text-align:right;">${fmt(item.price)}</td>
+                            <td style="text-align:right;font-weight:800;">${fmt(qty * Number(item.price || 0))}</td>
+                        </tr>`;
+                }).join("");
+                return `
+                    <tr class="review-main-row">
+                        <td>
+                            <button class="expand-btn" id="${btnId}" onclick="toggleExpand('${expandId}','${btnId}')">
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
                         </td>
-                        <td style="text-align:right;">${fmt(item.price)}</td>
-                        <td style="text-align:right;" class="subtotal" id="sub_${poIdx}_${lineIdx}">${fmt(subtotal)}</td>
+                        <td><strong class="mono">${po.poRef}</strong><div style="margin-top:3px;"><span class="tag tag-ready">Ready</span></div></td>
+                        <td>${po.poDate || "-"}</td>
+                        <td>${po.vendor || "-"}</td>
+                        <td><span class="tag tag-feed">${po.whse || "-"}</span></td>
+                        <td style="text-align:right;">${totals.lines}</td>
+                        <td style="text-align:right;font-weight:800;">${fmtQty(totals.qty)}</td>
+                        <td style="text-align:right;font-weight:800;">${fmt(totals.amount)}</td>
+                    </tr>
+                    <tr class="expand-row" id="${expandId}">
+                        <td colspan="8" style="padding:0;">
+                            <div class="expand-content">
+                                <div class="mini-title">Header</div>
+                                <div class="info-strip">
+                                    <div>
+                                        <div class="info-line"><div class="info-label">PO Reference</div><div class="info-value">${po.poRef}</div></div>
+                                        <div class="info-line"><div class="info-label">Customer</div><div class="info-value">${po.vendor || "-"}</div></div>
+                                        <div class="info-line"><div class="info-label">Total Qty</div><div class="info-value">${fmtQty(totals.qty)} Kg</div></div>
+                                    </div>
+                                    <div>
+                                        <div class="info-line"><div class="info-label">PO Date</div><div class="info-value">${po.poDate || "-"}</div></div>
+                                        <div class="info-line"><div class="info-label">Warehouse</div><div class="info-value">
+                                            <select class="whse-select" onchange="updateWarehouse(${idx}, this.value)">
+                                                ${["WH-MAIN", "WH-NORTH", "WH-EAST", "WH-KDG01", "WH-KDG02", "WH-KDG03"].map(w => `<option value="${w}" ${String(po.whse || "") === w ? "selected" : ""}>${w}</option>`).join("")}
+                                            </select>
+                                        </div></div>
+                                        <div class="info-line"><div class="info-label">Total Amount</div><div class="info-value">${fmt(totals.amount)}</div></div>
+                                    </div>
+                                </div>
+                                <div class="mini-title">Item Lines</div>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Item Code</th>
+                                            <th>Item Name</th>
+                                            <th style="text-align:right;">Qty</th>
+                                            <th style="text-align:right;">Confirm Qty</th>
+                                            <th>UoM</th>
+                                            <th style="text-align:right;">Unit Price</th>
+                                            <th style="text-align:right;">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${lineRows}</tbody>
+                                </table>
+                            </div>
+                        </td>
                     </tr>`;
-                });
-            });
+            }).join("");
 
-            if (workingData.length === 0) {
-                html = `<tr><td colspan="7" class="text-center py-4 text-muted">No configuration loaded.</td></tr>`;
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"></th>
+                            <th>PO Reference</th>
+                            <th>PO Date</th>
+                            <th>Customer</th>
+                            <th>Warehouse</th>
+                            <th style="text-align:right;">Lines</th>
+                            <th style="text-align:right;">Total Qty</th>
+                            <th style="text-align:right;">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>`;
+        }
+
+        function toggleExpand(rowId, btnId) {
+            const row = document.getElementById(rowId);
+            const btn = document.getElementById(btnId);
+            const isOpen = row.classList.contains("open");
+            row.classList.toggle("open", !isOpen);
+            btn.classList.toggle("open", !isOpen);
+        }
+
+        function updateConfirmQty(poIdx, sku, value) {
+            const po = workingData[poIdx];
+            if (!po) return;
+            const item = (po.items || []).find(line => line.sku === sku);
+            if (!item) return;
+            const parsed = parseInt(value, 10);
+            item.approvedQty = Number.isNaN(parsed) || parsed < 0 ? 0 : parsed;
+            renderTable();
+            const row = document.getElementById(`po-detail-${poIdx}`);
+            const btn = document.getElementById(`po-detail-btn-${poIdx}`);
+            if (row && btn) {
+                row.classList.add("open");
+                btn.classList.add("open");
             }
-
-            tbody.innerHTML = html;
-            document.getElementById("totalLinesCount").textContent = overallLines;
-            recalculateGrandTotal();
             checkWarnings();
+        }
+
+        function updateWarehouse(poIdx, value) {
+            if (!workingData[poIdx]) return;
+            workingData[poIdx].whse = value;
+            renderTable();
+            const row = document.getElementById(`po-detail-${poIdx}`);
+            const btn = document.getElementById(`po-detail-btn-${poIdx}`);
+            if (row && btn) {
+                row.classList.add("open");
+                btn.classList.add("open");
+            }
         }
 
         // =============================
@@ -640,9 +910,9 @@
             if(!confirm("Are you sure you want to confirm these quantities and generate Sales Orders?")) return;
 
             const gSoDate = document.getElementById("gSoDate").value;
-            const gDelivDate = document.getElementById("gDelivDate").value;
-            const gWarehouse = document.getElementById("gWarehouse").value;
-            const gNotes = document.getElementById("gNotes").value;
+            const gDelivDate = "";
+            const gWarehouse = "";
+            const gNotes = "";
             const now = new Date().toISOString();
 
             // Build payloads
@@ -668,8 +938,8 @@
                     poRef: po.poRef,
                     customer: po.vendor,
                     soDate: gSoDate,
-                    deliveryDate: gDelivDate,
-                    warehouse: gWarehouse,
+                    deliveryDate: po.deliveryDate || gDelivDate || gSoDate,
+                    warehouse: po.whse || gWarehouse,
                     vendorNotes: gNotes,
                     confirmedBy: user.email,
                     confirmedAt: now,
@@ -682,8 +952,12 @@
 
             // Simulate saving to backend / localStorage
             let orders = JSON.parse(localStorage.getItem(LS_ORDERS) || "[]");
+            let generated = 0;
             
-            payloads.forEach(payload => {
+            payloads.forEach((payload, idxPayload) => {
+                const so = saveSOFromPayload(payload, idxPayload);
+                if (so) generated++;
+                updateIncomingStatus(payload.poRef, "Closed");
                 // Update status in orders array
                 const idx = orders.findIndex(o => o.no === payload.poRef);
                 if (idx !== -1) {
@@ -696,7 +970,7 @@
             localStorage.setItem(LS_ORDERS, JSON.stringify(orders));
             localStorage.removeItem("IBOCS_bulk_po_refs"); // Clean up
 
-            alert(`Successfully generated ${payloads.length} Sales Orders from the batch!`);
+            alert(`Successfully generated ${generated || payloads.length} Sales Orders from the batch!`);
             window.location.href = "vendor_incoming_po_list.html";
         }
 
@@ -704,7 +978,3 @@
 </body>
 
 </html>
-
-
-
-
